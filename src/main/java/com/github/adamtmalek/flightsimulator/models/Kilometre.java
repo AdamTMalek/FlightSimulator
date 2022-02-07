@@ -1,6 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models;
 
-record Kilometre(double kilometre) {
+public record Kilometre(double kilometre) {
 	public Kilometre(double kilometre) {
 		if (kilometre <= 0) {
 			throw new java.lang.IllegalArgumentException(
