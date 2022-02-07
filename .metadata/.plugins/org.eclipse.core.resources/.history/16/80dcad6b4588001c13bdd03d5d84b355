@@ -1,0 +1,4 @@
+
+public record GramsPerKilometre(double gramsPerKilometre) {
+
+}
