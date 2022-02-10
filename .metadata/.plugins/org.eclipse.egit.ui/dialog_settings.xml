@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="org.eclipse.egit.ui.internal.clone.GitSelectWizardPageWizardSel" value="0"/>
+	<list key="RepositorySelectionPage.UsedUris">
+		<item value="file:///Users/adebowaleogunrin/Documents/GitHub/FlightSimulator"/>
+	</list>
+	<list key="CommitDialog.authorValues">
+		<item value="Ade20150 &lt;91483078+Ade20150@users.noreply.github.com&gt;"/>
+	</list>
+	<list key="CommitDialog.committerValues">
+		<item value="Ade20150 &lt;91483078+Ade20150@users.noreply.github.com&gt;"/>
+	</list>
+	<section name="GitImportWizard">
+		<item key="GitProjectsImportPage.STORE_NESTED_PROJECTS" value="true"/>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.staging.StagingView">
+		<item key="MAIN_SASH_FORM_ORIENTATION_VERTICAL" value="false"/>
+		<item key="HORIZONTAL_SASH_FORM_WEIGHT" value="500,500"/>
+		<item key="STAGING_SASH_FORM_WEIGHT" value="500,500"/>
+		<item key="sortItemState" value="false"/>
+	</section>
+	<section name="GitCommitMessageComponent">
+		<list key="/Users/adebowaleogunrin/git/FlightSimulator/.git">
+			<item value="false"/>
+			<item value="Ade20150 &lt;91483078+Ade20150@users.noreply.github.com&gt;"/>
+			<item value="Merge branch &apos;master&apos; of file:///Users/adebowaleogunrin/Documents/GitHub/FlightSimulator"/>
+			<item value="Ade20150 &lt;91483078+Ade20150@users.noreply.github.com&gt;"/>
+			<item value="39800de7c7e1ec4553c5f73b2b7cc3f8ca5d3f3b"/>
+			<item value="0"/>
+			<item value="false"/>
+		</list>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.push.PushResultDialog.dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="635"/>
+		<item key="DIALOG_Y_ORIGIN" value="244"/>
+		<item key="DIALOG_WIDTH" value="650"/>
+		<item key="DIALOG_HEIGHT" value="445"/>
+		<item key="DIALOG_FONT_NAME" value="1|.AppleSystemUIFont|11.0|0|COCOA|1|.AppleSystemUIFont"/>
+		<list key="sashWeights">
+			<item value="600"/>
+			<item value="400"/>
+		</list>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.pull.PullResultDialog.dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="707"/>
+		<item key="DIALOG_Y_ORIGIN" value="276"/>
+		<item key="DIALOG_WIDTH" value="506"/>
+		<item key="DIALOG_HEIGHT" value="396"/>
+		<item key="DIALOG_FONT_NAME" value="1|.AppleSystemUIFont|11.0|0|COCOA|1|.AppleSystemUIFont"/>
+	</section>
+</section>
