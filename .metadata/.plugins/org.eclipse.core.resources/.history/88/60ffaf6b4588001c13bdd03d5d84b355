@@ -1,4 +1,0 @@
-
-public record Airport(String code, String name,int position) {
-
-}

@@ -1,4 +1,0 @@
-
-public record Aeroplane(String model, String manufacturer,KilometrePerHour speed,LitresPerKilometre fuelConsumption) {
-
-}
