@@ -1,30 +1,14 @@
 package com.github.adamtmalek.flightsimulator.models;
 
+import org.jetbrains.annotations.NotNull;
+
 public record Airport(
-		String code, 
-		String name,
-		GeodeticCoordinate position) {
-	private boolean isStringAlphabetic(String s) {
-		for (int i = 0; i<s.length(); i++) {
-			if (!Character.isAlphabetic(s.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	// TODO validate name/position?
-	public Airport(
-			String code, 
-			String name,
-			GeodeticCoordinate position) {
-		if (code.length() != 3 || !isStringAlphabetic(code)) {
-			throw new java.lang.IllegalArgumentException(
-					String.format("Invalid airport code must be 3 letters: %f", code));
-		}
-		this.code = code.toUpperCase(); // TODO should maybe test
-		this.name = name;
-		this.position = position;
-		
+		@NotNull String code,
+		@NotNull String name,
+		@NotNull GeodeticCoordinate position) {
+	public Airport(@NotNull String code, @NotNull String name, @NotNull String latitude, @NotNull String longitude) {
+		this(code, name, null);
+		// TODO: Convert latitude and longitude to GeodeticCoordinate
+		throw new RuntimeException("Not implemented");
 	}
 }
