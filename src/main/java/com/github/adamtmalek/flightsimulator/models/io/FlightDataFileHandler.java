@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -54,34 +55,15 @@ public class FlightDataFileHandler {
   }
 
   public @NotNull Collection<Airport> readAirports() throws IOException {
-    return readCsv(airportsCsv).map(values -> {
-      final var code = values.get(0);
-      final var name = values.get(1);
-      final var latitude = values.get(2);
-      final var longitude = values.get(3);
-
-      return new Airport(code, name, latitude, longitude);
-    }).toList();
+    return parseToMap(readCsv(airportsCsv), Airport.class).values();
   }
 
   public @NotNull Collection<Airline> readAirlines() throws IOException {
-    return readCsv(airlinesCsv).map(values -> {
-      final var code = values.get(0);
-      final var name = values.get(1);
-
-      return new Airline(code, name);
-    }).toList();
+    return parseToMap(readCsv(airlinesCsv), Airline.class).values();
   }
 
   public @NotNull Collection<Aeroplane> readAeroplanes() throws IOException {
-    return readCsv(aeroplanesCsv).map(values -> {
-      final var code = values.get(0);
-      final var name = values.get(1);
-      final var speed = values.get(2);
-      final var consumption = values.get(3);
-
-      return new Aeroplane(code, name, speed, consumption);
-    }).toList();
+    return parseToMap(readCsv(aeroplanesCsv), Aeroplane.class).values();
   }
 
   private @NotNull Stream<List<String>> readCsv(@NotNull Path path) throws IOException {
@@ -93,19 +75,20 @@ public class FlightDataFileHandler {
                 .collect(Collectors.toList()));
   }
 
-//  private <T> @NotNull Map<String, T> parseToMap(@NotNull Stream<List<String>> data,
-//                                                 @NotNull Class<T> recordClass) {
-//    return data.map(values -> {
-//      final List<?> valueClasses = values.stream().map(v -> String.class).toList();
-//      try {
-//        final var code = values.get(0);
-//        final T instance = recordClass.getConstructor(valueClasses).newInstance(values);
-//        return new AbstractMap.SimpleImmutableEntry<>(code, instance);
-//      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//        throw new RuntimeException(e);
-//      }
-//    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//  }
+  private <T> @NotNull Map<String, T> parseToMap(@NotNull Stream<List<String>> data,
+                                                 @NotNull Class<T> recordClass) {
+    return data.map(values -> {
+      final var valueClasses = values.stream().map(Object::getClass).toArray(Class<?>[]::new);
+      final Object[] valueArray = values.toArray(new String[0]);
+      try {
+        final var code = values.get(0);
+        final T instance = recordClass.getConstructor(valueClasses).newInstance(valueArray);
+        return new AbstractMap.SimpleImmutableEntry<>(code, instance);
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  }
 
 //  private @NotNull Map<String, Flight> parseFlightsToMap(@NotNull Stream<List<String>> flightsCsv) {
 //    return flightsCsv.map(values -> {
