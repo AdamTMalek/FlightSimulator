@@ -20,7 +20,8 @@ public record AirlineReport(int totalFlights,
         if (flights.size() == 0) {
             return new Kilometre(0);
         } else {
-            return new Kilometre(flights.stream().mapToDouble(o -> o.totalDistance().kilometre()).sum());
+            throw new RuntimeException("Not implemented");
+//            return new Kilometre(flights.stream().mapToDouble(o -> o.totalDistance().kilometre()).sum());
         }
     }
 
@@ -37,7 +38,8 @@ public record AirlineReport(int totalFlights,
         if (flights.size() == 0) {
             return new GramsPerKilometre(0);
         } else {
-            return new GramsPerKilometre(flights.stream().mapToDouble(o -> o.estimatedCO2Produced().gramsPerKilometre()).sum());
+            throw new RuntimeException("Not implemented");
+//            return new GramsPerKilometre(flights.stream().mapToDouble(o -> o.estimatedCO2Produced().gramsPerKilometre()).sum());
         }
     }
 }
