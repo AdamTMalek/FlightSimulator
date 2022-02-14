@@ -24,12 +24,6 @@ public class FlightDataFileHandler {
   private final @NotNull Path aeroplanesCsv;
   private final @NotNull Path flightsCsv;
 
-  private final HashMap<String, Airport> airportMap = new HashMap<>();
-  private final HashMap<String, ControlTower> controlTowerMap = new HashMap<>();
-  private final HashMap<String, Airline> airlineMap = new HashMap<>();
-  private final HashMap<String, Aeroplane> aeroplaneMap = new HashMap<>();
-  private final HashMap<String, Flight> flightMap = new HashMap<>();
-
   private FlightDataFileHandler(@NotNull Path airportsCsv,
                                 @NotNull Path airlinesCsv,
                                 @NotNull Path aeroplanesCsv,
@@ -54,16 +48,30 @@ public class FlightDataFileHandler {
     );
   }
 
-  public @NotNull Collection<Airport> readAirports() throws IOException {
-    return parseToMap(readCsv(airportsCsv), Airport.class).values();
+  public @NotNull FlightData readFlightData() throws IOException, FileHandlerException {
+    final var airportMap = read(airportsCsv, Airport.class);
+    final var airlineMap = read(airlinesCsv, Airline.class);
+    final var aeroplaneMap = read(aeroplanesCsv, Aeroplane.class);
+    final var flights = readFlights(aeroplaneMap, airportMap);
+
+    return new FlightData(
+        new ArrayList<>(airportMap.values()),
+        new ArrayList<>(airlineMap.values()),
+        new ArrayList<>(aeroplaneMap.values()),
+        flights
+    );
   }
 
-  public @NotNull Collection<Airline> readAirlines() throws IOException {
-    return parseToMap(readCsv(airlinesCsv), Airline.class).values();
-  }
-
-  public @NotNull Collection<Aeroplane> readAeroplanes() throws IOException {
-    return parseToMap(readCsv(aeroplanesCsv), Aeroplane.class).values();
+  private <T> @NotNull Map<String, T> read(@NotNull Path fileToRead, @NotNull Class<T> klass) throws FileHandlerException {
+    try {
+      return parseToMap(readCsv(fileToRead), klass);
+    } catch (IOException e) {
+      throw new FileHandlerException(String.format("Failed to read %s", fileToRead), e);
+    } catch (RuntimeException e) {
+      final var message = String.format("Failed to parse %s to create instance of %s class",
+          fileToRead, klass.getName());
+      throw new FileHandlerException(message, e);
+    }
   }
 
   private @NotNull Stream<List<String>> readCsv(@NotNull Path path) throws IOException {
@@ -84,32 +92,41 @@ public class FlightDataFileHandler {
         final var code = values.get(0);
         final T instance = recordClass.getConstructor(valueClasses).newInstance(valueArray);
         return new AbstractMap.SimpleImmutableEntry<>(code, instance);
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
         throw new RuntimeException(e);
+      } catch (NoSuchMethodException e) {
+        final var exceptionMessage = String.format("Failed to find a constructor with %d String parameters",
+            valueClasses.length);
+        throw new RuntimeException(exceptionMessage, e);
       }
     }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
-//  private @NotNull Map<String, Flight> parseFlightsToMap(@NotNull Stream<List<String>> flightsCsv) {
-//    return flightsCsv.map(values -> {
-//      final var code = values.get(0);
-//      final var aeroplane = aeroplaneMap.get(values.get(1));
-//      final var departureAirport = airportMap.get(values.get(2));
-//      final var arrivalAirport = airportMap.get(values.get(3));
-//      final var dateOfDeparture = values.get(4);
-//      final var timeOfDeparture = values.get(5);
-//      final var flightPlan = values.subList(6, values.size())
-//          .stream()
-//          .map(airportMap::get)  // TODO: This needs to be changed, so that it's list of control towers
-//          .toList();
-//
-//      final var flight = new Flight(code, aeroplane,
-//          departureAirport, arrivalAirport,
-//          dateOfDeparture, timeOfDeparture, flightPlan);
-//
-//      return new AbstractMap.SimpleImmutableEntry<>(code, flight);
-//    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//  }
+  private @NotNull List<Flight> readFlights(Map<String, Aeroplane> aeroplaneMap,
+                                                   Map<String, Airport> airportMap) throws IOException {
+    return readFlights(readCsv(flightsCsv), aeroplaneMap, airportMap);
+  }
+
+  private @NotNull List<Flight> readFlights(@NotNull Stream<List<String>> flightsCsv,
+                                            @NotNull Map<String, Aeroplane> aeroplaneMap,
+                                            @NotNull Map<String, Airport> airportMap) {
+    return flightsCsv.map(values -> {
+      final var code = values.get(0);
+      final var aeroplane = aeroplaneMap.get(values.get(1));
+      final var departureAirport = airportMap.get(values.get(2));
+      final var arrivalAirport = airportMap.get(values.get(3));
+      final var dateOfDeparture = values.get(4);
+      final var timeOfDeparture = values.get(5);
+      final var flightPlan = values.subList(6, values.size())
+          .stream()
+          .map(c -> airportMap.get(c).controlTower)
+          .toList();
+
+      return new Flight(code, aeroplane,
+          departureAirport, arrivalAirport,
+          dateOfDeparture, timeOfDeparture, flightPlan);
+    }).toList();
+  }
 
   public static class Builder {
     private @Nullable Path directoryPath = null;

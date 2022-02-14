@@ -4,19 +4,22 @@ import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
+import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandler;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 public class App {
 
-    private static ArrayList<Airport> airports;
-    private static ArrayList<Airline> airlines;
-    private static ArrayList<Aeroplane> aeroplanes;
-    private static ArrayList<Flight> flights;
+    private static List<Airport> airports;
+    private static List<Airline> airlines;
+    private static List<Aeroplane> aeroplanes;
+    private static List<Flight> flights;
 
     public static void mainAppLoop() {
         boolean isRunning = true;
@@ -77,22 +80,26 @@ public class App {
                 .withDefaultAeroplanesFilename()
                 .build();
 
+        final FlightData data;
         try {
-            airports = new ArrayList<Airport>(handler.readAirports());
-            airlines = new ArrayList<Airline>();
-            aeroplanes = new ArrayList<Aeroplane>();
-            flights = new ArrayList<Flight>();
-
-            mainAppLoop();
-
-            Path airlineReportFolderPath = Path.of(""); //TODO Get airlineReportFolderPath.
-            writeAirlineReports(airlineReportFolderPath);
-            Path flightDataPath = Path.of(""); //TODO Get flightDataPath.
-            writeFlightData(flightDataPath);
-
-
-        } catch (IOException e) {
+            data = handler.readFlightData();
+        } catch (IOException | FileHandlerException e) {
+            // TODO: This is a bad solution, we'll need to catch it and create some error dialog
             throw new RuntimeException(e);
         }
+
+        airports = data.airports();
+        airlines = data.airlines();
+        aeroplanes = data.aeroplanes();
+        flights = data.flights();
+
+        mainAppLoop();
+
+        Path airlineReportFolderPath = Path.of(""); //TODO Get airlineReportFolderPath.
+        writeAirlineReports(airlineReportFolderPath);
+        Path flightDataPath = Path.of(""); //TODO Get flightDataPath.
+        writeFlightData(flightDataPath);
+
+
     }
 }
