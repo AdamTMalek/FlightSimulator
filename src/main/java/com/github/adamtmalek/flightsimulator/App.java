@@ -17,7 +17,13 @@ public class App {
     private static ArrayList<Airline> airlines;
     private static ArrayList<Aeroplane> aeroplanes;
     private static ArrayList<Flight> flights;
-    
+
+    public static void mainAppLoop() {
+        boolean isRunning = true;
+        while (isRunning) {
+            //TODO GUI to App relation, how to determine what operation to perform, and then perform it.
+        }
+    }
 
     public static void writeFlightData(Path destinationPath) {
         //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
@@ -76,7 +82,14 @@ public class App {
             airlines = new ArrayList<Airline>();
             aeroplanes = new ArrayList<Aeroplane>();
             flights = new ArrayList<Flight>();
-            run();
+
+            mainAppLoop();
+
+            Path airlineReportFolderPath = Path.of(""); //TODO Get airlineReportFolderPath.
+            writeAirlineReports(airlineReportFolderPath);
+            Path flightDataPath = Path.of(""); //TODO Get flightDataPath.
+            writeFlightData(flightDataPath);
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);
