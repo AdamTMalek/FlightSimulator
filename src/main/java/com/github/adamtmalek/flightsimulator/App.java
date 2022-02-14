@@ -17,7 +17,30 @@ public class App {
     private static ArrayList<Airline> airlines;
     private static ArrayList<Aeroplane> aeroplanes;
     private static ArrayList<Flight> flights;
+    
 
+    public static void writeFlightData(Path destinationPath) {
+        //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
+    }
+
+    public static void writeAirlineReports(Path destinationPath) {
+        for (var airline : airlines) {
+            final var flightsForAirline = filterFlightsByAirline(airline);
+            //TODO Get path.
+            //TODO ReportFileHandler.writeReport(new AirlineReport(flightsForAirline),path);
+        }
+    }
+
+    private static ArrayList<Flight> filterFlightsByAirline(Airline airline) {
+
+        ArrayList<Flight> filteredFlights = new ArrayList<Flight>();
+        for (var flight : flights) {
+            if (flight.flightID().equals(airline.code())) {
+                filteredFlights.add(flight);
+            }
+        }
+        return filteredFlights;
+    }
 
     public static void addFlight(Flight flight) throws
             UnsupportedOperationException,
@@ -53,6 +76,7 @@ public class App {
             airlines = new ArrayList<Airline>();
             aeroplanes = new ArrayList<Aeroplane>();
             flights = new ArrayList<Flight>();
+            run();
 
         } catch (IOException e) {
             throw new RuntimeException(e);

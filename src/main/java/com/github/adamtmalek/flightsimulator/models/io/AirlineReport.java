@@ -13,10 +13,18 @@ public record AirlineReport(int totalFlights, Kilometre totalDistanceTravelled,
     }
 
     private static Kilometre calculateTotalDistanceTravelled(ArrayList<Flight> flights) {
-        return new Kilometre(0); //TODO implement proper calculation
+        if (flights.size() == 0) {
+            return new Kilometre(0);
+        } else {
+            return new Kilometre(0); //TODO implement proper calculation
+        }
     }
 
     private static GramsPerKilometre calculateEstimatedCO2Emissions(ArrayList<Flight> flights) {
-        return new GramsPerKilometre(0); //TODO implement proper calculation
+        if (flights.size() == 0) {
+            return new GramsPerKilometre(0);
+        } else {
+            return new GramsPerKilometre(0); //TODO implement proper calculation
+        }
     }
 }
