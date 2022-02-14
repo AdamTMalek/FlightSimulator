@@ -16,7 +16,7 @@ public record AirlineReport(int totalFlights, Kilometre totalDistanceTravelled,
         if (flights.size() == 0) {
             return new Kilometre(0);
         } else {
-            return new Kilometre(0); //TODO implement proper calculation
+            return new Kilometre(flights.stream().mapToDouble(o -> o.totalDistance().kilometre()).sum());
         }
     }
 
@@ -24,7 +24,7 @@ public record AirlineReport(int totalFlights, Kilometre totalDistanceTravelled,
         if (flights.size() == 0) {
             return new GramsPerKilometre(0);
         } else {
-            return new GramsPerKilometre(0); //TODO implement proper calculation
+            return new GramsPerKilometre(flights.stream().mapToDouble(o -> o.estimatedCO2Produced().gramsPerKilometre()).sum());
         }
     }
 }
