@@ -49,6 +49,8 @@ public class AirlineReportTest {
         Assertions.assertEquals(3, airlineReport.totalFlights());
         Assertions.assertEquals(9, airlineReport.estimatedCO2Emissions().gramsPerKilometre());
         Assertions.assertEquals(3, airlineReport.totalDistanceTravelled().kilometre());
+        //TODO Test Fuel Consumption
+
     }
 
     @Test
@@ -58,5 +60,7 @@ public class AirlineReportTest {
         Assertions.assertEquals(0, airlineReport.totalFlights());
         Assertions.assertEquals(0, airlineReport.estimatedCO2Emissions().gramsPerKilometre());
         Assertions.assertEquals(0, airlineReport.totalDistanceTravelled().kilometre());
+        //TODO Test Fuel Consumption
+
     }
 }
