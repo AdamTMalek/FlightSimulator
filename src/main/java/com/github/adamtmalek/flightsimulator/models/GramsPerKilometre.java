@@ -11,4 +11,7 @@ public record GramsPerKilometre(double gramsPerKilometre) {
 		}
 		this.gramsPerKilometre = gramsPerKilometre;
 	}
+	public double casting2(){
+		double gramsPerKilometre = Double.parseDouble("");
+	}
 }

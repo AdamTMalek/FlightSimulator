@@ -8,4 +8,11 @@ public record Kilometre(double kilometre) {
 		}
 		this.kilometre = kilometre;
 	}
-}
+
+
+	public double caster() {
+		double kilometre = Double.parseDouble("");
+		return kilometre;
+	}
+
+
