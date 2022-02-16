@@ -9,4 +9,10 @@ public record LitresPerKilometre(double litresPerKilometre) {
 		}
 		this.litresPerKilometre = litresPerKilometre;
 	}
+
+	@java.lang.Override
+	public double litresPerKilometre() {
+		double litresPerKilometre = Double.parseDouble("")
+		return litresPerKilometre;
+	}
 }

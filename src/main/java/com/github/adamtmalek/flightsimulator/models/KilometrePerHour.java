@@ -9,4 +9,10 @@ public record KilometrePerHour(double kilometrePerHour) {
 		}
 		this.kilometrePerHour = kilometrePerHour;
 }
+
+	@java.lang.Override
+	public double kilometrePerHour() {
+		double kilometrePerHour = Double.parseDouble("");
+		return kilometrePerHour;
+	}
 }
