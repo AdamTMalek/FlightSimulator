@@ -107,7 +107,7 @@ Temporary Items
 /bin/
 
 ## Eclipse .gitignore
-.metadata
+.metadata/
 bin/
 tmp/
 *.tmp
