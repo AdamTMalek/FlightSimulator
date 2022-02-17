@@ -10,8 +10,8 @@ public record Kilometre(double kilometre) {
 	}
 
 
-	public double caster() {
-		double kilometre = Double.parseDouble("");
+	public Kilometre(String kilometre) {
+		double kilometre = Double.parseDouble("kilometre");
 		return kilometre;
 	}
 

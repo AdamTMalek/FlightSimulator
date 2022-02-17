@@ -11,8 +11,8 @@ public record LitresPerKilometre(double litresPerKilometre) {
 	}
 
 	@java.lang.Override
-	public double litresPerKilometre() {
-		double litresPerKilometre = Double.parseDouble("")
+	public double LitresPerKilometre(String litresPerKilometre) {
+		double litresPerKilometre = Double.parseDouble("litresPerKilometre");
 		return litresPerKilometre;
 	}
 }
