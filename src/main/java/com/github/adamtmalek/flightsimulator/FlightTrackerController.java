@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class FlightTrackerController implements Controller {
 
 
-    public FlightData readFlightData(Path fileDirectoryPath) throws
+    public void readFlightData(Path fileDirectoryPath) throws
             IOException,
             FileHandlerException {
 
@@ -27,7 +27,7 @@ public class FlightTrackerController implements Controller {
                 .build();
 
         try {
-            return handler.readFlightData();
+            flightData = handler.readFlightData();
         } catch (IOException e) {
             throw new IOException(e);
         } catch (FileHandlerException e) {
@@ -35,10 +35,10 @@ public class FlightTrackerController implements Controller {
         }
     }
 
-    public FlightData readFlightData(Path airportSourcePath,
-                                     Path aeroplaneSourcePath,
-                                     Path airlineSourcePath,
-                                     Path flightSourcePath) throws
+    public void readFlightData(Path airportSourcePath,
+                               Path aeroplaneSourcePath,
+                               Path airlineSourcePath,
+                               Path flightSourcePath) throws
             IOException,
             FileHandlerException {
 
@@ -50,7 +50,7 @@ public class FlightTrackerController implements Controller {
                 .build();
 
         try {
-            return handler.readFlightData();
+            flightData = handler.readFlightData();
         } catch (IOException e) {
             throw new IOException(e);
         } catch (FileHandlerException e) {

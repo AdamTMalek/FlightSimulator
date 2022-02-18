@@ -11,15 +11,15 @@ public interface Controller {
 
     // Read single directory for required files, using default naming scheme
     // defined in FlightDataFileHandler.
-    public FlightData readFlightData(Path fileDirectoryPath) throws
+    public void readFlightData(Path fileDirectoryPath) throws
             IOException,
             FileHandlerException;
 
     // Read unique paths for required files.
-    public FlightData readFlightData(Path airportSourcePath,
-                                     Path aeroplaneSourcePath,
-                                     Path airlineSourcePath,
-                                     Path flightSourcePath) throws
+    public void readFlightData(Path airportSourcePath,
+                               Path aeroplaneSourcePath,
+                               Path airlineSourcePath,
+                               Path flightSourcePath) throws
             IOException,
             FileHandlerException;
 

@@ -11,12 +11,18 @@ public class App {
     public static void main(String[] args) {
         var flightTrackerController = new FlightTrackerController();
 
-        final var path = Path.of(URI.create("file:///C:/Users/chris/IdeaProjects/FlightSimulator/src/main/resources"));  // TODO: Change this to the right path
+        final var path = Path.of(URI.create("file:///C:/Users/chris/IdeaProjects/FlightSimulator/src/test/resources/FlightDataFileHandlerTest"));  // TODO: Change this to the right path
 
         try {
             flightTrackerController.readFlightData(path);
+            final var flightData = flightTrackerController.getFlightData();
+
+            for (final var flight : flightData.flights()) {
+                System.out.println(flight.flightID());
+            }
+
         } catch (IOException | FileHandlerException e) {
-            throw new RuntimeException(e); //only have single Airports CSV, so an exception here is expected.
+            throw new RuntimeException(e);
         }
 
 
