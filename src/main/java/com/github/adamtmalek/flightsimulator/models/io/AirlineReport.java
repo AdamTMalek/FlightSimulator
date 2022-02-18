@@ -17,29 +17,18 @@ public record AirlineReport(int totalFlights,
     }
 
     private static Kilometre calculateTotalDistanceTravelled(ArrayList<Flight> flights) {
-        if (flights.size() == 0) {
-            return new Kilometre(0);
-        } else {
-            throw new RuntimeException("Not implemented");
+        throw new RuntimeException("Not implemented");
 //            return new Kilometre(flights.stream().mapToDouble(o -> o.totalDistance().kilometre()).sum());
-        }
+
     }
 
     private static LitresPerKilometre calculateAverageFuelConsumption(ArrayList<Flight> flights) {
-        if (flights.size() == 0) {
-            return new LitresPerKilometre(0);
-        } else {
-            return new LitresPerKilometre(0); // TODO Flight record needs to calculate fuel consumption.
-        }
-
+        throw new RuntimeException("Not implemented");
     }
 
     private static GramsPerKilometre calculateEstimatedCO2Emissions(ArrayList<Flight> flights) {
-        if (flights.size() == 0) {
-            return new GramsPerKilometre(0);
-        } else {
-            throw new RuntimeException("Not implemented");
+        throw new RuntimeException("Not implemented");
 //            return new GramsPerKilometre(flights.stream().mapToDouble(o -> o.estimatedCO2Produced().gramsPerKilometre()).sum());
-        }
+
     }
 }
