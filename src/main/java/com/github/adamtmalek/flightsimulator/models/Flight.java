@@ -5,6 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * @param distanceTravelled    Units: Kilometre
+ * @param fuelConsumption:     Units: Litres per kilometre
+ * @param estimatedCO2Produced Units Grams per kilometre:
+ */
 public record Flight(@NotNull String flightID,
                      @NotNull Aeroplane aeroplane,
                      @NotNull Airport departureAirport,
@@ -12,9 +17,9 @@ public record Flight(@NotNull String flightID,
                      @NotNull String departureDate,
                      @NotNull String departureTime,
                      @NotNull List<Airport.ControlTower> controlTowersToCross,
-                     @NotNull Kilometre distanceTravelled,
-                     @NotNull LitresPerKilometre fuelConsumption,
-                     @NotNull GramsPerKilometre estimatedCO2Produced) {
+                     @NotNull double distanceTravelled,
+                     @NotNull double fuelConsumption,
+                     @NotNull double estimatedCO2Produced) {
 
     public Flight(@NotNull String flightID,
                   @NotNull Aeroplane aeroplane,
@@ -37,8 +42,8 @@ public record Flight(@NotNull String flightID,
         );
     }
 
-    private static Kilometre calculateDistanceTravelled(List<Airport.ControlTower> controlTowersToCross) {
-        var distanceTravelled = new Kilometre(0);
+    private static double calculateDistanceTravelled(List<Airport.ControlTower> controlTowersToCross) {
+        var distanceTravelled = 0.0;
 
         if (controlTowersToCross.size() > 1) {
 
@@ -47,20 +52,19 @@ public record Flight(@NotNull String flightID,
                 final var firstControlTowerPosition = controlTowersToCross.get(i - 1).position;
                 final var secondControlTowerPosition = controlTowersToCross.get(i).position;
 
-                distanceTravelled = new Kilometre(distanceTravelled.kilometre()
-                        + Utils.calculateDistanceBetweenCoordinates(firstControlTowerPosition, secondControlTowerPosition).kilometre());
+                distanceTravelled += Utils.calculateDistanceBetweenCoordinates(firstControlTowerPosition, secondControlTowerPosition);
             }
         }
         return distanceTravelled;
 
     }
 
-    private static LitresPerKilometre calculateFuelConsumption(List<Airport.ControlTower> controlTowersToCross) {
-        return new LitresPerKilometre(0); //TODO
+    private static double calculateFuelConsumption(List<Airport.ControlTower> controlTowersToCross) {
+        return 0; //TODO
     }
 
-    private static GramsPerKilometre calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
-        return new GramsPerKilometre(0); //TODO
+    private static double calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
+        return 0; //TODO
     }
 
 

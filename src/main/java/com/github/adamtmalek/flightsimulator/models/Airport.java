@@ -10,11 +10,11 @@ public class Airport {
     public final @NotNull GeodeticCoordinate position;
     public final ControlTower controlTower;
 
-    public Airport(@NotNull String code, @NotNull String name, @NotNull String latitude, @NotNull String longitude) {
+    public Airport(@NotNull String code, @NotNull String name, @NotNull GeodeticCoordinate position) {
         this.code = code;
         this.name = name;
-        this.position = new GeodeticCoordinate(new Degrees(Double.parseDouble(latitude)), new Degrees(Double.parseDouble(longitude)));
-        this.controlTower = new ControlTower(code, name, this.position);
+        this.position = position;
+        this.controlTower = new ControlTower(code, name, position);
     }
 
 
@@ -37,12 +37,12 @@ public class Airport {
         Airport airport = (Airport) o;
         return code.equals(airport.code)
                 && name.equals(airport.name)
-                && Double.compare(position.latitude().degrees(), airport.position.latitude().degrees()) == 0
-                && Double.compare(position.longitude().degrees(), airport.position.longitude().degrees()) == 0;
+                && Double.compare(position.latitude(), airport.position.latitude()) == 0
+                && Double.compare(position.longitude(), airport.position.longitude()) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, name, position.latitude().degrees(), position.longitude().degrees());
+        return Objects.hash(code, name, position.latitude(), position.longitude());
     }
 }
