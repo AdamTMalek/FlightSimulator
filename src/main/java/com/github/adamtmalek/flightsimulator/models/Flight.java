@@ -6,9 +6,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
- * @param distanceTravelled    Units: Kilometre
- * @param fuelConsumption:     Units: Litres per kilometre
- * @param estimatedCO2Produced Units Grams per kilometre:
+ * @param distanceTravelled         Units: Kilometre
+ * @param estimatedFuelConsumption: Units: Litres per kilometre
+ * @param estimatedCO2Produced      Units Grams per kilometre:
  */
 public record Flight(@NotNull String flightID,
                      @NotNull Aeroplane aeroplane,
@@ -17,7 +17,7 @@ public record Flight(@NotNull String flightID,
                      @NotNull ZonedDateTime departureDate,
                      @NotNull List<Airport.ControlTower> controlTowersToCross,
                      @NotNull double distanceTravelled,
-                     @NotNull double fuelConsumption,
+                     @NotNull double estimatedFuelConsumption,
                      @NotNull double estimatedCO2Produced) {
 
     public Flight(@NotNull String flightID,
@@ -34,7 +34,7 @@ public record Flight(@NotNull String flightID,
                 departureDate,
                 controlTowersToCross,
                 calculateDistanceTravelled(controlTowersToCross),
-                calculateFuelConsumption(controlTowersToCross),
+                calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), calculateDistanceTravelled(controlTowersToCross)),
                 calculateEstimatedCO2Produced(controlTowersToCross)
         );
     }
@@ -55,8 +55,8 @@ public record Flight(@NotNull String flightID,
 
     }
 
-    private static double calculateFuelConsumption(List<Airport.ControlTower> controlTowersToCross) {
-        return 0; //TODO
+    private static double calculateEstimatedFuelConsumption(double fuelConsumption, double distance) {
+        return fuelConsumption * (distance / 100);
     }
 
     private static double calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
