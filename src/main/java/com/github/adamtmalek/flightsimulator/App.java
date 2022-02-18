@@ -14,8 +14,7 @@ public class App {
         final var path = Path.of(URI.create("file:///C:/Users/chris/IdeaProjects/FlightSimulator/src/test/resources/FlightDataFileHandlerTest"));  // TODO: Change this to the right path
 
         try {
-            flightTrackerController.readFlightData(path);
-            final var flightData = flightTrackerController.getFlightData();
+            final var flightData = flightTrackerController.readFlightData(path).getFlightData();
 
             for (final var flight : flightData.flights()) {
                 System.out.println(flight.flightID());
