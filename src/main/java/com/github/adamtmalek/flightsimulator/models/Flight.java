@@ -44,7 +44,7 @@ public record Flight(@NotNull String flightID,
 
             // Calculate the distance between pairs of control tower pairs, and sum into distance travelled.
             for (int i = 1; i < controlTowersToCross.size(); i++) {
-                final var firstControlTowerPosition = controlTowersToCross.get(i--).position;
+                final var firstControlTowerPosition = controlTowersToCross.get(i - 1).position;
                 final var secondControlTowerPosition = controlTowersToCross.get(i).position;
 
                 distanceTravelled = new Kilometre(distanceTravelled.kilometre()
@@ -56,11 +56,11 @@ public record Flight(@NotNull String flightID,
     }
 
     private static LitresPerKilometre calculateFuelConsumption(List<Airport.ControlTower> controlTowersToCross) {
-        throw new RuntimeException("Not implemented");
+        return new LitresPerKilometre(0); //TODO
     }
 
     private static GramsPerKilometre calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
-        throw new RuntimeException("Not implemented");
+        return new GramsPerKilometre(0); //TODO
     }
 
 
