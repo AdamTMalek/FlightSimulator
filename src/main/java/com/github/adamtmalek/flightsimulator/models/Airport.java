@@ -8,19 +8,26 @@ public class Airport {
     public final @NotNull String code;
     public final @NotNull String name;
     public final @NotNull GeodeticCoordinate position;
+    public final ControlTower controlTower;
 
     public Airport(@NotNull String code, @NotNull String name, @NotNull String latitude, @NotNull String longitude) {
         this.code = code;
         this.name = name;
         this.position = new GeodeticCoordinate(new Degrees(Double.parseDouble(latitude)), new Degrees(Double.parseDouble(longitude)));
+        this.controlTower = new ControlTower(code, name, this.position);
     }
 
-    public final ControlTower controlTower = new ControlTower();
 
     public class ControlTower {
-        public final @NotNull String code = Airport.this.code;
-        public final @NotNull String name = Airport.this.name;
-        public final @NotNull GeodeticCoordinate position = Airport.this.position;
+        public final @NotNull String code;
+        public final @NotNull String name;
+        public final @NotNull GeodeticCoordinate position;
+
+        public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
+            code = codeIn;
+            name = nameIn;
+            position = positionIn;
+        }
     }
 
     @Override
