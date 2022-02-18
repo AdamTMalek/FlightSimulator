@@ -2,6 +2,7 @@ package com.github.adamtmalek.flightsimulator.models;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -13,8 +14,7 @@ public record Flight(@NotNull String flightID,
                      @NotNull Aeroplane aeroplane,
                      @NotNull Airport departureAirport,
                      @NotNull Airport destinationAirport,
-                     @NotNull String departureDate,
-                     @NotNull String departureTime,
+                     @NotNull ZonedDateTime departureDate,
                      @NotNull List<Airport.ControlTower> controlTowersToCross,
                      @NotNull double distanceTravelled,
                      @NotNull double fuelConsumption,
@@ -24,8 +24,7 @@ public record Flight(@NotNull String flightID,
                   @NotNull Aeroplane aeroplane,
                   @NotNull Airport departureAirport,
                   @NotNull Airport destinationAirport,
-                  @NotNull String departureDate,
-                  @NotNull String departureTime,
+                  @NotNull ZonedDateTime departureDate,
                   @NotNull List<Airport.ControlTower> controlTowersToCross) {
 
         this(flightID,
@@ -33,7 +32,6 @@ public record Flight(@NotNull String flightID,
                 departureAirport,
                 destinationAirport,
                 departureDate,
-                departureTime,
                 controlTowersToCross,
                 calculateDistanceTravelled(controlTowersToCross),
                 calculateFuelConsumption(controlTowersToCross),

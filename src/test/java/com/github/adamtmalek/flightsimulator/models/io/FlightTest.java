@@ -7,6 +7,8 @@ import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class FlightTest {
@@ -23,8 +25,7 @@ public class FlightTest {
                 new Aeroplane("a", "a", 1, 1),
                 glasgowAirport,
                 newYorkAirport,
-                "01/01/2022",
-                "00:00:00",
+                ZonedDateTime.of(2022, 02, 18, 16, 00, 00, 0, ZoneId.of("UTC+0")),
                 new ArrayList<Airport.ControlTower>() {{
                     add(glasgowAirport.controlTower);
                     add(edinburghAirport.controlTower);
