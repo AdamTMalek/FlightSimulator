@@ -56,19 +56,19 @@ public class FlightTrackerController implements Controller {
         } catch (FileHandlerException e) {
             throw new FileHandlerException(e.getMessage(), e);
         }
-
     }
 
 
     public void writeFlightData(Path destinationPath) {
-        //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
+        throw new RuntimeException("FlightDataFileHandler not implemented, file is not written to."); //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
     }
 
     public void writeAirlineReports(Path destinationPath) {
         for (var airline : flightData.airlines()) {
             final var flightsForAirline = filterFlightsByAirline(airline);
-            //TODO Get path.
-            //TODO ReportFileHandler.writeReport(new AirlineReport(flightsForAirline),path);
+            final var airlineReportPath = destinationPath.resolve(airline.name()); //concatenate destinationPath with the name of the airline.
+
+            throw new RuntimeException("ReportFileHandler not implemented, files are not written to."); //TODO ReportFileHandler.writeReport(new AirlineReport(flightsForAirline),path);
         }
     }
 
@@ -86,8 +86,9 @@ public class FlightTrackerController implements Controller {
         flightData.flights().remove(index);
     }
 
-    public void editFlight(int index, Flight flight) {
-
+    public void editFlight(int index, Flight flight) throws
+            NullPointerException,
+            IndexOutOfBoundsException {
         flightData.flights().set(index, flight);
     }
 
@@ -107,6 +108,4 @@ public class FlightTrackerController implements Controller {
         }
         return filteredFlights;
     }
-
-
 }

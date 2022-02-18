@@ -37,7 +37,9 @@ public interface Controller {
             IndexOutOfBoundsException,
             UnsupportedOperationException;
 
-    public void editFlight(int index, Flight flight);
+    public void editFlight(int index, Flight flight) throws
+            NullPointerException,
+            IndexOutOfBoundsException;
 
     public FlightData getFlightData();
 
