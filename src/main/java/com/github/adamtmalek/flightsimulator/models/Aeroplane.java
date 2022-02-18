@@ -9,6 +9,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public record Aeroplane(@NotNull String model,
                         @NotNull String manufacturer,
-                        @NotNull String speed,
-                        @NotNull String fuelConsumption) {
+                        @NotNull double speed,
+                        @NotNull double fuelConsumption) {
 }
