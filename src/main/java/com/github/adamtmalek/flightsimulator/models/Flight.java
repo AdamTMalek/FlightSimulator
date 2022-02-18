@@ -1,6 +1,5 @@
 package com.github.adamtmalek.flightsimulator.models;
 
-import com.github.adamtmalek.flightsimulator.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -51,8 +50,7 @@ public record Flight(@NotNull String flightID,
             for (int i = 1; i < controlTowersToCross.size(); i++) {
                 final var firstControlTowerPosition = controlTowersToCross.get(i - 1).position;
                 final var secondControlTowerPosition = controlTowersToCross.get(i).position;
-
-                distanceTravelled += Utils.calculateDistanceBetweenCoordinates(firstControlTowerPosition, secondControlTowerPosition);
+                distanceTravelled += Math.abs(firstControlTowerPosition.calculateDistance(secondControlTowerPosition));
             }
         }
         return distanceTravelled;
