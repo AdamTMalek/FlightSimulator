@@ -16,9 +16,9 @@ public record Flight(@NotNull String flightID,
                      @NotNull Airport destinationAirport,
                      @NotNull ZonedDateTime departureDate,
                      @NotNull List<Airport.ControlTower> controlTowersToCross,
-                     @NotNull double distanceTravelled,
-                     @NotNull double estimatedFuelConsumption,
-                     @NotNull double estimatedCO2Produced) {
+                     double distanceTravelled,
+                     double estimatedFuelConsumption,
+                     double estimatedCO2Produced) {
 
     public Flight(@NotNull String flightID,
                   @NotNull Aeroplane aeroplane,
