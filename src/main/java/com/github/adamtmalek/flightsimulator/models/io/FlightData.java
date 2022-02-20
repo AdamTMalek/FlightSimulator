@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record FlightData(@NotNull List<Airport> airports,
-                         @NotNull List<Airline> airlines,
-                         @NotNull List<Aeroplane> aeroplanes,
-                         @NotNull List<Flight> flights) {
+												 @NotNull List<Airline> airlines,
+												 @NotNull List<Aeroplane> aeroplanes,
+												 @NotNull List<Flight> flights) {
 
 }

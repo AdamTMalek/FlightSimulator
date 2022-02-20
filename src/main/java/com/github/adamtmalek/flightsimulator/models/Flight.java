@@ -11,57 +11,57 @@ import java.util.List;
  * @param estimatedCO2Produced      Units Grams per kilometre:
  */
 public record Flight(@NotNull String flightID,
-                     @NotNull Aeroplane aeroplane,
-                     @NotNull Airport departureAirport,
-                     @NotNull Airport destinationAirport,
-                     @NotNull ZonedDateTime departureDate,
-                     @NotNull List<Airport.ControlTower> controlTowersToCross,
-                     double distanceTravelled,
-                     double estimatedFuelConsumption,
-                     double estimatedCO2Produced) {
+										 @NotNull Aeroplane aeroplane,
+										 @NotNull Airport departureAirport,
+										 @NotNull Airport destinationAirport,
+										 @NotNull ZonedDateTime departureDate,
+										 @NotNull List<Airport.ControlTower> controlTowersToCross,
+										 double distanceTravelled,
+										 double estimatedFuelConsumption,
+										 double estimatedCO2Produced) {
 
-    public Flight(@NotNull String flightID,
-                  @NotNull Aeroplane aeroplane,
-                  @NotNull Airport departureAirport,
-                  @NotNull Airport destinationAirport,
-                  @NotNull ZonedDateTime departureDate,
-                  @NotNull List<Airport.ControlTower> controlTowersToCross) {
+	public Flight(@NotNull String flightID,
+								@NotNull Aeroplane aeroplane,
+								@NotNull Airport departureAirport,
+								@NotNull Airport destinationAirport,
+								@NotNull ZonedDateTime departureDate,
+								@NotNull List<Airport.ControlTower> controlTowersToCross) {
 
-        this(flightID,
-                aeroplane,
-                departureAirport,
-                destinationAirport,
-                departureDate,
-                controlTowersToCross,
-                calculateDistanceTravelled(controlTowersToCross),
-                calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), calculateDistanceTravelled(controlTowersToCross)),
-                calculateEstimatedCO2Produced(controlTowersToCross)
-        );
-    }
+		this(flightID,
+			aeroplane,
+			departureAirport,
+			destinationAirport,
+			departureDate,
+			controlTowersToCross,
+			calculateDistanceTravelled(controlTowersToCross),
+			calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), calculateDistanceTravelled(controlTowersToCross)),
+			calculateEstimatedCO2Produced(controlTowersToCross)
+		);
+	}
 
-    private static double calculateDistanceTravelled(List<Airport.ControlTower> controlTowersToCross) {
-        var distanceTravelled = 0.0;
+	private static double calculateDistanceTravelled(List<Airport.ControlTower> controlTowersToCross) {
+		var distanceTravelled = 0.0;
 
-        if (controlTowersToCross.size() > 1) {
+		if (controlTowersToCross.size() > 1) {
 
-            // Calculate the distance between pairs of control tower pairs, and sum into distance travelled.
-            for (int i = 1; i < controlTowersToCross.size(); i++) {
-                final var firstControlTowerPosition = controlTowersToCross.get(i - 1).position;
-                final var secondControlTowerPosition = controlTowersToCross.get(i).position;
-                distanceTravelled += Math.abs(firstControlTowerPosition.calculateDistance(secondControlTowerPosition));
-            }
-        }
-        return distanceTravelled;
+			// Calculate the distance between pairs of control tower pairs, and sum into distance travelled.
+			for (int i = 1; i < controlTowersToCross.size(); i++) {
+				final var firstControlTowerPosition = controlTowersToCross.get(i - 1).position;
+				final var secondControlTowerPosition = controlTowersToCross.get(i).position;
+				distanceTravelled += Math.abs(firstControlTowerPosition.calculateDistance(secondControlTowerPosition));
+			}
+		}
+		return distanceTravelled;
 
-    }
+	}
 
-    private static double calculateEstimatedFuelConsumption(double fuelConsumption, double distance) {
-        return fuelConsumption * (distance / 100);
-    }
+	private static double calculateEstimatedFuelConsumption(double fuelConsumption, double distance) {
+		return fuelConsumption * (distance / 100);
+	}
 
-    private static double calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
-        return 0; //TODO
-    }
+	private static double calculateEstimatedCO2Produced(List<Airport.ControlTower> controlTowersToCross) {
+		return 0; //TODO
+	}
 
 
 }

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @param fuelConsumptionRate Units: Litres per 100 kilometre
  */
 public record Aeroplane(@NotNull String model,
-                        @NotNull String manufacturer,
-                        double speed,
-                        double fuelConsumptionRate) {
+												@NotNull String manufacturer,
+												double speed,
+												double fuelConsumptionRate) {
 }

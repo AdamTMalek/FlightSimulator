@@ -14,100 +14,100 @@ import java.util.ArrayList;
 public class FlightTrackerController implements Controller {
 
 
-    public FlightTrackerController readFlightData(Path fileDirectoryPath) throws
-            IOException,
-            FileHandlerException {
+	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws
+		IOException,
+		FileHandlerException {
 
-        final var handler = FlightDataFileHandler.getBuilder()
-                .withDirectory(fileDirectoryPath)
-                .withDefaultFlightsFilename()
-                .withDefaultAeroplanesFilename()
-                .withDefaultAirlinesFilename()
-                .withDefaultAirportsFilename()
-                .build();
+		final var handler = FlightDataFileHandler.getBuilder()
+			.withDirectory(fileDirectoryPath)
+			.withDefaultFlightsFilename()
+			.withDefaultAeroplanesFilename()
+			.withDefaultAirlinesFilename()
+			.withDefaultAirportsFilename()
+			.build();
 
-        try {
-            flightData = handler.readFlightData();
-        } catch (IOException e) {
-            throw new IOException(e);
-        } catch (FileHandlerException e) {
-            throw new FileHandlerException(e.getMessage(), e);
-        }
-        return this;
-    }
+		try {
+			flightData = handler.readFlightData();
+		} catch (IOException e) {
+			throw new IOException(e);
+		} catch (FileHandlerException e) {
+			throw new FileHandlerException(e.getMessage(), e);
+		}
+		return this;
+	}
 
-    public FlightTrackerController readFlightData(Path airportSourcePath,
-                                                  Path aeroplaneSourcePath,
-                                                  Path airlineSourcePath,
-                                                  Path flightSourcePath) throws
-            IOException,
-            FileHandlerException {
+	public FlightTrackerController readFlightData(Path airportSourcePath,
+																								Path aeroplaneSourcePath,
+																								Path airlineSourcePath,
+																								Path flightSourcePath) throws
+		IOException,
+		FileHandlerException {
 
-        final var handler = FlightDataFileHandler.getBuilder()
-                .withAirportsPath(airportSourcePath)
-                .withAeroplanesPath(aeroplaneSourcePath)
-                .withAirlinesPath(aeroplaneSourcePath)
-                .withFlightsPath(flightSourcePath)
-                .build();
+		final var handler = FlightDataFileHandler.getBuilder()
+			.withAirportsPath(airportSourcePath)
+			.withAeroplanesPath(aeroplaneSourcePath)
+			.withAirlinesPath(aeroplaneSourcePath)
+			.withFlightsPath(flightSourcePath)
+			.build();
 
-        try {
-            flightData = handler.readFlightData();
-        } catch (IOException e) {
-            throw new IOException(e);
-        } catch (FileHandlerException e) {
-            throw new FileHandlerException(e.getMessage(), e);
-        }
-        return this;
-    }
+		try {
+			flightData = handler.readFlightData();
+		} catch (IOException e) {
+			throw new IOException(e);
+		} catch (FileHandlerException e) {
+			throw new FileHandlerException(e.getMessage(), e);
+		}
+		return this;
+	}
 
 
-    public void writeFlightData(Path destinationPath) {
-        throw new RuntimeException("FlightDataFileHandler not implemented, file is not written to."); //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
-    }
+	public void writeFlightData(Path destinationPath) {
+		throw new RuntimeException("FlightDataFileHandler not implemented, file is not written to."); //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
+	}
 
-    public void writeAirlineReports(Path destinationPath) {
-        for (var airline : flightData.airlines()) {
-            final var flightsForAirline = filterFlightsByAirline(airline);
-            final var airlineReportPath = destinationPath.resolve(airline.name()); //concatenate destinationPath with the name of the airline.
+	public void writeAirlineReports(Path destinationPath) {
+		for (var airline : flightData.airlines()) {
+			final var flightsForAirline = filterFlightsByAirline(airline);
+			final var airlineReportPath = destinationPath.resolve(airline.name()); //concatenate destinationPath with the name of the airline.
 
-            throw new RuntimeException("ReportFileHandler not implemented, files are not written to."); //TODO ReportFileHandler.writeReport(new AirlineReport(flightsForAirline),path);
-        }
-    }
+			throw new RuntimeException("ReportFileHandler not implemented, files are not written to."); //TODO ReportFileHandler.writeReport(new AirlineReport(flightsForAirline),path);
+		}
+	}
 
-    public void addFlight(Flight flight) throws
-            UnsupportedOperationException,
-            ClassCastException,
-            NullPointerException,
-            IllegalArgumentException {
-        flightData.flights().add(flight);
-    }
+	public void addFlight(Flight flight) throws
+		UnsupportedOperationException,
+		ClassCastException,
+		NullPointerException,
+		IllegalArgumentException {
+		flightData.flights().add(flight);
+	}
 
-    public void removeFlight(int index) throws
-            IndexOutOfBoundsException,
-            UnsupportedOperationException {
-        flightData.flights().remove(index);
-    }
+	public void removeFlight(int index) throws
+		IndexOutOfBoundsException,
+		UnsupportedOperationException {
+		flightData.flights().remove(index);
+	}
 
-    public void editFlight(int index, Flight flight) throws
-            NullPointerException,
-            IndexOutOfBoundsException {
-        flightData.flights().set(index, flight);
-    }
+	public void editFlight(int index, Flight flight) throws
+		NullPointerException,
+		IndexOutOfBoundsException {
+		flightData.flights().set(index, flight);
+	}
 
-    public FlightData getFlightData() {
-        return flightData;
-    }
+	public FlightData getFlightData() {
+		return flightData;
+	}
 
-    private FlightData flightData;
+	private FlightData flightData;
 
-    private ArrayList<Flight> filterFlightsByAirline(Airline airline) {
+	private ArrayList<Flight> filterFlightsByAirline(Airline airline) {
 
-        ArrayList<Flight> filteredFlights = new ArrayList<Flight>();
-        for (var flight : flightData.flights()) {
-            if (flight.flightID().equals(airline.code())) {
-                filteredFlights.add(flight);
-            }
-        }
-        return filteredFlights;
-    }
+		ArrayList<Flight> filteredFlights = new ArrayList<Flight>();
+		for (var flight : flightData.flights()) {
+			if (flight.flightID().equals(airline.code())) {
+				filteredFlights.add(flight);
+			}
+		}
+		return filteredFlights;
+	}
 }

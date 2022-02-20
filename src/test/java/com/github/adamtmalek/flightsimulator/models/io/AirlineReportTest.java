@@ -1,12 +1,9 @@
 package com.github.adamtmalek.flightsimulator.models.io;
 
-import com.github.adamtmalek.flightsimulator.models.*;
-import com.github.adamtmalek.flightsimulator.models.io.AirlineReport;
+import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class AirlineReportTest {
@@ -55,14 +52,14 @@ public class AirlineReportTest {
 //
 //    }
 
-    @Test
-    void givenEmptyAirlinesListThenMembersAreSetTo0() {
-        var flights = new ArrayList<Flight>();
-        final var airlineReport = new AirlineReport(flights);
-        Assertions.assertEquals(0, airlineReport.totalFlights());
-        Assertions.assertEquals(0, airlineReport.estimatedCO2Emissions().gramsPerKilometre());
-        Assertions.assertEquals(0, airlineReport.totalDistanceTravelled().kilometre());
-        //TODO Test Fuel Consumption
+	@Test
+	void givenEmptyAirlinesListThenMembersAreSetTo0() {
+		var flights = new ArrayList<Flight>();
+		final var airlineReport = new AirlineReport(flights);
+		Assertions.assertEquals(0, airlineReport.totalFlights());
+		Assertions.assertEquals(0, airlineReport.estimatedCO2Emissions());
+		Assertions.assertEquals(0, airlineReport.totalDistanceTravelled());
+		//TODO Test Fuel Consumption
 
-    }
+	}
 }
