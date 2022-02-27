@@ -12,6 +12,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class Serializer {
+	public abstract <T> @NotNull Path saveToFile(@NotNull Path path,
+																							 @NotNull Collection<T> objectCollection) throws SerializationException;
+
 	public abstract <T> List<T> readFile(@NotNull Path path, @NotNull Class<T> klass) throws SerializationException;
 
 	protected @NotNull <T> Constructor<T> getConstructorFor(@NotNull Class<T> klass) throws SerializationException {
@@ -114,6 +117,26 @@ public abstract class Serializer {
 
 	protected boolean hasSerializableFields(@NotNull Class<?> klass) {
 		return getSerializableFields(klass).findAny().isPresent();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> @NotNull Stream<List<String>> getSerializableValues(@NotNull Collection<T> objectsCollection) {
+		final var klass = objectsCollection.stream()
+			.findAny()
+			.map(o -> o.getClass())
+			.orElseThrow(() -> new IllegalStateException("Unexpected empty collection"));
+		final var serializableFields = getSerializableFields(klass).toList();
+
+		return objectsCollection.stream()
+			.map(o -> serializableFields.stream().map(field -> {
+				try {
+					final Object originalValue = field.canAccess(o) ? field.get(o) : o.getClass().getMethod(field.getName()).invoke(o);
+					final var converter = ((Converter<T>)getConverter(field));
+					return converter.convertToString((T)originalValue);
+				} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+					throw new SerializationException(e);
+				}
+			}).toList());
 	}
 
 	protected @NotNull Stream<Field> getSerializableFields(@NotNull Class<?> klass) {

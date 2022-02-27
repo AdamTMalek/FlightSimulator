@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CsvFileHandler extends Serializer {
 	public static final @NotNull String SEPARATOR_COMMA = ",";
@@ -35,5 +37,20 @@ public class CsvFileHandler extends Serializer {
 			.toArray(String[]::new);
 
 		return createInstance(klass, values);
+	}
+
+	@Override
+	public <T> @NotNull Path saveToFile(@NotNull Path path,
+																			@NotNull Collection<T> objectCollection) throws SerializationException {
+		try {
+			if (objectCollection.isEmpty()) return Files.createFile(path);
+
+			final var content = getSerializableValues(objectCollection)
+				.map(values -> String.join(separator, values))
+				.collect(Collectors.joining("\n"));
+			return Files.writeString(path, content);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
