@@ -1,22 +1,24 @@
 package com.github.adamtmalek.flightsimulator.models;
 
-import com.github.adamtmalek.flightsimulator.models.io.converters.CustomConverter;
+import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
 import com.github.adamtmalek.flightsimulator.models.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class Airport {
+	@SerializableField
 	public final @NotNull String code;
+	@SerializableField
 	public final @NotNull String name;
 	@NotNull
-	@CustomConverter(converter = GeodeticCoordinateConverter.class)
+	@SerializableField(converter = GeodeticCoordinateConverter.class)
 	public final GeodeticCoordinate position;
 	public final ControlTower controlTower;
 
 	public Airport(@NotNull String code,
 								 @NotNull String name,
-								 @NotNull @CustomConverter(converter = GeodeticCoordinateConverter.class) GeodeticCoordinate position) {
+								 @NotNull GeodeticCoordinate position) {
 		this.code = code;
 		this.name = name;
 		this.position = position;

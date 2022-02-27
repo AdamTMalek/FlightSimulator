@@ -56,22 +56,24 @@ public class FlightDataFileHandler {
 		);
 	}
 
-	public @NotNull FlightData readFlightData() throws IOException, FileHandlerException {
-		final var airportMap = csvFileHandler.readFile(airportsCsv, Airport.class)
-			.stream().collect(Collectors.toMap(e -> e.code, e -> e));
-		final var airlineMap = csvFileHandler.readFile(airlinesCsv, Airline.class)
-			.stream().collect(Collectors.toMap(Airline::code, e -> e));
-		final var aeroplaneMap = csvFileHandler.readFile(aeroplanesCsv, Aeroplane.class)
-			.stream().collect(Collectors.toMap(Aeroplane::model, e -> e));
+	public @NotNull FlightData readFlightData() throws FileHandlerException {
+		try {
+			final var airportMap = csvFileHandler.readFile(airportsCsv, Airport.class)
+				.stream().collect(Collectors.toMap(e -> e.code, e -> e));
+			final var airlineMap = csvFileHandler.readFile(airlinesCsv, Airline.class)
+				.stream().collect(Collectors.toMap(Airline::code, e -> e));
+			final var aeroplaneMap = csvFileHandler.readFile(aeroplanesCsv, Aeroplane.class)
+				.stream().collect(Collectors.toMap(Aeroplane::model, e -> e));
 
-		final var flights = readFlights(aeroplaneMap, airportMap);
-
-		return new FlightData(
-			new ArrayList<>(airportMap.values()),
-			new ArrayList<>(airlineMap.values()),
-			new ArrayList<>(aeroplaneMap.values()),
-			flights
-		);
+			return new FlightData(
+				new ArrayList<>(airportMap.values()),
+				new ArrayList<>(airlineMap.values()),
+				new ArrayList<>(aeroplaneMap.values()),
+				readFlights(aeroplaneMap, airportMap)
+				);
+		} catch (SerializationException | IOException e) {
+			throw new FileHandlerException(e);
+		}
 	}
 
 	private @NotNull Stream<List<String>> readCsv(@NotNull Path path) throws IOException {

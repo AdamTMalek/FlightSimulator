@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
@@ -25,7 +24,7 @@ public class CsvFileHandlerTest {
 				getPathFromTestResources("aeroplanes.csv"),
 				Aeroplane.class
 			);
-		} catch (IOException | FileHandlerException e) {
+		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
 			return;
 		}
@@ -48,7 +47,7 @@ public class CsvFileHandlerTest {
 				getPathFromTestResources("airlines.csv"),
 				Airline.class
 			);
-		} catch (IOException | FileHandlerException e) {
+		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
 			return;
 		}
@@ -71,7 +70,7 @@ public class CsvFileHandlerTest {
 				getPathFromTestResources("airports.csv"),
 				Airport.class
 			);
-		} catch (IOException | FileHandlerException e) {
+		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
 			return;
 		}

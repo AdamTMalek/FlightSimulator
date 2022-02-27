@@ -20,7 +20,7 @@ public class App {
 				System.out.println(flight.flightID());
 			}
 
-		} catch (IOException | FileHandlerException e) {
+		} catch (FileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 

@@ -26,7 +26,7 @@ class FlightDataFileHandlerTest {
 			);
 			final var fileHandler = FlightDataFileHandler.withDefaultFileNames(Path.of(dataDir.toURI()));
 			flightData = fileHandler.readFlightData();
-		} catch (URISyntaxException | IOException | FileHandlerException e) {
+		} catch (URISyntaxException | FileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 	}
