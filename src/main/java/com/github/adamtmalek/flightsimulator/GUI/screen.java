@@ -13,4 +13,9 @@ public class screen {
     private JTextField textField2;
     private JTextField textField3;
     private JTextField textField4;
+    private JList list1;
+    private JList list2;
+    private JButton addButton;
+    private JButton cancelButton;
+    private JButton exitButton;
 }
