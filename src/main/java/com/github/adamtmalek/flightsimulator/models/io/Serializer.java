@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public abstract class Serializer {
 	public abstract <T> List<T> readFile(@NotNull Path path, @NotNull Class<T> klass) throws SerializationException;
 
-	public @NotNull <T> Constructor<T> getConstructorFor(@NotNull Class<T> klass) throws SerializationException {
+	protected @NotNull <T> Constructor<T> getConstructorFor(@NotNull Class<T> klass) throws SerializationException {
 		final var paramTypes = getSerializableFields(klass)
 			.map(Field::getType)
 			.toArray(Class<?>[]::new);
@@ -35,7 +35,7 @@ public abstract class Serializer {
 		}
 	}
 
-	public <T> @NotNull T createInstance(@NotNull Class<T> klass, @NotNull String[] values)
+	protected <T> @NotNull T createInstance(@NotNull Class<T> klass, @NotNull String[] values)
 		throws SerializationException {
 		final var constructor = getConstructorFor(klass);
 		final List<String> valuesList = new ArrayList<>(Arrays.asList(values));
@@ -91,8 +91,8 @@ public abstract class Serializer {
 	 * This is so that the same annotation does not need to be duplicated, once in the field declaration and once
 	 * in the constructor.
 	 *
-	 * @param klass The class which is being constructed.
-	 * @param parameter The parameter for which the values need to be converter.
+	 * @param klass      The class which is being constructed.
+	 * @param parameter  The parameter for which the values need to be converter.
 	 * @param valuesList List of values to convert.
 	 * @return Converted object based on the values list.
 	 */
@@ -112,23 +112,23 @@ public abstract class Serializer {
 			});
 	}
 
-	public boolean hasSerializableFields(@NotNull Class<?> klass) {
+	protected boolean hasSerializableFields(@NotNull Class<?> klass) {
 		return getSerializableFields(klass).findAny().isPresent();
 	}
 
-	public @NotNull Stream<Field> getSerializableFields(@NotNull Class<?> klass) {
+	protected @NotNull Stream<Field> getSerializableFields(@NotNull Class<?> klass) {
 		return Arrays.stream(klass.getDeclaredFields())
 			.filter(f -> f.isAnnotationPresent(SerializableField.class));
 	}
 
-	public @NotNull Stream<String> getFieldNames(@NotNull Stream<Field> fields) {
+	protected @NotNull Stream<String> getFieldNames(@NotNull Stream<Field> fields) {
 		return fields.map(field -> {
 			final String customName = field.getAnnotation(SerializableField.class).name();
 			return !customName.isBlank() ? customName : field.getName();
 		});
 	}
 
-	public @NotNull Converter<?> getConverter(@NotNull AnnotatedElement element) throws SerializationException {
+	protected @NotNull Converter<?> getConverter(@NotNull AnnotatedElement element) throws SerializationException {
 		try {
 			return element.getAnnotation(SerializableField.class)
 				.converter()
@@ -139,7 +139,7 @@ public abstract class Serializer {
 		}
 	}
 
-	public @Nullable Converter<?> getCustomConverter(@NotNull AnnotatedElement element) throws SerializationException {
+	protected @Nullable Converter<?> getCustomConverter(@NotNull AnnotatedElement element) throws SerializationException {
 		final var converter = getConverter(element);
 		return converter.getClass() == SerializableField.DefaultConverter.class ? null : converter;
 	}
