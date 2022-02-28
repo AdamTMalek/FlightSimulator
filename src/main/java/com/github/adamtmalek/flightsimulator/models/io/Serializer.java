@@ -126,7 +126,10 @@ public abstract class Serializer {
 			.map(o -> o.getClass())
 			.orElseThrow(() -> new IllegalStateException("Unexpected empty collection"));
 		final var serializableFields = getSerializableFields(klass).toList();
-
+		if (serializableFields.isEmpty()) {
+			throw new SerializationException(String.format("Class %s has no fields marked with @SerializableField - " +
+				"it cannot be serialized", klass));
+		}
 		return objectsCollection.stream()
 			.map(o -> serializableFields.stream().map(field -> {
 				try {
