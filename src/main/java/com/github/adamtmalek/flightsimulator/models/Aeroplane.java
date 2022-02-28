@@ -1,14 +1,20 @@
 package com.github.adamtmalek.flightsimulator.models;
 
 
+import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @param speed               Units: Kilometres per hour
  * @param fuelConsumptionRate Units: Litres per 100 kilometre
  */
-public record Aeroplane(@NotNull String model,
-												@NotNull String manufacturer,
-												double speed,
-												double fuelConsumptionRate) {
+public record Aeroplane(
+	@SerializableField
+	@NotNull String model,
+	@SerializableField
+	@NotNull String manufacturer,
+	@SerializableField
+	double speed,
+	@SerializableField
+	double fuelConsumptionRate) {
 }

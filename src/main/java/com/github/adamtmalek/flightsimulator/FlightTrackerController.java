@@ -7,16 +7,13 @@ import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandler;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class FlightTrackerController implements Controller {
 
 
-	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws
-		IOException,
-		FileHandlerException {
+	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws FileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 			.withDirectory(fileDirectoryPath)
@@ -26,22 +23,14 @@ public class FlightTrackerController implements Controller {
 			.withDefaultAirportsFilename()
 			.build();
 
-		try {
-			flightData = handler.readFlightData();
-		} catch (IOException e) {
-			throw new IOException(e);
-		} catch (FileHandlerException e) {
-			throw new FileHandlerException(e.getMessage(), e);
-		}
+		flightData = handler.readFlightData();
 		return this;
 	}
 
 	public FlightTrackerController readFlightData(Path airportSourcePath,
 																								Path aeroplaneSourcePath,
 																								Path airlineSourcePath,
-																								Path flightSourcePath) throws
-		IOException,
-		FileHandlerException {
+																								Path flightSourcePath) throws FileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 			.withAirportsPath(airportSourcePath)
@@ -50,13 +39,7 @@ public class FlightTrackerController implements Controller {
 			.withFlightsPath(flightSourcePath)
 			.build();
 
-		try {
-			flightData = handler.readFlightData();
-		} catch (IOException e) {
-			throw new IOException(e);
-		} catch (FileHandlerException e) {
-			throw new FileHandlerException(e.getMessage(), e);
-		}
+		flightData = handler.readFlightData();
 		return this;
 	}
 

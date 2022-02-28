@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.time.ZoneId;
@@ -22,11 +21,11 @@ class FlightDataFileHandlerTest {
 	public static void setupTest() {
 		try {
 			final var dataDir = Objects.requireNonNull(
-				FlightDataFileHandlerTest.class.getClassLoader().getResource("FlightDataFileHandlerTest")
+				FlightDataFileHandlerTest.class.getClassLoader().getResource("flight-data")
 			);
 			final var fileHandler = FlightDataFileHandler.withDefaultFileNames(Path.of(dataDir.toURI()));
 			flightData = fileHandler.readFlightData();
-		} catch (URISyntaxException | IOException | FileHandlerException e) {
+		} catch (URISyntaxException | FileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 	}
