@@ -17,27 +17,38 @@ public class Screen extends JFrame {
     private JPanel panelTopLeft;
     private JPanel panelTopRight;
     private JList flightPlans;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JTextField textField4;
+    private JTextField textDistance;
+    private JTextField textTime;
+    private JTextField textFuelConsumption;
+    private JTextField textCo2Emission;
     private JList<Flight> flightList;
     private DefaultListModel flightListModel;
+    private List<Flight> flights;
 
     Screen() {
         super("Flight Tracking System");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
+        FlightTrackerController flightTrackerController = new FlightTrackerController();
+        FlightData flightData = flightTrackerController.getFlightData();
+        this.flights = flightData.flights();
         flightListModel = new DefaultListModel<>();
         flightList.setModel(flightListModel);
         this.refreshFlightList();
         flightList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-
+                int flightIndex = flightList.getSelectedIndex();
+                if (flightIndex >= 0){
+                    Flight flight = flights.get(flightIndex);
+                    textDistance.setText(Double.toString(flight.distanceTravelled()));
+                    textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
+                    textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
+                }
             }
         });
+
     }
 
     public static void main(String[] args) {
@@ -46,9 +57,6 @@ public class Screen extends JFrame {
     }
 
     public void refreshFlightList() {
-        FlightTrackerController flightTrackerController = new FlightTrackerController();
-        FlightData flightData = flightTrackerController.getFlightData();
-        List<Flight> flights = flightData.flights();
         flightListModel.removeAllElements();
         for (Flight flight : flights) {
             flightListModel.addElement(flight);
@@ -147,7 +155,7 @@ public class Screen extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         panelTopRight.add(label4, gbc);
-        textField1 = new JTextField();
+        textDistance = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 1;
@@ -155,8 +163,8 @@ public class Screen extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panelTopRight.add(textField1, gbc);
-        textField2 = new JTextField();
+        panelTopRight.add(textDistance, gbc);
+        textTime = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 3;
@@ -164,8 +172,8 @@ public class Screen extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panelTopRight.add(textField2, gbc);
-        textField3 = new JTextField();
+        panelTopRight.add(textTime, gbc);
+        textFuelConsumption = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 5;
@@ -173,8 +181,8 @@ public class Screen extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panelTopRight.add(textField3, gbc);
-        textField4 = new JTextField();
+        panelTopRight.add(textFuelConsumption, gbc);
+        textCo2Emission = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 7;
@@ -182,7 +190,7 @@ public class Screen extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panelTopRight.add(textField4, gbc);
+        panelTopRight.add(textCo2Emission, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;

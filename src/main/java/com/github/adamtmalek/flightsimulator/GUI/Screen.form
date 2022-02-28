@@ -30,7 +30,9 @@
                     <preferred-size width="150" height="50"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <selectionMode value="0"/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -87,7 +89,7 @@
                   <text value="CO2 Emission"/>
                 </properties>
               </component>
-              <component id="37e8f" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+              <component id="37e8f" class="javax.swing.JTextField" binding="textDistance">
                 <constraints>
                   <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -96,7 +98,7 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="bbfa5" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+              <component id="bbfa5" class="javax.swing.JTextField" binding="textTime">
                 <constraints>
                   <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -105,7 +107,7 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="1d69e" class="javax.swing.JTextField" binding="textField3" default-binding="true">
+              <component id="1d69e" class="javax.swing.JTextField" binding="textFuelConsumption">
                 <constraints>
                   <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -114,7 +116,7 @@
                 </constraints>
                 <properties/>
               </component>
-              <component id="bb59c" class="javax.swing.JTextField" binding="textField4" default-binding="true">
+              <component id="bb59c" class="javax.swing.JTextField" binding="textCo2Emission">
                 <constraints>
                   <grid row="7" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
