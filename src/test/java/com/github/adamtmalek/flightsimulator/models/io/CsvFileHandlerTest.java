@@ -52,7 +52,7 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var expected = getPathFromResources("flight-data/aeroplanes.csv");
 		final Path actual;
 		try {
-			actual = fileHandler.saveToFile(Files.createTempFile("csvAeroplanes", "csv"), planes);
+			actual = fileHandler.saveToFile(Files.createTempFile("csvAeroplanes", ".csv"), planes);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -98,7 +98,7 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var expected = getPathFromResources("flight-data/airlines.csv");
 		final Path actual;
 		try {
-			actual = fileHandler.saveToFile(Files.createTempFile("csvAirlines", "csv"), airlines);
+			actual = fileHandler.saveToFile(Files.createTempFile("csvAirlines", ".csv"), airlines);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -150,7 +150,7 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var expected = getPathFromResources("flight-data/airports.csv");
 		final Path actual;
 		try {
-			actual = fileHandler.saveToFile(Files.createTempFile("csvAirports", "csv"), airports);
+			actual = fileHandler.saveToFile(Files.createTempFile("csvAirports", ".csv"), airports);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
