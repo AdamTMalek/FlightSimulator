@@ -9,10 +9,15 @@ import java.util.ArrayList;
  * @param averageFuelConsumption Units: Litres per kilometre
  * @param estimatedCO2Emissions  Units: Grams per kilometre
  */
-public record AirlineReport(int totalFlights,
-                            double totalDistanceTravelled,
-                            double averageFuelConsumption,
-                            double estimatedCO2Emissions) {
+public record AirlineReport(
+        @SerializableField
+        int totalFlights,
+        @SerializableField
+        double totalDistanceTravelled,
+        @SerializableField
+        double averageFuelConsumption,
+        @SerializableField
+        double estimatedCO2Emissions) {
 
     public AirlineReport(ArrayList<Flight> flights) {
         this(flights.size(), calculateTotalDistanceTravelled(flights), calculateAverageFuelConsumption(flights), calculateEstimatedCO2Emissions(flights));
