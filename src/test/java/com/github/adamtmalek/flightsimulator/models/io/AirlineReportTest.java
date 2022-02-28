@@ -1,56 +1,60 @@
 package com.github.adamtmalek.flightsimulator.models.io;
 
+import com.github.adamtmalek.flightsimulator.models.Aeroplane;
+import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class AirlineReportTest {
 
-//    @Test
-//    void givenPopulatedListThenMembersAreSummed() {
-//        var flights = new ArrayList<Flight>();
-//        flights.add(new Flight("",
-//                new Aeroplane("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                ZonedDateTime.now(),
-//                new ArrayList<Airport.ControlTower>(),
-//                new Kilometre(1),
-//                Duration.ofHours(2),
-//                new GramsPerKilometre(3)
-//        ));
-//
-//        flights.add(new Flight("",
-//                new Aeroplane("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                ZonedDateTime.now(),
-//                new ArrayList<Airport.ControlTower>(),
-//                new Kilometre(1),
-//                Duration.ofHours(2),
-//                new GramsPerKilometre(3)
-//        ));
-//
-//        flights.add(new Flight("",
-//                new Aeroplane("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                new Airport("", "", "", ""),
-//                ZonedDateTime.now(),
-//                new ArrayList<ControlTower>(),
-//                new Kilometre(1),
-//                Duration.ofHours(2),
-//                new GramsPerKilometre(3)
-//        ));
-//
-//        final var airlineReport = new AirlineReport(flights);
-//        Assertions.assertEquals(3, airlineReport.totalFlights());
-//        Assertions.assertEquals(9, airlineReport.estimatedCO2Emissions().gramsPerKilometre());
-//        Assertions.assertEquals(3, airlineReport.totalDistanceTravelled().kilometre());
-//        //TODO Test Fuel Consumption
-//
-//    }
+	@Test
+	void givenPopulatedListThenMembersAreSummed() {
+
+		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
+		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
+		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
+
+		var flights = new ArrayList<Flight>();
+
+		// Glasgow to London Flight
+		flights.add(new Flight("",
+				new Aeroplane("", "", 10, 15),
+				glasgowAirport,
+				londonAirport,
+				ZonedDateTime.now(),
+				new ArrayList<Airport.ControlTower>() {{
+					add(glasgowAirport.controlTower);
+					add(londonAirport.controlTower);
+				}}
+		));
+
+		// Edinburgh to New York Flight
+		flights.add(new Flight("",
+				new Aeroplane("", "", 10, 15),
+				edinburghAirport,
+				newYorkAirport,
+				ZonedDateTime.now(),
+				new ArrayList<Airport.ControlTower>() {{
+					add(edinburghAirport.controlTower);
+					add(newYorkAirport.controlTower);
+				}}
+		));
+
+
+		final var airlineReport = new AirlineReport(flights);
+		Assertions.assertEquals(2, airlineReport.totalFlights());
+		Assertions.assertEquals(0, airlineReport.estimatedCO2Emissions()); //TODO
+
+		//GLA-LONDON = ~554KM, EDI-NY=~5241KM
+		// Add slight delta for differences between distance calculators.
+		Assertions.assertEquals(5795, airlineReport.totalDistanceTravelled(), 5);
+	}
 
 	@Test
 	void givenEmptyAirlinesListThenMembersAreSetTo0() {
