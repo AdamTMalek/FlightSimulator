@@ -1,6 +1,8 @@
 package com.github.adamtmalek.flightsimulator.GUI;
 
 import com.github.adamtmalek.flightsimulator.FlightTrackerController;
+import com.github.adamtmalek.flightsimulator.models.Aeroplane;
+import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
@@ -12,8 +14,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
-
-;
 
 
 public class Screen extends JFrame {
@@ -30,7 +30,7 @@ public class Screen extends JFrame {
     private JTextArea flightPlan;
     private JPanel addFlightPanel;
     private JPanel addFlightPlanPanel;
-    private JComboBox comboBox1;
+    private JComboBox airlineBox;
     private JComboBox comboBox2;
     private JComboBox comboBox3;
     private JComboBox comboBox4;
@@ -51,9 +51,10 @@ public class Screen extends JFrame {
     private JButton exitButton;
     private DefaultListModel flightListModel;
     private List<Flight> flights;
+    private List<Airline> airlines;
     private List<Airport.ControlTower> controlTowers;
 
-    Screen() throws FileHandlerException {
+    public Screen() throws FileHandlerException {
         super("Flight Tracking System");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,11 +66,14 @@ public class Screen extends JFrame {
         FlightData flightData = flightTrackerController.getFlightData();
 
         this.flights = flightData.flights();
+        this.airlines = flightData.airlines();
+
 
         flightListModel = new DefaultListModel<>();
         flightList.setModel(flightListModel);
 
         this.refreshFlightList();
+        this.addAirlinesList();
 
         flightList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -93,11 +97,6 @@ public class Screen extends JFrame {
 
     }
 
-    public static void main(String[] args) throws FileHandlerException {
-        Screen screen = new Screen();
-        screen.setVisible(true);
-    }
-
     public void refreshFlightList() {
         flightListModel.removeAllElements();
         for (Flight flight : flights) {
@@ -105,4 +104,12 @@ public class Screen extends JFrame {
         }
     }
 
+    public void addAirlinesList() {
+        for (Airline airline: airlines) {
+            airlineBox.addItem(airline.name());
+        }
+    }
+
+
 }
+
