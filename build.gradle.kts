@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("idea")
 }
 
 group = "com.github.adamtmalek"
@@ -10,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly("com.intellij:forms_rt:7.0.3")
     implementation("org.jetbrains:annotations:20.1.0")
     compileOnly("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
