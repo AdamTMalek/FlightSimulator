@@ -16,7 +16,6 @@ AA; American Airlines
 AC; Air Canada
 AE; Mandarin Airlines
 AF; Air France
-AF; Air France
 AH; Air Algerie
 AI; Air India
 AM; Aeromexico Cargo
@@ -52,8 +51,7 @@ EK; Emirates
 ER; DHL Aviation/DHL Airways
 ET; Ethiopian Airlines
 EV; Atlantic Southeast Airlines
-EY; ETIHAD Airways
-European Air Transport
+EY; ETIHAD Airways European Air Transport
 F4; Shanghai Airlines Cargo
 FB; Bulgaria Air
 FI; Icelandair
@@ -117,7 +115,7 @@ MP; Martinair Cargo
 MS; Egyptair
 MU; China Eastern Airlines
 MY; MASAir
-N8; Hong Kong Airlines
+HX; Hong Kong Airlines
 N8; National Air Cargo
 NC; Northern Air Cargo
 NG; Lauda Air
@@ -147,7 +145,6 @@ QY; DHL Aviation /
 RB; Syrian Arab Airlines
 RF; Florida West International Airways
 RG; VARIG Brazilian Airlines
-RG; VARIG Brazilian Airlines
 RJ; Royal Jordanian
 RU; AirBridge Cargo
 S6; SAC South American Airways
@@ -168,7 +165,6 @@ TL; Trans MediterraneanAirways
 TP; TAP Air Portugal
 UA; United Airlines Cargo
 UL; SriLankan Cargo
-UL; more AWB tracking
 US; USAirways
 UX; Air Europa Cargo
 UY; Cameroon Airlines
