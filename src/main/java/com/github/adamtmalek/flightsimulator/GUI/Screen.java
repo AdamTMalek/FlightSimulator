@@ -11,7 +11,6 @@ import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -31,9 +30,9 @@ public class Screen extends JFrame {
     private JPanel addFlightPanel;
     private JPanel addFlightPlanPanel;
     private JComboBox airlineBox;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
-    private JComboBox comboBox4;
+    private JComboBox aeroplaneBox;
+    private JComboBox depatureBox;
+    private JComboBox destinationBox;
     private JTextField textField1;
     private JTextField textField2;
     private JTextField textField3;
@@ -52,6 +51,8 @@ public class Screen extends JFrame {
     private DefaultListModel flightListModel;
     private List<Flight> flights;
     private List<Airline> airlines;
+    private List<Aeroplane> aeroplanes;
+    private List<Airport> airports;
     private List<Airport.ControlTower> controlTowers;
 
     public Screen() throws FileHandlerException {
@@ -67,6 +68,8 @@ public class Screen extends JFrame {
 
         this.flights = flightData.flights();
         this.airlines = flightData.airlines();
+        this.aeroplanes = flightData.aeroplanes();
+        this.airports = flightData.airports();
 
 
         flightListModel = new DefaultListModel<>();
@@ -74,6 +77,8 @@ public class Screen extends JFrame {
 
         this.refreshFlightList();
         this.addAirlinesList();
+        this.addAeroplanesList();
+        this.addAirportsList();
 
         flightList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -110,6 +115,18 @@ public class Screen extends JFrame {
         }
     }
 
+    public void addAeroplanesList() {
+        for (Aeroplane aeroplane: aeroplanes) {
+            aeroplaneBox.addItem(aeroplane.model());
+        }
+    }
+
+    public void addAirportsList() {
+        for (Airport airport: airports) {
+            depatureBox.addItem(airport.name);
+            destinationBox.addItem(airport.name);
+        }
+    }
 
 }
 
