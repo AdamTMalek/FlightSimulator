@@ -20,7 +20,7 @@ public class AirlineReportTest {
     var flights = new ArrayList<Flight>();
 
     // Glasgow to London Flight
-    flights.add(Flight.build("0",
+    flights.add(Flight.buildWithSerialNumber("0",
       new Airline("", ""),
       new Aeroplane("", "", 10, 5),
       glasgowAirport,
@@ -33,7 +33,7 @@ public class AirlineReportTest {
     ));
 
     // Edinburgh to New York Flight
-    flights.add(Flight.build("0",
+    flights.add(Flight.buildWithSerialNumber("0",
       new Airline("a", "a"),
       new Aeroplane("", "", 10, 15),
       edinburghAirport,

@@ -29,13 +29,13 @@ public record Flight(@SerializableField
                      double estimatedCO2Produced) {
 
 
-  public static Flight build(@NotNull String serialNumber,
-                             @NotNull Airline airline,
-                             @NotNull Aeroplane aeroplane,
-                             @NotNull Airport departureAirport,
-                             @NotNull Airport destinationAirport,
-                             @NotNull ZonedDateTime departureDate,
-                             @NotNull List<Airport.ControlTower> controlTowersToCross) {
+  public static Flight buildWithSerialNumber(@NotNull String serialNumber,
+                                             @NotNull Airline airline,
+                                             @NotNull Aeroplane aeroplane,
+                                             @NotNull Airport departureAirport,
+                                             @NotNull Airport destinationAirport,
+                                             @NotNull ZonedDateTime departureDate,
+                                             @NotNull List<Airport.ControlTower> controlTowersToCross) {
     final var distanceTravelled = calculateDistanceTravelled(controlTowersToCross);
     final var estimatedFuelConsumption = calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), distanceTravelled);
     final var estimatedCO2Produced = calculateEstimatedCO2Produced(estimatedFuelConsumption);

@@ -14,7 +14,7 @@ public class FlightTest {
 
   @Test
   void givenSerialNumberThenBuildFlight() {
-    var flight = Flight.build("001",
+    var flight = Flight.buildWithSerialNumber("001",
       new Airline("TEST", ""),
       new Aeroplane("a", "a", 1, 50),
       new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -42,7 +42,7 @@ public class FlightTest {
   void givenInvalidSerialNumberThenExceptionThrown() {
     Assertions.assertThrows(InvalidParameterException.class, new Executable() {
       public void execute() throws Throwable {
-        var flight = Flight.build("Serial numbers containing non-integers is invalid.",
+        var flight = Flight.buildWithSerialNumber("Serial numbers containing non-integers is invalid.",
           new Airline("TEST", ""),
           new Aeroplane("a", "a", 1, 50),
           new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -63,7 +63,7 @@ public class FlightTest {
     var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
     var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-    var flight = Flight.build("001",
+    var flight = Flight.buildWithSerialNumber("001",
       new Airline("", ""),
       new Aeroplane("a", "a", 1, 50),
       glasgowAirport,
