@@ -21,11 +21,11 @@ public class FlightTest {
         var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
         var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-        var flight = new Flight("a",
+        var flight = Flight.build("a",
                 new Aeroplane("a", "a", 1, 50),
                 glasgowAirport,
                 newYorkAirport,
-                ZonedDateTime.of(2022, 02, 18, 16, 00, 00, 0, ZoneId.of("UTC+0")),
+                ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
                 new ArrayList<Airport.ControlTower>() {{
                     add(glasgowAirport.controlTower);
                     add(edinburghAirport.controlTower);
@@ -39,8 +39,12 @@ public class FlightTest {
         // Total Distance 6157.39:
         Assertions.assertEquals(6157.39, flight.distanceTravelled(), 0.5);
 
-        // 50* (6157.39/100) = 3078.70 Litres per 100 kilometres
+        // The aircraft consumes an x litres per 100 kilometre, specified as fuelConsumptionRatio.
+        // As the flight has a total distance of ~6157.39, the estimated fuel consumption is as follows:
+        // 50* (6157.39/100) = 3078.70 Litres
         Assertions.assertEquals(3078.70, flight.estimatedFuelConsumption(), 0.5);
-        Assertions.assertEquals(0, flight.estimatedCO2Produced(), 0.5);
+
+        // Estimated Fuel Consumed * Average CO2 Emissions per Kilometre = 3078.70*3.16 = ~9728.69
+        Assertions.assertEquals(9728.69, flight.estimatedCO2Produced(), 1);
     }
 }

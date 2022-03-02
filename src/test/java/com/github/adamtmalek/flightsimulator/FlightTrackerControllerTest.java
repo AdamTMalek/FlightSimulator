@@ -1,5 +1,9 @@
 package com.github.adamtmalek.flightsimulator;
 
+import com.github.adamtmalek.flightsimulator.models.Aeroplane;
+import com.github.adamtmalek.flightsimulator.models.Airport;
+import com.github.adamtmalek.flightsimulator.models.Flight;
+import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
@@ -8,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
 public class FlightTrackerControllerTest extends TestSuite {
 
@@ -91,6 +98,66 @@ public class FlightTrackerControllerTest extends TestSuite {
             throw new RuntimeException(e);
         }
 
+
+    }
+
+    @Test
+    void addFlight() {
+        var controller = new FlightTrackerController();
+
+        controller.addFlight(Flight.build("newFlightID",
+                new Aeroplane("a", "a", 1, 50),
+                new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+                new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+                ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+                new ArrayList<Airport.ControlTower>()));
+
+        final var addedFlight = controller.getFlightData().flights().get(0);
+        Assertions.assertEquals("newFlightID", addedFlight.flightID());
+
+    }
+
+    @Test
+    void removeFlight() {
+        var controller = new FlightTrackerController();
+
+        controller.addFlight(Flight.build("newFlightID",
+                new Aeroplane("a", "a", 1, 50),
+                new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+                new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+                ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+                new ArrayList<Airport.ControlTower>()));
+
+        Assertions.assertEquals(1, controller.getFlightData().flights().size());
+        controller.removeFlight(0);
+        Assertions.assertEquals(0, controller.getFlightData().flights().size());
+
+    }
+
+    @Test
+    void editFlight() {
+        var controller = new FlightTrackerController();
+
+        controller.addFlight(Flight.build("originalFlightID",
+                new Aeroplane("a", "a", 1, 50),
+                new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+                new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+                ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+                new ArrayList<Airport.ControlTower>()));
+
+        var changedFlight = Flight.build("editedFlightID",
+                new Aeroplane("a", "a", 1, 50),
+                new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+                new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+                ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+                new ArrayList<Airport.ControlTower>());
+
+        final var originalFlight = controller.getFlightData().flights().get(0);
+
+        Assertions.assertEquals("originalFlightID", originalFlight.flightID());
+        controller.editFlight(0, changedFlight);
+        final var editedFlight = controller.getFlightData().flights().get(0);
+        Assertions.assertEquals("editedFlightID", editedFlight.flightID());
 
     }
 

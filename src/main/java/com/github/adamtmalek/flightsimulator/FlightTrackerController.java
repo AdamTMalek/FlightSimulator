@@ -83,7 +83,7 @@ public class FlightTrackerController implements Controller {
         return flightData;
     }
 
-    private FlightData flightData;
+    private FlightData flightData = new FlightData();
 
     private ArrayList<Flight> filterFlightsByAirline(Airline airline) {
 
