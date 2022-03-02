@@ -54,8 +54,11 @@ class IntegrationTest extends TestSuite {
 		Assertions.assertEquals("123ID", flightData.flights().get(flightData.flights().size()-1).flightID());
 
 		// write this to a file
-		mainController.writeFlightData(tempDir);
-
+		try {
+			mainController.writeFlightData(tempDir);
+		} catch(FileHandlerException e){
+			throw new RuntimeException(e);
+		}
 		// load the file on a new controller/dataset and check if it matches
 		FlightTrackerController readTestController = new FlightTrackerController();
 		FlightData readTestFD;
@@ -73,7 +76,11 @@ class IntegrationTest extends TestSuite {
 		Assertions.assertEquals("BA605", flightData.flights().get(flightData.flights().size()-1).flightID());
 
 		// write the flights down again and check if it still matches
-		mainController.writeFlightData(tempDir);
+		try {
+			mainController.writeFlightData(tempDir);
+		} catch(FileHandlerException e){
+			throw new RuntimeException(e);
+		}
 
 		// load the file on a new controller/dataset and check if it matches
 		FlightTrackerController readTestController2 = new FlightTrackerController();

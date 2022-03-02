@@ -4,6 +4,7 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -23,9 +24,9 @@ public interface Controller {
 		IOException,
 		FileHandlerException;
 
-	public void writeFlightData(Path destinationPath);
+	public void writeFlightData(Path destinationPath) throws FileHandlerException;
 
-	public void writeAirlineReports(Path destinationPath);
+	public void writeAirlineReports(Path destinationPath) throws FileHandlerException;
 
 	public void addFlight(Flight flight) throws
 		UnsupportedOperationException,

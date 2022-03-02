@@ -135,7 +135,7 @@ public class FlightTrackerControllerTest extends TestSuite {
       org.assertj.core.api.Assertions.assertThat(actualAiroplanessFile)
         .hasSameTextualContentAs(expectedAiroplanesFile);
 
-    } catch (IOException e) {
+    } catch (IOException  | FileHandlerException e) {
       throw new RuntimeException(e);
     }
 

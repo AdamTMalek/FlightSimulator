@@ -42,8 +42,14 @@ public class FlightTrackerController implements Controller {
     }
 
 
-    public void writeFlightData(Path destinationPath) {
-        throw new RuntimeException("FlightDataFileHandler not implemented, file is not written to."); //TODO FlightDataFileHandler.writeFlightData(flights, destinationPath);
+    public void writeFlightData(Path destinationPath) throws FileHandlerException {
+            FlightDataFileHandler.getBuilder()
+              .withFlightsPath(destinationPath.resolve("flights.csv"))
+              .withAeroplanesPath(destinationPath.resolve("aeroplanes.csv"))
+              .withAirlinesPath(destinationPath.resolve("airlines.csv"))
+              .withAirportsPath(destinationPath.resolve("airports.csv")).build().saveFlights(flightData);
+
+
     }
 
     public void writeAirlineReports(Path destinationPath) {
