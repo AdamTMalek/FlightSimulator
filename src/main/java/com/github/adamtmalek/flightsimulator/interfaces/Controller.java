@@ -1,10 +1,9 @@
 package com.github.adamtmalek.flightsimulator.interfaces;
 
 import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
+import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -14,7 +13,7 @@ public interface Controller {
 	// defined in FlightDataFileHandler.
 	public Controller readFlightData(Path fileDirectoryPath) throws
 		IOException,
-		FileHandlerException;
+		FlightDataFileHandlerException;
 
 	// Read unique paths for required files.
 	public Controller readFlightData(Path airportSourcePath,
@@ -22,11 +21,11 @@ public interface Controller {
 																	 Path airlineSourcePath,
 																	 Path flightSourcePath) throws
 		IOException,
-		FileHandlerException;
+		FlightDataFileHandlerException;
 
-	public void writeFlightData(Path destinationPath) throws FileHandlerException;
+	public void writeFlightData(Path destinationPath) throws FlightDataFileHandlerException;
 
-	public void writeAirlineReports(Path destinationPath) throws FileHandlerException;
+	public void writeAirlineReports(Path destinationPath) throws FlightDataFileHandlerException;
 
 	public void addFlight(Flight flight) throws
 		UnsupportedOperationException,

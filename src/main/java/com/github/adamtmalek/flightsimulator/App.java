@@ -1,15 +1,13 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
-import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
+import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 
-import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 
 public class App {
 
-	public static void main(String[] args) throws FileHandlerException {
+	public static void main(String[] args) throws FlightDataFileHandlerException {
 		var flightTrackerController = new FlightTrackerController();
 
 		final var path = Path.of("src/test/resources/flight-data");  // TODO: Change this to the right path
@@ -21,7 +19,7 @@ public class App {
 				System.out.println(flight.flightID());
 			}
 
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 

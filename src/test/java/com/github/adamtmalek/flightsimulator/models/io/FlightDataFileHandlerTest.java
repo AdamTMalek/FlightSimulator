@@ -22,7 +22,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 		try {
 			final FlightDataFileHandler fileHandler = FlightDataFileHandler.withDefaultFileNames(flightDataPath);
 			flightData = fileHandler.readFlightData();
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			Assertions.fail("Exception thrown" + e);
 			return;
 		}
@@ -65,7 +65,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 		try {
 			final FlightDataFileHandler fileHandler = FlightDataFileHandler.withDefaultFileNames(flightDataPath);
 			flightData = fileHandler.readFlightData();
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			Assertions.fail("Exception thrown" + e);
 			return;
 		}
@@ -77,7 +77,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 			final var fileHandler = FlightDataFileHandler.withDefaultFileNames(tempOutputDir);
 			fileHandler.saveFlights(flightData);
       actual = tempOutputDir.resolve("flights.csv");
-		} catch (IOException | FileHandlerException e) {
+		} catch (IOException | FlightDataFileHandlerException e) {
 			Assertions.fail("Exception thrown " + e);
       return;
 		}

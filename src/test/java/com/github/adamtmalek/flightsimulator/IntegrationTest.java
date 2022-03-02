@@ -1,7 +1,7 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.models.*;
-import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
+import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.*;
@@ -31,7 +31,7 @@ class IntegrationTest extends TestSuite {
 		FlightData flightData;
 		try {
 			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 
@@ -56,7 +56,7 @@ class IntegrationTest extends TestSuite {
 		// write this to a file
 		try {
 			mainController.writeFlightData(tempDir);
-		} catch(FileHandlerException e){
+		} catch(FlightDataFileHandlerException e){
 			throw new RuntimeException(e);
 		}
 		// load the file on a new controller/dataset and check if it matches
@@ -64,7 +64,7 @@ class IntegrationTest extends TestSuite {
 		FlightData readTestFD;
 		try {
 			readTestFD = readTestController.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 		Assertions.assertEquals("OK420", readTestFD.flights().get(0).flightID());
@@ -78,7 +78,7 @@ class IntegrationTest extends TestSuite {
 		// write the flights down again and check if it still matches
 		try {
 			mainController.writeFlightData(tempDir);
-		} catch(FileHandlerException e){
+		} catch(FlightDataFileHandlerException e){
 			throw new RuntimeException(e);
 		}
 
@@ -87,7 +87,7 @@ class IntegrationTest extends TestSuite {
 		FlightData readTestFD2;
 		try {
 			readTestFD2 = readTestController2.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
-		} catch (FileHandlerException e) {
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
 		Assertions.assertEquals("OK420", readTestFD2.flights().get(0).flightID());

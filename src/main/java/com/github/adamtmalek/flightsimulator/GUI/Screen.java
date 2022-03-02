@@ -5,7 +5,7 @@ import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
+import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 
 import javax.swing.*;
@@ -68,7 +68,7 @@ public class Screen extends JFrame implements ActionListener {
     public FlightTrackerController flightTrackerController;
     public List<Airport.ControlTower> selectedFlightPlan;
 
-    public Screen() throws FileHandlerException {
+    public Screen() throws FlightDataFileHandlerException {
         super("Flight Tracking System");
         this.setContentPane(this.panelMain);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

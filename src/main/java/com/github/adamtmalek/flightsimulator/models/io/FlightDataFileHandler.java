@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FlightDataFileHandler {
-
 	private static final String DEFAULT_AIRPORTS_FILENAME = "airports.csv";
 	private static final String DEFAULT_AIRLINES_FILENAME = "airlines.csv";
 	private static final String DEFAULT_AEROPLANES_FILENAME = "aeroplanes.csv";
@@ -64,7 +63,7 @@ public class FlightDataFileHandler {
 		);
 	}
 
-	public @NotNull FlightData readFlightData() throws FileHandlerException {
+	public @NotNull FlightData readFlightData() throws FlightDataFileHandlerException {
 		try {
 			final var airportMap = csvFileHandler.readFile(airportsCsv, Airport.class)
 				.stream().collect(Collectors.toMap(e -> e.code, e -> e));
@@ -78,9 +77,9 @@ public class FlightDataFileHandler {
 				new ArrayList<>(airlineMap.values()),
 				new ArrayList<>(aeroplaneMap.values()),
 				readFlights(aeroplaneMap, airportMap, airlineMap)
-				);
+			);
 		} catch (SerializationException | IOException e) {
-			throw new FileHandlerException(e);
+			throw new FlightDataFileHandlerException(e);
 		}
 	}
 
@@ -95,18 +94,17 @@ public class FlightDataFileHandler {
 
 	private @NotNull List<Flight> readFlights(Map<String, Aeroplane> aeroplaneMap,
 																						Map<String, Airport> airportMap,
-																						Map<String,Airline> airlineMap) throws IOException {
-		return readFlights(readCsv(flightsCsv), aeroplaneMap, airportMap,airlineMap);
+																						Map<String, Airline> airlineMap) throws IOException {
+		return readFlights(readCsv(flightsCsv), aeroplaneMap, airportMap, airlineMap);
 	}
 
 	private @NotNull List<Flight> readFlights(@NotNull Stream<List<String>> flightsCsv,
 																						@NotNull Map<String, Aeroplane> aeroplaneMap,
 																						@NotNull Map<String, Airport> airportMap,
-																						@NotNull Map<String, Airline> airlineMap
-																						) {
+																						@NotNull Map<String, Airline> airlineMap) {
 		return flightsCsv.map(values -> {
 			final var code = values.get(0);
-			final var airline = airlineMap.get(values.get(0).substring(0,2));
+			final var airline = airlineMap.get(values.get(0).substring(0, 2));
 			final var aeroplane = aeroplaneMap.get(values.get(1));
 			final var departureAirport = airportMap.get(values.get(2));
 			final var arrivalAirport = airportMap.get(values.get(3));
@@ -120,11 +118,11 @@ public class FlightDataFileHandler {
 				.map(c -> airportMap.get(c).controlTower)
 				.toList();
 
-			return Flight.buildWithFlightId(code,airline, aeroplane, departureAirport, arrivalAirport, dateTime, flightPlan);
+			return Flight.buildWithFlightId(code, airline, aeroplane, departureAirport, arrivalAirport, dateTime, flightPlan);
 		}).collect(Collectors.toCollection(ArrayList<Flight>::new));
 	}
 
-	public void saveFlights(@NotNull FlightData data) throws FileHandlerException {
+	public void saveFlights(@NotNull FlightData data) throws FlightDataFileHandlerException {
 		csvFileHandler.saveToFile(airlinesCsv, data.airlines());
 		csvFileHandler.saveToFile(aeroplanesCsv, data.aeroplanes());
 		csvFileHandler.saveToFile(airportsCsv, data.airports());
@@ -149,7 +147,7 @@ public class FlightDataFileHandler {
 		try {
 			Files.writeString(flightsCsv, flightsContent);
 		} catch (IOException e) {
-			throw new FileHandlerException(e);
+			throw new FlightDataFileHandlerException(e);
 		}
 	}
 
