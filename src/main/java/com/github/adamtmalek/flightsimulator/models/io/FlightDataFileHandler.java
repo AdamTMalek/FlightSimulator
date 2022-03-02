@@ -29,8 +29,15 @@ public class FlightDataFileHandler {
 	private final @NotNull Path aeroplanesCsv;
 	private final @NotNull Path flightsCsv;
 
-	private final @NotNull CsvFileHandler csvFileHandler = new CsvFileHandler(";");
-	private final @NotNull DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd:MM:yyyy HH:mm");
+	private final @NotNull String delimiter = "; ";
+
+	private final @NotNull CsvFileHandler csvFileHandler = new CsvFileHandler(delimiter);
+
+	private final @NotNull String dateFormat = "dd:MM:yyyy";
+	private final @NotNull String timeFormat = "HH:mm";
+	private final @NotNull DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+	private final @NotNull DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
+	private final @NotNull DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat + " " + timeFormat);
 
 	private FlightDataFileHandler(@NotNull Path airportsCsv,
 																@NotNull Path airlinesCsv,
@@ -80,7 +87,7 @@ public class FlightDataFileHandler {
 		return Files.readAllLines(path)
 			.stream()
 			.map(line ->
-				Arrays.stream(line.split(";"))
+				Arrays.stream(line.split(delimiter))
 					.map(String::strip)
 					.collect(Collectors.toList()));
 	}
@@ -110,6 +117,35 @@ public class FlightDataFileHandler {
 
 			return Flight.build(code, aeroplane, departureAirport, arrivalAirport, dateTime, flightPlan);
 		}).collect(Collectors.toCollection(ArrayList<Flight>::new));
+	}
+
+	public void saveFlights(@NotNull FlightData data) throws FileHandlerException {
+		csvFileHandler.saveToFile(airlinesCsv, data.airlines());
+		csvFileHandler.saveToFile(aeroplanesCsv, data.aeroplanes());
+		csvFileHandler.saveToFile(airportsCsv, data.airports());
+
+		final var flightsContent = data.flights()
+			.stream()
+			.map(flight -> {
+				final var code = flight.flightID();
+				final var aeroplane = flight.aeroplane().model();
+				final var departureAirport = flight.departureAirport().code;
+				final var arrivalAirport = flight.destinationAirport().code;
+				final var date = flight.departureDate().toLocalDate().format(dateFormatter);
+				final var time = flight.departureDate().toLocalTime().format(timeFormatter);
+				final var flightPlan = flight.controlTowersToCross().stream().map(e -> e.code).toList();
+
+				return String.join(delimiter, code, aeroplane, departureAirport,
+					arrivalAirport, date, time,
+					String.join(delimiter, flightPlan));
+			})
+			.collect(Collectors.joining("\n"));
+
+		try {
+			Files.writeString(flightsCsv, flightsContent);
+		} catch (IOException e) {
+			throw new FileHandlerException(e);
+		}
 	}
 
 	public static class Builder {
