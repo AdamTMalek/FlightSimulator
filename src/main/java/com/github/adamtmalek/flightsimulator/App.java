@@ -12,7 +12,7 @@ public class App {
 	public static void main(String[] args) throws FileHandlerException {
 		var flightTrackerController = new FlightTrackerController();
 
-		final var path = Path.of(URI.create("src/test/resources/flight-data"));  // TODO: Change this to the right path
+		final var path = Path.of("src/test/resources/flight-data");  // TODO: Change this to the right path
 
 		try {
 			final var flightData = flightTrackerController.readFlightData(path).getFlightData();

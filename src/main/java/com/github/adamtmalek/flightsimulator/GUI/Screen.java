@@ -11,11 +11,16 @@ import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 
-public class Screen extends JFrame {
+public class Screen extends JFrame implements ActionListener {
     private JPanel panelMain;
     private JPanel panelTop;
     private JPanel panelBottom;
@@ -33,12 +38,9 @@ public class Screen extends JFrame {
     private JComboBox aeroplaneBox;
     private JComboBox depatureBox;
     private JComboBox destinationBox;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JComboBox comboBox5;
-    private JComboBox comboBox6;
-    private JComboBox comboBox7;
+    private JComboBox flightPlanBox1;
+    private JComboBox flightPlanBox2;
+    private JComboBox flightPlanBox3;
     private JComboBox comboBox8;
     private JComboBox comboBox9;
     private JComboBox comboBox10;
@@ -46,14 +48,25 @@ public class Screen extends JFrame {
     private JComboBox comboBox12;
     private JComboBox comboBox13;
     private JButton addButton;
-    private JButton cancelButton;
     private JButton exitButton;
+    private JTextField ddMmYyyyTextField;
     private DefaultListModel flightListModel;
+    private DefaultComboBoxModel airlineListModel;
+    private DefaultComboBoxModel aeroplaneListModel;
+    private DefaultComboBoxModel depatureListModel;
+    private DefaultComboBoxModel destinationListModel;
+    private DefaultComboBoxModel flightPlan1ListModel;
+    private DefaultComboBoxModel flightPlan2ListModel;
+    private DefaultComboBoxModel flightPlan3ListModel;
     private List<Flight> flights;
     private List<Airline> airlines;
     private List<Aeroplane> aeroplanes;
     private List<Airport> airports;
-    private List<Airport.ControlTower> controlTowers;
+    private Aeroplane selectedAeroplane;
+    private Airport selectedDepature;
+    private Airport selectedDestination;
+    public FlightTrackerController flightTrackerController;
+    public List<Airport.ControlTower> selectedFlightPlan;
 
     public Screen() throws FileHandlerException {
         super("Flight Tracking System");
@@ -61,10 +74,10 @@ public class Screen extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
 
-        FlightTrackerController flightTrackerController = new FlightTrackerController();
+        this.flightTrackerController = new FlightTrackerController();
         Path fileDirectory = Path.of("src/test/resources/flight-data");
-        flightTrackerController.readFlightData(fileDirectory);
-        FlightData flightData = flightTrackerController.getFlightData();
+        this.flightTrackerController.readFlightData(fileDirectory);
+        FlightData flightData = this.flightTrackerController.getFlightData();
 
         this.flights = flightData.flights();
         this.airlines = flightData.airlines();
@@ -75,10 +88,40 @@ public class Screen extends JFrame {
         flightListModel = new DefaultListModel<>();
         flightList.setModel(flightListModel);
 
+        airlineListModel = new DefaultComboBoxModel<>();
+        airlineBox.setModel(airlineListModel);
+
+        aeroplaneListModel = new DefaultComboBoxModel<>();
+        aeroplaneBox.setModel(aeroplaneListModel);
+
+        depatureListModel = new DefaultComboBoxModel<>();
+        depatureBox.setModel(depatureListModel);
+
+        destinationListModel = new DefaultComboBoxModel<>();
+        destinationBox.setModel(destinationListModel);
+
+        flightPlan1ListModel = new DefaultComboBoxModel<>();
+        flightPlanBox1.setModel(flightPlan1ListModel);
+
+        flightPlan2ListModel = new DefaultComboBoxModel<>();
+        flightPlanBox2.setModel(flightPlan2ListModel);
+
+        flightPlan3ListModel = new DefaultComboBoxModel<>();
+        flightPlanBox3.setModel(flightPlan3ListModel);
+
         this.refreshFlightList();
         this.addAirlinesList();
         this.addAeroplanesList();
         this.addAirportsList();
+
+        airlineBox.addActionListener(this);
+        aeroplaneBox.addActionListener(this);
+        depatureBox.addActionListener(this);
+        destinationBox.addActionListener(this);
+        flightPlanBox1.addActionListener(this);
+        flightPlanBox2.addActionListener(this);
+        flightPlanBox3.addActionListener(this);
+        addButton.addActionListener(this);
 
         flightList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -89,9 +132,9 @@ public class Screen extends JFrame {
                     textDistance.setText(Double.toString(flight.distanceTravelled()));
                     textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
                     textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
-                    controlTowers = flight.controlTowersToCross();
+                    List<Airport.ControlTower> flightControlTowers = flight.controlTowersToCross();
                     StringBuffer allTowers = new StringBuffer();
-                    for (var tower : controlTowers) {
+                    for (var tower : flightControlTowers) {
                         allTowers.append(tower.code);
                         allTowers.append('\n');
                     }
@@ -100,6 +143,58 @@ public class Screen extends JFrame {
             }
         });
 
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        this.selectedFlightPlan = new ArrayList<>();
+        double distanceTravelled;
+        double estimatedFuelConsumption;
+        double estimatedCO2Produced;
+        int newIndex;
+
+        if(e.getSource() == airlineBox) {
+            int airlineIndex = airlineBox.getSelectedIndex();
+            Airline airline = airlines.get(airlineIndex);
+        }
+        if(e.getSource() == aeroplaneBox) {
+            int aeroplaneIndex = aeroplaneBox.getSelectedIndex();
+            this.selectedAeroplane = aeroplanes.get(aeroplaneIndex);
+        }
+        if(e.getSource() == depatureBox) {
+            int depatureIndex = depatureBox.getSelectedIndex();
+            this.selectedDepature = airports.get(depatureIndex);
+        }
+        if(e.getSource() == destinationBox) {
+            int destinationIndex = destinationBox.getSelectedIndex();
+            this.selectedDestination = airports.get(destinationIndex);
+        }
+        if(e.getSource() == flightPlanBox1) {
+            int flightPlanIndex = flightPlanBox1.getSelectedIndex();
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
+        }
+        if(e.getSource() == flightPlanBox2) {
+            int flightPlanIndex = flightPlanBox2.getSelectedIndex();
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
+        }
+        if(e.getSource() == flightPlanBox3) {
+            int flightPlanIndex = flightPlanBox3.getSelectedIndex();
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
+        }
+
+        ZonedDateTime zonedDateTimeNow = ZonedDateTime.now(ZoneId.of("UTC"));
+
+        if(e.getSource() == addButton) {
+            Flight newFlight = new Flight("501", this.selectedAeroplane, this.selectedDepature,
+                    this.selectedDestination, zonedDateTimeNow, this.selectedFlightPlan, distanceTravelled = 0.0,
+                    estimatedFuelConsumption = 0.0, estimatedCO2Produced = 0.0
+            );
+
+            this.addNewFlight(newFlight);
+        }
     }
 
     public void refreshFlightList() {
@@ -111,22 +206,29 @@ public class Screen extends JFrame {
 
     public void addAirlinesList() {
         for (Airline airline: airlines) {
-            airlineBox.addItem(airline.name());
+            airlineListModel.addElement(airline.name());
         }
     }
 
     public void addAeroplanesList() {
         for (Aeroplane aeroplane: aeroplanes) {
-            aeroplaneBox.addItem(aeroplane.model());
+            aeroplaneListModel.addElement(aeroplane.model());
         }
     }
 
     public void addAirportsList() {
         for (Airport airport: airports) {
-            depatureBox.addItem(airport.name);
-            destinationBox.addItem(airport.name);
+            depatureListModel.addElement(airport.name);
+            destinationListModel.addElement(airport.name);
+            flightPlan1ListModel.addElement(airport.controlTower.name);
+            flightPlan2ListModel.addElement(airport.controlTower.name);
+            flightPlan3ListModel.addElement(airport.controlTower.name);
         }
     }
 
+    public void addNewFlight( Flight flight) {
+        this.flightTrackerController.addFlight(flight);
+        this.refreshFlightList();
+    }
 }
 
