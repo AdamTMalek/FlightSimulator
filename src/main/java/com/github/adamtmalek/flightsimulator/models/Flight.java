@@ -83,7 +83,7 @@ public record Flight(@SerializableField
     } catch (NumberFormatException e) {
       throw new InvalidParameterException("Flight serial number must be a series of integer values.");
     }
-    return serialNumber + airline.code();
+    return airline.code() + serialNumber;
   }
 
   private static double calculateDistanceTravelled(List<Airport.ControlTower> controlTowersToCross) {
