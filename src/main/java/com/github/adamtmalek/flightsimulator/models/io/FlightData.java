@@ -12,13 +12,13 @@ import java.util.List;
 
 public record FlightData(
 
-  @NotNull List<Airport> airports,
-  @NotNull List<Airline> airlines,
-  @NotNull List<Aeroplane> aeroplanes,
-  @NotNull List<Flight> flights) {
+		@NotNull List<Airport> airports,
+		@NotNull List<Airline> airlines,
+		@NotNull List<Aeroplane> aeroplanes,
+		@NotNull List<Flight> flights) {
 
-  public FlightData() {
-    this(new ArrayList<Airport>(), new ArrayList<Airline>(), new ArrayList<Aeroplane>(), new ArrayList<Flight>());
-  }
+	public FlightData() {
+		this(new ArrayList<Airport>(), new ArrayList<Airline>(), new ArrayList<Aeroplane>(), new ArrayList<Flight>());
+	}
 
 }

@@ -1,10 +1,11 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.models.*;
-import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
+import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,7 +41,7 @@ class IntegrationTest extends TestSuite {
 
 		// Make new flight and try adding to controller
 		Flight testFlight = Flight.buildWithFlightId("123ID",
-				new Airline("code","name"),
+				new Airline("code", "name"),
 				new Aeroplane("model", "manufacturer", 2000, 15),
 				new Airport("code1", "start",
 						new GeodeticCoordinate(1, 2)),
@@ -51,12 +52,12 @@ class IntegrationTest extends TestSuite {
 		mainController.addFlight(testFlight);
 
 		// now we check if the last flight matches the one we just added
-		Assertions.assertEquals("123ID", flightData.flights().get(flightData.flights().size()-1).flightID());
+		Assertions.assertEquals("123ID", flightData.flights().get(flightData.flights().size() - 1).flightID());
 
 		// write this to a file
 		try {
 			mainController.writeFlightData(tempDir);
-		} catch(FlightDataFileHandlerException e){
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 		// load the file on a new controller/dataset and check if it matches
@@ -68,17 +69,17 @@ class IntegrationTest extends TestSuite {
 			throw new RuntimeException(e.getMessage());
 		}
 		Assertions.assertEquals("OK420", readTestFD.flights().get(0).flightID());
-		Assertions.assertEquals("123ID", readTestFD.flights().get(readTestFD.flights().size()-1).flightID());
+		Assertions.assertEquals("123ID", readTestFD.flights().get(readTestFD.flights().size() - 1).flightID());
 
 		// remove the testFlight/last flight from the controller assert if it worked
-		mainController.removeFlight(flightData.flights().size()-1);
+		mainController.removeFlight(flightData.flights().size() - 1);
 		// last flight in flightData should be BA605 now
-		Assertions.assertEquals("BA605", flightData.flights().get(flightData.flights().size()-1).flightID());
+		Assertions.assertEquals("BA605", flightData.flights().get(flightData.flights().size() - 1).flightID());
 
 		// write the flights down again and check if it still matches
 		try {
 			mainController.writeFlightData(tempDir);
-		} catch(FlightDataFileHandlerException e){
+		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -91,7 +92,7 @@ class IntegrationTest extends TestSuite {
 			throw new RuntimeException(e.getMessage());
 		}
 		Assertions.assertEquals("OK420", readTestFD2.flights().get(0).flightID());
-		Assertions.assertEquals("BA605", readTestFD2.flights().get(readTestFD2.flights().size()-1).flightID());
+		Assertions.assertEquals("BA605", readTestFD2.flights().get(readTestFD2.flights().size() - 1).flightID());
 	}
 
 

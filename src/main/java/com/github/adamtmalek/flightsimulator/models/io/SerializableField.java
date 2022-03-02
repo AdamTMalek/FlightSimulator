@@ -46,7 +46,7 @@ public @interface SerializableField {
 	 * but unfortunately in Java, primitives are primitives, and hence this would not work
 	 * for them, as they do not inherit from the Number class.
 	 */
-	 final class DefaultConverter implements Converter<Object> {
+	final class DefaultConverter implements Converter<Object> {
 		@Override
 		@Contract(pure = true)
 		public @Nullable Object convertFromString(String... values) {

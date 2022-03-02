@@ -28,7 +28,7 @@ public class Airport {
 	@Override
 	public String toString() {
 		return String.format("Airport(code=%s name=%s latitude=%f longitude=%f)",
-			code, name, position.latitude(), position.longitude());
+				code, name, position.latitude(), position.longitude());
 	}
 
 	@Override
@@ -37,9 +37,9 @@ public class Airport {
 		if (o == null || getClass() != o.getClass()) return false;
 		Airport airport = (Airport) o;
 		return code.equals(airport.code)
-			&& name.equals(airport.name)
-			&& position.latitude() == airport.position.latitude()
-			&& position.longitude() == airport.position.longitude();
+				&& name.equals(airport.name)
+				&& position.latitude() == airport.position.latitude()
+				&& position.longitude() == airport.position.longitude();
 	}
 
 	@Override
@@ -61,10 +61,10 @@ public class Airport {
 		@Override
 		public String toString() {
 			return "ControlTower(" +
-				"code='" + code + '\'' +
-				", name='" + name + '\'' +
-				", position=" + position +
-				')';
+					"code='" + code + '\'' +
+					", name='" + name + '\'' +
+					", position=" + position +
+					')';
 		}
 
 		@Override

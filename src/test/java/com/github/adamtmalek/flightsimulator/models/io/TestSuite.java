@@ -11,10 +11,10 @@ public abstract class TestSuite {
 																											@NotNull String path) {
 		try {
 			return Path.of(
-				Objects.requireNonNull(klass
-					.getClassLoader()
-					.getResource(path)
-				).toURI());
+					Objects.requireNonNull(klass
+							.getClassLoader()
+							.getResource(path)
+					).toURI());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
@@ -28,10 +28,10 @@ public abstract class TestSuite {
 																																@NotNull String resourceName) {
 		try {
 			return Path.of(
-				Objects.requireNonNull(klass
-					.getClassLoader()
-					.getResource(String.format("%s/%s", klass.getSimpleName(), resourceName))
-				).toURI());
+					Objects.requireNonNull(klass
+							.getClassLoader()
+							.getResource(String.format("%s/%s", klass.getSimpleName(), resourceName))
+					).toURI());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}

@@ -19,27 +19,27 @@ public abstract class Serializer {
 
 	protected @NotNull <T> Constructor<T> getConstructorFor(@NotNull Class<T> klass) throws SerializationException {
 		final var paramTypes = getSerializableFields(klass)
-			.map(Field::getType)
-			.toArray(Class<?>[]::new);
+				.map(Field::getType)
+				.toArray(Class<?>[]::new);
 		try {
 			return klass.getConstructor(paramTypes);
 		} catch (NoSuchMethodException e) {
 			final var expectedConstructorFormRepresentation = String.format("(%s)",
-				String.join(",", getSerializableFields(klass)
-					.map(Field::getType)
-					.map(Class::getName)
-					.toList()
-				)
+					String.join(",", getSerializableFields(klass)
+							.map(Field::getType)
+							.map(Class::getName)
+							.toList()
+					)
 			);
 			final var message = String.format("Expected class %s to have a constructor which accepts %s",
-				klass.getName(),
-				expectedConstructorFormRepresentation);
+					klass.getName(),
+					expectedConstructorFormRepresentation);
 			throw new SerializationException(message, e);
 		}
 	}
 
 	protected <T> @NotNull T createInstance(@NotNull Class<T> klass, @NotNull String[] values)
-		throws SerializationException {
+			throws SerializationException {
 		final var constructor = getConstructorFor(klass);
 		final List<String> valuesList = new ArrayList<>(Arrays.asList(values));
 		final var convertedValues = new ArrayList<>();
@@ -81,7 +81,7 @@ public abstract class Serializer {
 																													@NotNull Converter<?> customConverter) {
 		final Object convertedValue;
 		final var valuesToTake = valuesList.subList(0, customConverter.getNumberOfStringsToConsume())
-			.toArray(new String[0]);
+				.toArray(new String[0]);
 		IntStream.range(0, customConverter.getNumberOfStringsToConsume()).forEach(e -> valuesList.remove(0));
 
 		convertedValue = customConverter.convertFromString(valuesToTake);
@@ -103,16 +103,16 @@ public abstract class Serializer {
 																																			 @NotNull Parameter parameter,
 																																			 @NotNull List<String> valuesList) {
 		return Arrays.stream(klass.getDeclaredFields())
-			.filter(f -> f.isAnnotationPresent(SerializableField.class))
-			.filter(f -> f.getAnnotation(SerializableField.class).converter() != SerializableField.DefaultConverter.class)
-			.filter(f -> f.getType() == parameter.getType())
-			.findAny()
-			.map(f -> convertValueWithCustomConverter(valuesList, Objects.requireNonNull(getCustomConverter(f))))
-			.orElseThrow(() -> {
-				final var msg = String.format("Cannot find a converter for parameter %s of class %s",
-					parameter.getName(), klass.getName());
-				return new SerializationException(msg);
-			});
+				.filter(f -> f.isAnnotationPresent(SerializableField.class))
+				.filter(f -> f.getAnnotation(SerializableField.class).converter() != SerializableField.DefaultConverter.class)
+				.filter(f -> f.getType() == parameter.getType())
+				.findAny()
+				.map(f -> convertValueWithCustomConverter(valuesList, Objects.requireNonNull(getCustomConverter(f))))
+				.orElseThrow(() -> {
+					final var msg = String.format("Cannot find a converter for parameter %s of class %s",
+							parameter.getName(), klass.getName());
+					return new SerializationException(msg);
+				});
 	}
 
 	protected boolean hasSerializableFields(@NotNull Class<?> klass) {
@@ -122,29 +122,29 @@ public abstract class Serializer {
 	@SuppressWarnings("unchecked")
 	protected <T> @NotNull Stream<List<String>> getSerializableValues(@NotNull Collection<T> objectsCollection) {
 		final var klass = objectsCollection.stream()
-			.findAny()
-			.map(o -> o.getClass())
-			.orElseThrow(() -> new IllegalStateException("Unexpected empty collection"));
+				.findAny()
+				.map(o -> o.getClass())
+				.orElseThrow(() -> new IllegalStateException("Unexpected empty collection"));
 		final var serializableFields = getSerializableFields(klass).toList();
 		if (serializableFields.isEmpty()) {
 			throw new SerializationException(String.format("Class %s has no fields marked with @SerializableField - " +
-				"it cannot be serialized", klass));
+					"it cannot be serialized", klass));
 		}
 		return objectsCollection.stream()
-			.map(o -> serializableFields.stream().map(field -> {
-				try {
-					final Object originalValue = field.canAccess(o) ? field.get(o) : o.getClass().getMethod(field.getName()).invoke(o);
-					final var converter = ((Converter<T>)getConverter(field));
-					return converter.convertToString((T)originalValue);
-				} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-					throw new SerializationException(e);
-				}
-			}).toList());
+				.map(o -> serializableFields.stream().map(field -> {
+					try {
+						final Object originalValue = field.canAccess(o) ? field.get(o) : o.getClass().getMethod(field.getName()).invoke(o);
+						final var converter = ((Converter<T>) getConverter(field));
+						return converter.convertToString((T) originalValue);
+					} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+						throw new SerializationException(e);
+					}
+				}).toList());
 	}
 
 	protected @NotNull Stream<Field> getSerializableFields(@NotNull Class<?> klass) {
 		return Arrays.stream(klass.getDeclaredFields())
-			.filter(f -> f.isAnnotationPresent(SerializableField.class));
+				.filter(f -> f.isAnnotationPresent(SerializableField.class));
 	}
 
 	protected @NotNull Stream<String> getFieldNames(@NotNull Stream<Field> fields) {
@@ -157,9 +157,9 @@ public abstract class Serializer {
 	protected @NotNull Converter<?> getConverter(@NotNull AnnotatedElement element) throws SerializationException {
 		try {
 			return element.getAnnotation(SerializableField.class)
-				.converter()
-				.getConstructor()
-				.newInstance();
+					.converter()
+					.getConstructor()
+					.newInstance();
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new SerializationException(e);
 		}
@@ -173,9 +173,9 @@ public abstract class Serializer {
 	private boolean isBuiltInType(@NotNull Parameter parameter) {
 		final var klass = parameter.getType();
 		return (klass == String.class)
-			|| (klass == double.class)
-			|| (klass == float.class)
-			|| (klass == int.class)
-			|| (klass == boolean.class);
+				|| (klass == double.class)
+				|| (klass == float.class)
+				|| (klass == int.class)
+				|| (klass == boolean.class);
 	}
 }

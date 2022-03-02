@@ -29,34 +29,34 @@ class FlightDataFileHandlerTest extends TestSuite {
 		final var actual = flightData.flights();
 
 		final var expected = new Flight[]{
-			Flight.buildWithFlightId("OK420",
-				flightData.airlines().stream().filter(v -> v.code().equals("OK")).findFirst().orElseThrow(),
-				flightData.aeroplanes().stream().filter(v -> v.model().equals("B777")).findFirst().orElseThrow(),
-				flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow(),
-				flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
-				dateTime,
-				Arrays.asList(
-					flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow().controlTower,
-					flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow().controlTower
+				Flight.buildWithFlightId("OK420",
+						flightData.airlines().stream().filter(v -> v.code().equals("OK")).findFirst().orElseThrow(),
+						flightData.aeroplanes().stream().filter(v -> v.model().equals("B777")).findFirst().orElseThrow(),
+						flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow(),
+						flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
+						dateTime,
+						Arrays.asList(
+								flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow().controlTower,
+								flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow().controlTower
+						)
+				),
+				// BA605; A330; EDI; LHR; 15:01:2022; 06:00; EDI; CDG; LHR
+				Flight.buildWithFlightId("BA605",
+						flightData.airlines().stream().filter(v -> v.code().equals("BA")).findFirst().orElseThrow(),
+						flightData.aeroplanes().stream().filter(v -> v.model().equals("A330")).findFirst().orElseThrow(),
+						flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
+						flightData.airports().stream().filter(v -> v.code.equals("LHR")).findFirst().orElseThrow(),
+						dateTime,
+						Arrays.asList(
+								flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow().controlTower,
+								flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow().controlTower,
+								flightData.airports().stream().filter(v -> v.code.equals("LHR")).findFirst().orElseThrow().controlTower
+						)
 				)
-			),
-			// BA605; A330; EDI; LHR; 15:01:2022; 06:00; EDI; CDG; LHR
-			Flight.buildWithFlightId("BA605",
-				flightData.airlines().stream().filter(v -> v.code().equals("BA")).findFirst().orElseThrow(),
-				flightData.aeroplanes().stream().filter(v -> v.model().equals("A330")).findFirst().orElseThrow(),
-				flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
-				flightData.airports().stream().filter(v -> v.code.equals("LHR")).findFirst().orElseThrow(),
-				dateTime,
-				Arrays.asList(
-					flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow().controlTower,
-					flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow().controlTower,
-					flightData.airports().stream().filter(v -> v.code.equals("LHR")).findFirst().orElseThrow().controlTower
-				)
-			)
 		};
 
 		Assertions.assertThat(actual)
-			.containsExactlyInAnyOrder(expected);
+				.containsExactlyInAnyOrder(expected);
 	}
 
 	@Test
@@ -73,16 +73,16 @@ class FlightDataFileHandlerTest extends TestSuite {
 		final var expectedFile = flightDataPath.resolve("flights.csv");
 		final Path actual;
 		try {
-      final var tempOutputDir = Files.createTempDirectory("flightDataFileHandlerTest");
+			final var tempOutputDir = Files.createTempDirectory("flightDataFileHandlerTest");
 			final var fileHandler = FlightDataFileHandler.withDefaultFileNames(tempOutputDir);
 			fileHandler.saveFlights(flightData);
-      actual = tempOutputDir.resolve("flights.csv");
+			actual = tempOutputDir.resolve("flights.csv");
 		} catch (IOException | FlightDataFileHandlerException e) {
 			Assertions.fail("Exception thrown " + e);
-      return;
+			return;
 		}
 
-    Assertions.assertThat(actual)
-      .hasSameTextualContentAs(expectedFile);
+		Assertions.assertThat(actual)
+				.hasSameTextualContentAs(expectedFile);
 	}
 }

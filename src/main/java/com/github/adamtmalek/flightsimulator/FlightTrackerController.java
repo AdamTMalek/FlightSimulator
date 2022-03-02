@@ -9,16 +9,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class FlightTrackerController implements Controller {
+	private FlightData flightData = new FlightData();
 
 	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
-			.withDirectory(fileDirectoryPath)
-			.withDefaultFlightsFilename()
-			.withDefaultAeroplanesFilename()
-			.withDefaultAirlinesFilename()
-			.withDefaultAirportsFilename()
-			.build();
+				.withDirectory(fileDirectoryPath)
+				.withDefaultFlightsFilename()
+				.withDefaultAeroplanesFilename()
+				.withDefaultAirlinesFilename()
+				.withDefaultAirportsFilename()
+				.build();
 
 		flightData = handler.readFlightData();
 		return this;
@@ -30,11 +31,11 @@ public class FlightTrackerController implements Controller {
 																								Path flightSourcePath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
-			.withAirportsPath(airportSourcePath)
-			.withAeroplanesPath(aeroplaneSourcePath)
-			.withAirlinesPath(airlineSourcePath)
-			.withFlightsPath(flightSourcePath)
-			.build();
+				.withAirportsPath(airportSourcePath)
+				.withAeroplanesPath(aeroplaneSourcePath)
+				.withAirlinesPath(airlineSourcePath)
+				.withFlightsPath(flightSourcePath)
+				.build();
 
 		flightData = handler.readFlightData();
 		return this;
@@ -43,10 +44,10 @@ public class FlightTrackerController implements Controller {
 
 	public void writeFlightData(Path destinationPath) throws FlightDataFileHandlerException {
 		FlightDataFileHandler.getBuilder()
-			.withFlightsPath(destinationPath.resolve("flights.csv"))
-			.withAeroplanesPath(destinationPath.resolve("aeroplanes.csv"))
-			.withAirlinesPath(destinationPath.resolve("airlines.csv"))
-			.withAirportsPath(destinationPath.resolve("airports.csv")).build().saveFlights(flightData);
+				.withFlightsPath(destinationPath.resolve("flights.csv"))
+				.withAeroplanesPath(destinationPath.resolve("aeroplanes.csv"))
+				.withAirlinesPath(destinationPath.resolve("airlines.csv"))
+				.withAirportsPath(destinationPath.resolve("airports.csv")).build().saveFlights(flightData);
 	}
 
 	public void writeAirlineReports(Path destinationPath) {
@@ -63,22 +64,22 @@ public class FlightTrackerController implements Controller {
 	}
 
 	public void addFlight(Flight flight) throws
-		UnsupportedOperationException,
-		ClassCastException,
-		NullPointerException,
-		IllegalArgumentException {
+			UnsupportedOperationException,
+			ClassCastException,
+			NullPointerException,
+			IllegalArgumentException {
 		flightData.flights().add(flight);
 	}
 
 	public void removeFlight(int index) throws
-		IndexOutOfBoundsException,
-		UnsupportedOperationException {
+			IndexOutOfBoundsException,
+			UnsupportedOperationException {
 		flightData.flights().remove(index);
 	}
 
 	public void editFlight(int index, Flight flight) throws
-		NullPointerException,
-		IndexOutOfBoundsException {
+			NullPointerException,
+			IndexOutOfBoundsException {
 		flightData.flights().set(index, flight);
 	}
 

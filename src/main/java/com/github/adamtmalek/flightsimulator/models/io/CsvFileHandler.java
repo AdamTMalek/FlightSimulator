@@ -22,9 +22,9 @@ public class CsvFileHandler extends Serializer {
 	public <T> List<T> readFile(@NotNull Path filePath, @NotNull Class<T> klass) throws SerializationException {
 		try {
 			return Files.readAllLines(filePath)
-				.stream()
-				.map(line -> createInstanceFromLine(line, klass))
-				.toList();
+					.stream()
+					.map(line -> createInstanceFromLine(line, klass))
+					.toList();
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}
@@ -33,8 +33,8 @@ public class CsvFileHandler extends Serializer {
 	private <T> @NotNull T createInstanceFromLine(@NotNull String line,
 																								@NotNull Class<T> klass) throws SerializationException {
 		final var values = Arrays.stream(line.split(separator))
-			.map(String::strip)
-			.toArray(String[]::new);
+				.map(String::strip)
+				.toArray(String[]::new);
 
 		return createInstance(klass, values);
 	}
@@ -46,8 +46,8 @@ public class CsvFileHandler extends Serializer {
 			if (objectCollection.isEmpty()) return Files.createFile(path);
 
 			final var content = getSerializableValues(objectCollection)
-				.map(values -> String.join(separator, values))
-				.collect(Collectors.joining("\n"));
+					.map(values -> String.join(separator, values))
+					.collect(Collectors.joining("\n"));
 			return Files.writeString(path, content);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

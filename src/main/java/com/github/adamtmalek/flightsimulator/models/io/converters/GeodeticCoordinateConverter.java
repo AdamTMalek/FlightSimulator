@@ -26,8 +26,8 @@ public class GeodeticCoordinateConverter implements Converter<GeodeticCoordinate
 		final var longitude = convertDoubleToDms(object.longitude());
 
 		return String.format("%.0f°%.0f'%.4f\"%s; %.0f°%.0f'%.4f\"%s",
-			latitude.degrees, latitude.minutes, latitude.seconds, latitude.isPositive ? "N" : "S",
-			longitude.degrees, longitude.minutes, longitude.seconds, longitude.isPositive ? "E": "W");
+				latitude.degrees, latitude.minutes, latitude.seconds, latitude.isPositive ? "N" : "S",
+				longitude.degrees, longitude.minutes, longitude.seconds, longitude.isPositive ? "E" : "W");
 	}
 
 	private double convertDmsToDouble(@NotNull DMSRepresentation dms) {

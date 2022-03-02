@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class GeodeticCoordinateConverterTest {
 	private final @NotNull GeodeticCoordinateConverter converter = new GeodeticCoordinateConverter();
-	private final double expectedPositiveDegrees = 51 + 28/60.0 + 12.0720 / 3600.0;
+	private final double expectedPositiveDegrees = 51 + 28 / 60.0 + 12.0720 / 3600.0;
 
 	@Test
 	public void testLatitudeFromStringConversionIsPositiveWhenDirectionIsNorth() {

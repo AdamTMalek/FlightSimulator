@@ -23,8 +23,8 @@ public class CsvFileHandlerTest extends TestSuite {
 		final List<Aeroplane> actual;
 		try {
 			actual = fileHandler.readFile(
-				getPathFromResources("flight-data/aeroplanes.csv"),
-				Aeroplane.class
+					getPathFromResources("flight-data/aeroplanes.csv"),
+					Aeroplane.class
 			);
 		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
@@ -32,21 +32,21 @@ public class CsvFileHandlerTest extends TestSuite {
 		}
 
 		final var expected = new Aeroplane[]{
-			new Aeroplane("B777", "Boeing", 875.0, 952.78815),
-			new Aeroplane("A330", "Airbus", 800.0, 768.439),
-			new Aeroplane("A350", "Airbus", 900.0, 747.24)
+				new Aeroplane("B777", "Boeing", 875.0, 952.78815),
+				new Aeroplane("A330", "Airbus", 800.0, 768.439),
+				new Aeroplane("A350", "Airbus", 900.0, 747.24)
 		};
 
 		Assertions.assertThat(actual)
-			.containsExactlyInAnyOrder(expected);
+				.containsExactlyInAnyOrder(expected);
 	}
 
 	@Test
 	public void testAeroplanesAreSavedCorrectly() {
 		final var planes = Arrays.asList(
-			new Aeroplane("B777", "Boeing", 875.0, 952.78815),
-			new Aeroplane("A330", "Airbus", 800.0, 768.439),
-			new Aeroplane("A350", "Airbus", 900.0, 747.24)
+				new Aeroplane("B777", "Boeing", 875.0, 952.78815),
+				new Aeroplane("A330", "Airbus", 800.0, 768.439),
+				new Aeroplane("A350", "Airbus", 900.0, 747.24)
 		);
 
 		final var expected = getPathFromResources("flight-data/aeroplanes.csv");
@@ -61,7 +61,7 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var actualFile = new File(actual.toUri());
 
 		Assertions.assertThat(actualFile)
-			.hasSameTextualContentAs(expectedFile);
+				.hasSameTextualContentAs(expectedFile);
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class CsvFileHandlerTest extends TestSuite {
 		final List<Airline> actual;
 		try {
 			actual = fileHandler.readFile(
-				getPathFromResources("flight-data/airlines.csv"),
-				Airline.class
+					getPathFromResources("flight-data/airlines.csv"),
+					Airline.class
 			);
 		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
@@ -78,21 +78,21 @@ public class CsvFileHandlerTest extends TestSuite {
 		}
 
 		final var expected = new Airline[]{
-			new Airline("AA", "American Airlines"),
-			new Airline("OK", "Czech Airlines"),
-			new Airline("BA", "British Airways")
+				new Airline("AA", "American Airlines"),
+				new Airline("OK", "Czech Airlines"),
+				new Airline("BA", "British Airways")
 		};
 
 		Assertions.assertThat(actual)
-			.containsExactlyInAnyOrder(expected);
+				.containsExactlyInAnyOrder(expected);
 	}
 
 	@Test
 	public void testAirlinesAreSavedCorrectly() {
 		final var airlines = Arrays.asList(
-			new Airline("AA", "American Airlines"),
-			new Airline("OK", "Czech Airlines"),
-			new Airline("BA", "British Airways")
+				new Airline("AA", "American Airlines"),
+				new Airline("OK", "Czech Airlines"),
+				new Airline("BA", "British Airways")
 		);
 
 		final var expected = getPathFromResources("flight-data/airlines.csv");
@@ -107,7 +107,7 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var actualFile = new File(actual.toUri());
 
 		Assertions.assertThat(actualFile)
-			.hasSameTextualContentAs(expectedFile);
+				.hasSameTextualContentAs(expectedFile);
 	}
 
 	@Test
@@ -115,8 +115,8 @@ public class CsvFileHandlerTest extends TestSuite {
 		final List<Airport> actual;
 		try {
 			actual = fileHandler.readFile(
-				getPathFromResources("flight-data/airports.csv"),
-				Airport.class
+					getPathFromResources("flight-data/airports.csv"),
+					Airport.class
 			);
 		} catch (SerializationException e) {
 			Assertions.fail(String.format("Exception thrown: %s", e));
@@ -124,27 +124,27 @@ public class CsvFileHandlerTest extends TestSuite {
 		}
 
 		final var expected = new Airport[]{
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(49 + (0 / 60.0) + (35.0064 / 3600.0), 2 + (32 / 60.0) + (52.0008 / 3600))),
-			new Airport("EDI", "Edinburgh",
-				new GeodeticCoordinate(55 + (56 / 60.0) + (59.99 / 3600.0), -(3 + (22 / 60.0) + (12.59 / 3600.0)))),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(51 + (28 / 60.0) + (12.0720 / 3600.0), -(0 + (27 / 60.0) + (15.4620 / 3600.0))))
+				new Airport("CDG", "Paris Charles de Gaulle",
+						new GeodeticCoordinate(49 + (0 / 60.0) + (35.0064 / 3600.0), 2 + (32 / 60.0) + (52.0008 / 3600))),
+				new Airport("EDI", "Edinburgh",
+						new GeodeticCoordinate(55 + (56 / 60.0) + (59.99 / 3600.0), -(3 + (22 / 60.0) + (12.59 / 3600.0)))),
+				new Airport("LHR", "Heathrow",
+						new GeodeticCoordinate(51 + (28 / 60.0) + (12.0720 / 3600.0), -(0 + (27 / 60.0) + (15.4620 / 3600.0))))
 		};
 
 		Assertions.assertThat(actual)
-			.containsExactlyInAnyOrder(expected);
+				.containsExactlyInAnyOrder(expected);
 	}
 
 	@Test
 	public void testAirportsAreSavedCorrectly() {
 		final var airports = Arrays.asList(
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(49 + (0 / 60.0) + (35.0064 / 3600.0), 2 + (32 / 60.0) + (52.0008 / 3600))),
-			new Airport("EDI", "Edinburgh",
-				new GeodeticCoordinate(55 + (56 / 60.0) + (59.99 / 3600.0), -(3 + (22 / 60.0) + (12.59 / 3600.0)))),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(51 + (28 / 60.0) + (12.0720 / 3600.0), -(0 + (27 / 60.0) + (15.4620 / 3600.0))))
+				new Airport("CDG", "Paris Charles de Gaulle",
+						new GeodeticCoordinate(49 + (0 / 60.0) + (35.0064 / 3600.0), 2 + (32 / 60.0) + (52.0008 / 3600))),
+				new Airport("EDI", "Edinburgh",
+						new GeodeticCoordinate(55 + (56 / 60.0) + (59.99 / 3600.0), -(3 + (22 / 60.0) + (12.59 / 3600.0)))),
+				new Airport("LHR", "Heathrow",
+						new GeodeticCoordinate(51 + (28 / 60.0) + (12.0720 / 3600.0), -(0 + (27 / 60.0) + (15.4620 / 3600.0))))
 		);
 
 		final var expected = getPathFromResources("flight-data/airports.csv");
@@ -159,6 +159,6 @@ public class CsvFileHandlerTest extends TestSuite {
 		final var actualFile = new File(actual.toUri());
 
 		Assertions.assertThat(actualFile)
-			.hasSameTextualContentAs(expectedFile);
+				.hasSameTextualContentAs(expectedFile);
 	}
 }
