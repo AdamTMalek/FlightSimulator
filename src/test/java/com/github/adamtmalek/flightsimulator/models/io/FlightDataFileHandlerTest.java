@@ -14,7 +14,7 @@ import java.util.Objects;
 class FlightDataFileHandlerTest {
   private static FlightData flightData;
   private final ZonedDateTime dateTime = ZonedDateTime.of(2022, 1, 31, 12, 0, 0, 0, ZoneId.of("Europe/London"));
-  
+
   @BeforeAll
   @Test
   public static void setupTest() {
@@ -35,7 +35,8 @@ class FlightDataFileHandlerTest {
 
 
     final var expected = new Flight[]{
-      Flight.build("OK420",
+      Flight.buildWithFlightId("OK420",
+        flightData.airlines().stream().filter(v -> v.code().equals("OK")).findFirst().orElseThrow(),
         flightData.aeroplanes().stream().filter(v -> v.model().equals("B777")).findFirst().orElseThrow(),
         flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow(),
         flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
@@ -46,7 +47,8 @@ class FlightDataFileHandlerTest {
         )
       ),
       // BA605; A330; EDI; LHR; 15:01:2022; 06:00; EDI; CDG; LHR
-      Flight.build("BA605",
+      Flight.buildWithFlightId("BA605",
+        flightData.airlines().stream().filter(v -> v.code().equals("BA")).findFirst().orElseThrow(),
         flightData.aeroplanes().stream().filter(v -> v.model().equals("A330")).findFirst().orElseThrow(),
         flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
         flightData.airports().stream().filter(v -> v.code.equals("LHR")).findFirst().orElseThrow(),

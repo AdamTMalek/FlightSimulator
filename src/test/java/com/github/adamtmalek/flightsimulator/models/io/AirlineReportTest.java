@@ -1,9 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models.io;
 
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airport;
-import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
+import com.github.adamtmalek.flightsimulator.models.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +20,8 @@ public class AirlineReportTest {
     var flights = new ArrayList<Flight>();
 
     // Glasgow to London Flight
-    flights.add(Flight.build("",
+    flights.add(Flight.build("0",
+      new Airline("", ""),
       new Aeroplane("", "", 10, 5),
       glasgowAirport,
       londonAirport,
@@ -35,7 +33,8 @@ public class AirlineReportTest {
     ));
 
     // Edinburgh to New York Flight
-    flights.add(Flight.build("",
+    flights.add(Flight.build("0",
+      new Airline("a", "a"),
       new Aeroplane("", "", 10, 15),
       edinburghAirport,
       newYorkAirport,

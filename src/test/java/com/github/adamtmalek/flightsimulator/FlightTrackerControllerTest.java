@@ -1,9 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airport;
-import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
+import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
@@ -148,7 +145,8 @@ public class FlightTrackerControllerTest extends TestSuite {
   void addFlight() {
     var controller = new FlightTrackerController();
 
-    controller.addFlight(Flight.build("newFlightID",
+    controller.addFlight(Flight.buildWithFlightId("newFlightID",
+      new Airline("a", "a"),
       new Aeroplane("a", "a", 1, 50),
       new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
       new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
@@ -164,7 +162,8 @@ public class FlightTrackerControllerTest extends TestSuite {
   void removeFlight() {
     var controller = new FlightTrackerController();
 
-    controller.addFlight(Flight.build("newFlightID",
+    controller.addFlight(Flight.buildWithFlightId("newFlightID",
+      new Airline("a", "a"),
       new Aeroplane("a", "a", 1, 50),
       new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
       new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
@@ -181,14 +180,16 @@ public class FlightTrackerControllerTest extends TestSuite {
   void editFlight() {
     var controller = new FlightTrackerController();
 
-    controller.addFlight(Flight.build("originalFlightID",
+    controller.addFlight(Flight.buildWithFlightId("001",
+      new Airline("a", "a"),
       new Aeroplane("a", "a", 1, 50),
       new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
       new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
       ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
       new ArrayList<Airport.ControlTower>()));
 
-    var changedFlight = Flight.build("editedFlightID",
+    var changedFlight = Flight.buildWithFlightId("002",
+      new Airline("a", "a"),
       new Aeroplane("a", "a", 1, 50),
       new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
       new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
@@ -197,10 +198,10 @@ public class FlightTrackerControllerTest extends TestSuite {
 
     final var originalFlight = controller.getFlightData().flights().get(0);
 
-    Assertions.assertEquals("originalFlightID", originalFlight.flightID());
+    Assertions.assertEquals("001", originalFlight.flightID());
     controller.editFlight(0, changedFlight);
     final var editedFlight = controller.getFlightData().flights().get(0);
-    Assertions.assertEquals("editedFlightID", editedFlight.flightID());
+    Assertions.assertEquals("002", editedFlight.flightID());
 
   }
 
