@@ -38,9 +38,6 @@ public class Screen extends JFrame implements ActionListener {
     private JComboBox aeroplaneBox;
     private JComboBox depatureBox;
     private JComboBox destinationBox;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
     private JComboBox flightPlanBox1;
     private JComboBox flightPlanBox2;
     private JComboBox flightPlanBox3;
@@ -51,8 +48,8 @@ public class Screen extends JFrame implements ActionListener {
     private JComboBox comboBox12;
     private JComboBox comboBox13;
     private JButton addButton;
-    private JButton cancelButton;
     private JButton exitButton;
+    private JTextField ddMmYyyyTextField;
     private DefaultListModel flightListModel;
     private DefaultComboBoxModel airlineListModel;
     private DefaultComboBoxModel aeroplaneListModel;
@@ -65,11 +62,11 @@ public class Screen extends JFrame implements ActionListener {
     private List<Airline> airlines;
     private List<Aeroplane> aeroplanes;
     private List<Airport> airports;
-    public Aeroplane selectedAeroplane;
-    public Airport selectedDepature;
-    public Airport selectedDestination;
+    private Aeroplane selectedAeroplane;
+    private Airport selectedDepature;
+    private Airport selectedDestination;
     public FlightTrackerController flightTrackerController;
-    public int flightIndex;
+    public List<Airport.ControlTower> selectedFlightPlan;
 
     public Screen() throws FileHandlerException {
         super("Flight Tracking System");
@@ -82,7 +79,6 @@ public class Screen extends JFrame implements ActionListener {
         this.flightTrackerController.readFlightData(fileDirectory);
         FlightData flightData = this.flightTrackerController.getFlightData();
 
-        this.flightIndex = flightData.flights().size();
         this.flights = flightData.flights();
         this.airlines = flightData.airlines();
         this.aeroplanes = flightData.aeroplanes();
@@ -151,7 +147,7 @@ public class Screen extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e)
     {
-        List<Airport.ControlTower> selectedFlightPlan = new ArrayList<>();
+        this.selectedFlightPlan = new ArrayList<>();
         double distanceTravelled;
         double estimatedFuelConsumption;
         double estimatedCO2Produced;
@@ -175,31 +171,29 @@ public class Screen extends JFrame implements ActionListener {
         }
         if(e.getSource() == flightPlanBox1) {
             int flightPlanIndex = flightPlanBox1.getSelectedIndex();
-            selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
-            System.out.println(selectedFlightPlan);
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
         }
         if(e.getSource() == flightPlanBox2) {
             int flightPlanIndex = flightPlanBox2.getSelectedIndex();
-            selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
-            System.out.println(selectedFlightPlan);
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
         }
         if(e.getSource() == flightPlanBox3) {
             int flightPlanIndex = flightPlanBox3.getSelectedIndex();
-            selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
-            System.out.println(selectedFlightPlan);
+            this.selectedFlightPlan.add(airports.get(flightPlanIndex).controlTower);
+            System.out.println(this.selectedFlightPlan);
         }
 
         ZonedDateTime zonedDateTimeNow = ZonedDateTime.now(ZoneId.of("UTC"));
 
         if(e.getSource() == addButton) {
-            if (this.selectedAeroplane != null) {
-                Flight newFlight = new Flight("501", this.selectedAeroplane, this.selectedDepature,
-                        this.selectedDestination, zonedDateTimeNow, selectedFlightPlan, distanceTravelled = 0.0,
-                        estimatedFuelConsumption = 0.0, estimatedCO2Produced = 0.0
-                );
+            Flight newFlight = new Flight("501", this.selectedAeroplane, this.selectedDepature,
+                    this.selectedDestination, zonedDateTimeNow, this.selectedFlightPlan, distanceTravelled = 0.0,
+                    estimatedFuelConsumption = 0.0, estimatedCO2Produced = 0.0
+            );
 
-                this.addNewFlight(newFlight);
-            }
+            this.addNewFlight(newFlight);
         }
     }
 
