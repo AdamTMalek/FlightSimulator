@@ -69,6 +69,7 @@ public class Screen extends JFrame implements ActionListener {
     public Airport selectedDepature;
     public Airport selectedDestination;
     public FlightTrackerController flightTrackerController;
+    public int flightIndex;
 
     public Screen() throws FileHandlerException {
         super("Flight Tracking System");
@@ -81,6 +82,7 @@ public class Screen extends JFrame implements ActionListener {
         this.flightTrackerController.readFlightData(fileDirectory);
         FlightData flightData = this.flightTrackerController.getFlightData();
 
+        this.flightIndex = flightData.flights().size();
         this.flights = flightData.flights();
         this.airlines = flightData.airlines();
         this.aeroplanes = flightData.aeroplanes();
@@ -150,6 +152,10 @@ public class Screen extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e)
     {
         List<Airport.ControlTower> selectedFlightPlan = new ArrayList<>();
+        double distanceTravelled;
+        double estimatedFuelConsumption;
+        double estimatedCO2Produced;
+        int newIndex;
 
         if(e.getSource() == airlineBox) {
             int airlineIndex = airlineBox.getSelectedIndex();
@@ -187,9 +193,11 @@ public class Screen extends JFrame implements ActionListener {
 
         if(e.getSource() == addButton) {
             if (this.selectedAeroplane != null) {
-                Flight newFlight = new Flight("501", this.selectedAeroplane, this.selectedDepature, this.selectedDestination,
-                        zonedDateTimeNow, selectedFlightPlan
+                Flight newFlight = new Flight("501", this.selectedAeroplane, this.selectedDepature,
+                        this.selectedDestination, zonedDateTimeNow, selectedFlightPlan, distanceTravelled = 0.0,
+                        estimatedFuelConsumption = 0.0, estimatedCO2Produced = 0.0
                 );
+
                 this.addNewFlight(newFlight);
             }
         }
@@ -224,7 +232,7 @@ public class Screen extends JFrame implements ActionListener {
         }
     }
 
-    public void addNewFlight(Flight flight) {
+    public void addNewFlight( Flight flight) {
         this.flightTrackerController.addFlight(flight);
         this.refreshFlightList();
     }
