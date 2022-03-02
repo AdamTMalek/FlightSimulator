@@ -1,9 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airport;
-import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
+import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.models.io.FileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
@@ -42,7 +39,8 @@ class IntegrationTest extends TestSuite {
 		Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
 
 		// Make new flight and try adding to controller
-		Flight testFlight = Flight.build("123ID",
+		Flight testFlight = Flight.buildWithFlightId("123ID",
+				new Airline("code","name"),
 				new Aeroplane("model", "manufacturer", 2000, 15),
 				new Airport("code1", "start",
 						new GeodeticCoordinate(1, 2)),
