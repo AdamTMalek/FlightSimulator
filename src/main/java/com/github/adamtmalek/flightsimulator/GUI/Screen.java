@@ -13,7 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -50,9 +53,12 @@ public class Screen extends JFrame {
 	private JButton exitButton;
 	private JFormattedTextField dateTimeField;
 	private JTable flightPlanTable;
+	private JTextField flightNumberTextField;
+	private JLabel flightNumberLabel;
 	private final FlightTrackerController flightTrackerController = new FlightTrackerController();
 
 	private static final int MAX_CONTROL_TOWERS = 10;
+	private static final int MAX_FLIGHT_ID_CHAR_LENGTH = 4;
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	public Screen() {
@@ -145,12 +151,10 @@ public class Screen extends JFrame {
 	}
 
 	private void addListenersForUpdatingAddButtonState() {
-		airlineBox.addItemListener(evt -> updateAddButtonState());
-		aeroplaneBox.addItemListener(evt -> updateAddButtonState());
-		departureBox.addItemListener(evt -> updateAddButtonState());
-		destinationBox.addItemListener(evt -> updateAddButtonState());
-		flightPlanTable.addPropertyChangeListener(evt -> updateAddButtonState());
-		dateTimeField.addPropertyChangeListener(evt -> updateAddButtonState());
+		Stream.of(airlineBox, aeroplaneBox, departureBox,
+				destinationBox, flightPlanTable, dateTimeField,
+				flightNumberTextField)
+						.forEach(e -> e.addPropertyChangeListener(evt -> updateAddButtonState()));
 	}
 
 	private void updateAddButtonState() {
@@ -159,7 +163,8 @@ public class Screen extends JFrame {
 				&& aeroplaneBox.getSelectedItem() != null
 				&& departureBox.getSelectedItem() != null
 				&& destinationBox.getSelectedItem() != null
-				&& getFlightPlan().size() >= 2;
+				&& getFlightPlan().size() >= 2
+				&& !flightNumberTextField.getText().isEmpty();
 		addButton.setEnabled(enabled);
 	}
 
@@ -170,12 +175,14 @@ public class Screen extends JFrame {
 		final var destinationAirport = (Airport) destinationBox.getSelectedItem();
 		final var flightPlan = getFlightPlan();
 		final var departureDateTime = getDateTime();
+		final var flightNumber = flightNumberTextField.getText();
 
 		assert airline != null;
 		assert aeroplane != null;
 		assert departureAirport != null;
 		assert destinationAirport != null;
 		assert departureDateTime != null;
+		assert !flightNumber.isEmpty();
 
 		final var invalidResults = Stream.of(
 						new FlightValidator(departureAirport).validate(destinationAirport),
@@ -188,9 +195,7 @@ public class Screen extends JFrame {
 					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
 			return;
 		}
-
-		// TODO: Get the serial number from input
-		final var flight = Flight.buildWithSerialNumber("501", airline, aeroplane,
+		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
 				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
 		((DefaultListModel<Flight>) this.flightList.getModel()).add(0, flight);
@@ -220,6 +225,18 @@ public class Screen extends JFrame {
 		dateTimeField = new JFormattedTextField(createDateTimeFormatter());
 		dateTimeField.setValue("03/03/2022 15:51");
 		dateTimeField.updateUI();
+
+		flightNumberTextField = new JTextField();
+		flightNumberTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (!Character.isDigit(e.getKeyChar()))
+					e.consume();
+
+				if (((JTextComponent)e.getComponent()).getText().length() >= MAX_FLIGHT_ID_CHAR_LENGTH)
+					e.consume();
+			}
+		});
 	}
 
 	private @NotNull MaskFormatter createDateTimeFormatter() {
