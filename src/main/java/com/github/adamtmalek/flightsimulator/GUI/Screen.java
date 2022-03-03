@@ -145,6 +145,10 @@ public class Screen extends JFrame {
 	}
 
 	private void addListenersForUpdatingAddButtonState() {
+		airlineBox.addItemListener(evt -> updateAddButtonState());
+		aeroplaneBox.addItemListener(evt -> updateAddButtonState());
+		departureBox.addItemListener(evt -> updateAddButtonState());
+		destinationBox.addItemListener(evt -> updateAddButtonState());
 		flightPlanTable.addPropertyChangeListener(evt -> updateAddButtonState());
 		dateTimeField.addPropertyChangeListener(evt -> updateAddButtonState());
 	}
