@@ -1,6 +1,8 @@
 package com.github.adamtmalek.flightsimulator.GUI;
 
 import com.github.adamtmalek.flightsimulator.FlightTrackerController;
+import com.github.adamtmalek.flightsimulator.GUI.models.BoundComboBoxModel;
+import com.github.adamtmalek.flightsimulator.GUI.models.BoundListModel;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
@@ -105,29 +107,19 @@ public class Screen extends JFrame {
 	}
 
 	private void initializeComponents(@NotNull FlightData flightData) {
-		final var flightListModel = new DefaultListModel<Flight>();
-		flightListModel.addAll(flightData.flights());
-		flightList.setModel(flightListModel);
+		flightList.setModel(new BoundListModel<>(flightData.flights()));
 		flightList.setCellRenderer(new FlightListCellRenderer());
 
-		final var airlineListModel = new DefaultComboBoxModel<Airline>();
-		airlineListModel.addAll(flightData.airlines());
-		airlineBox.setModel(airlineListModel);
+		airlineBox.setModel(new BoundComboBoxModel<>(flightData.airlines()));
 		airlineBox.setRenderer(new AirlineListCellRenderer());
 
-		final var aeroplaneListModel = new DefaultComboBoxModel<Aeroplane>();
-		aeroplaneListModel.addAll(flightData.aeroplanes());
-		aeroplaneBox.setModel(aeroplaneListModel);
+		aeroplaneBox.setModel(new BoundComboBoxModel<>(flightData.aeroplanes()));
 		aeroplaneBox.setRenderer(new AeroplaneListCellRenderer());
 
-		final var departureListModel = new DefaultComboBoxModel<Airport>();
-		departureListModel.addAll(flightData.airports());
-		departureBox.setModel(departureListModel);
+		departureBox.setModel(new BoundComboBoxModel<>(flightData.airports()));
 		departureBox.setRenderer(new AirportListCellRenderer());
 
-		final var destinationListModel = new DefaultComboBoxModel<Airport>();
-		destinationListModel.addAll(flightData.airports());
-		destinationBox.setModel(destinationListModel);
+		destinationBox.setModel(new BoundComboBoxModel<>(flightData.airports()));
 		destinationBox.setRenderer(new AirportListCellRenderer());
 
 		if (!flightData.airlines().isEmpty()) airlineBox.setSelectedIndex(0);
@@ -198,7 +190,7 @@ public class Screen extends JFrame {
 		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
 				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
-		((DefaultListModel<Flight>) this.flightList.getModel()).add(0, flight);
+		flightTrackerController.addFlight(flight);
 		flightList.updateUI();
 	}
 
