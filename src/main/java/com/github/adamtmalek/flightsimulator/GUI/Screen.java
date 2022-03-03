@@ -19,6 +19,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -76,6 +78,7 @@ public class Screen extends JFrame {
 
 		addFlightSelectionListener();
 		updateAddButtonState();
+		addOnExitEventHandler();
 	}
 
 	private void addFlightSelectionListener() {
@@ -144,9 +147,9 @@ public class Screen extends JFrame {
 
 	private void addListenersForUpdatingAddButtonState() {
 		Stream.of(airlineBox, aeroplaneBox, departureBox,
-				destinationBox, flightPlanTable, dateTimeField,
-				flightNumberTextField)
-						.forEach(e -> e.addPropertyChangeListener(evt -> updateAddButtonState()));
+						destinationBox, flightPlanTable, dateTimeField,
+						flightNumberTextField)
+				.forEach(e -> e.addPropertyChangeListener(evt -> updateAddButtonState()));
 	}
 
 	private void updateAddButtonState() {
@@ -225,7 +228,7 @@ public class Screen extends JFrame {
 				if (!Character.isDigit(e.getKeyChar()))
 					e.consume();
 
-				if (((JTextComponent)e.getComponent()).getText().length() >= MAX_FLIGHT_ID_CHAR_LENGTH)
+				if (((JTextComponent) e.getComponent()).getText().length() >= MAX_FLIGHT_ID_CHAR_LENGTH)
 					e.consume();
 			}
 		});
@@ -239,5 +242,19 @@ public class Screen extends JFrame {
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void addOnExitEventHandler() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				saveFlightsReport();
+				super.windowClosing(e);
+			}
+		});
+	}
+
+	private void saveFlightsReport() {
+		flightTrackerController.writeAirlineReports(Path.of("src/test/resources/reports"));
 	}
 }
