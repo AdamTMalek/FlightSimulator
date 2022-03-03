@@ -259,6 +259,7 @@ public class Screen extends JFrame implements ActionListener {
 		Screen screen = new Screen();
 		screen.setVisible(true);
 	}
+}
 
 
 
