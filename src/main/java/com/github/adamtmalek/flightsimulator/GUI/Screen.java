@@ -7,6 +7,7 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
+import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -143,7 +144,7 @@ public class Screen extends JFrame {
 				&& aeroplaneBox.getSelectedItem() != null
 				&& departureBox.getSelectedItem() != null
 				&& destinationBox.getSelectedItem() != null
-				&& !getFlightPlan().isEmpty();
+				&& getFlightPlan().size() >= 2;
 		addButton.setEnabled(enabled);
 	}
 
@@ -160,6 +161,13 @@ public class Screen extends JFrame {
 		assert departureAirport != null;
 		assert destinationAirport != null;
 		assert departureDateTime != null;
+
+		final var flightPlanValidator = new FlightPlanValidator(departureAirport, destinationAirport);
+		final var validationResult = flightPlanValidator.validate(flightPlan);
+		if (!validationResult.isValid()) {
+			JOptionPane.showMessageDialog(new JFrame(), validationResult.reason(), "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
 		// TODO: Get the serial number from input
 		final var flight = Flight.buildWithSerialNumber("501", airline, aeroplane,
