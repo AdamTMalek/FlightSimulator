@@ -67,6 +67,7 @@ public class Screen extends JFrame {
 		addButton.addActionListener(e -> addNewFlight());
 
 		addFlightSelectionListener();
+		updateAddButtonState();
 	}
 
 	private void addFlightSelectionListener() {
