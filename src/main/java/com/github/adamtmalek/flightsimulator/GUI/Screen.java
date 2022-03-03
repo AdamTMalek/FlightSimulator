@@ -8,6 +8,7 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
+import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 
 public class Screen extends JFrame {
@@ -162,10 +164,15 @@ public class Screen extends JFrame {
 		assert destinationAirport != null;
 		assert departureDateTime != null;
 
-		final var flightPlanValidator = new FlightPlanValidator(departureAirport, destinationAirport);
-		final var validationResult = flightPlanValidator.validate(flightPlan);
-		if (!validationResult.isValid()) {
-			JOptionPane.showMessageDialog(new JFrame(), validationResult.reason(), "Error", JOptionPane.ERROR_MESSAGE);
+		final var invalidResults = Stream.of(
+						new FlightValidator(departureAirport).validate(destinationAirport),
+						new FlightPlanValidator(departureAirport, destinationAirport).validate(flightPlan)
+				).filter(e -> !e.isValid())
+				.toList();
+
+		if (!invalidResults.isEmpty()) {
+			invalidResults.forEach(result ->
+					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
 			return;
 		}
 

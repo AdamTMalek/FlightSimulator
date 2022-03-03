@@ -27,6 +27,6 @@ public class FlightPlanValidator implements Validator<List<Airport.ControlTower>
 		if (value.get(value.size() - 1) != destinationAirport.controlTower)
 			return new ValidationResult(false, "The last point of the flight plan is not the destination airport");
 
-		return new ValidationResult(true, null);
+		return ValidationResult.VALID;
 	}
 }
