@@ -8,10 +8,17 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,11 +45,12 @@ public class Screen extends JFrame {
 	private JComboBox<Airport> destinationBox;
 	private JButton addButton;
 	private JButton exitButton;
-	private JTextField ddMmYyyyTextField;
+	private JFormattedTextField dateTimeField;
 	private JTable flightPlanTable;
 	private final FlightTrackerController flightTrackerController = new FlightTrackerController();
 
 	private static final int MAX_CONTROL_TOWERS = 10;
+	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	public Screen() throws FlightDataFileHandlerException {
 		super("Flight Tracking System");
@@ -52,6 +60,7 @@ public class Screen extends JFrame {
 
 		initializeComponents(readFlightData());
 
+		addListenersForUpdatingAddButtonState();
 		addButton.addActionListener(e -> addNewFlight());
 
 		addFlightSelectionListener();
@@ -123,25 +132,49 @@ public class Screen extends JFrame {
 		this.flightList.updateUI();
 	}
 
+	private void addListenersForUpdatingAddButtonState() {
+		flightPlanTable.addPropertyChangeListener(evt -> updateAddButtonState());
+		dateTimeField.addPropertyChangeListener(evt -> updateAddButtonState());
+	}
+
+	private void updateAddButtonState() {
+		final var enabled = getDateTime() != null
+				&& airlineBox.getSelectedItem() != null
+				&& aeroplaneBox.getSelectedItem() != null
+				&& departureBox.getSelectedItem() != null
+				&& destinationBox.getSelectedItem() != null
+				&& !getFlightPlan().isEmpty();
+		addButton.setEnabled(enabled);
+	}
+
 	public void addNewFlight() {
 		final var airline = (Airline) airlineBox.getSelectedItem();
 		final var aeroplane = (Aeroplane) aeroplaneBox.getSelectedItem();
 		final var departureAirport = (Airport) departureBox.getSelectedItem();
 		final var destinationAirport = (Airport) destinationBox.getSelectedItem();
 		final var flightPlan = getFlightPlan();
+		final var departureDateTime = getDateTime();
 
 		assert airline != null;
 		assert aeroplane != null;
 		assert departureAirport != null;
 		assert destinationAirport != null;
+		assert departureDateTime != null;
 
 		// TODO: Get the serial number from input
-		// TODO: Parse the date and time of flight
 		final var flight = Flight.buildWithSerialNumber("501", airline, aeroplane,
-				departureAirport, destinationAirport, ZonedDateTime.now(), flightPlan);
+				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
 		((DefaultListModel<Flight>) this.flightList.getModel()).add(0, flight);
 		flightList.updateUI();
+	}
+
+	private @Nullable ZonedDateTime getDateTime() {
+		try {
+			return LocalDateTime.parse((String) dateTimeField.getValue(), dateTimeFormatter).atZone(ZoneId.systemDefault());
+		} catch (DateTimeParseException ex) {
+			return null;
+		}
 	}
 
 	private List<Airport.ControlTower> getFlightPlan() {
@@ -155,6 +188,19 @@ public class Screen extends JFrame {
 	private void createUIComponents() {
 		flightPlanTable = new JTable(1, MAX_CONTROL_TOWERS);
 		flightPlanTable.setRowHeight(30);
+
+		dateTimeField = new JFormattedTextField(createDateTimeFormatter());
+		dateTimeField.setValue("03/03/2022 15:51");
+		dateTimeField.updateUI();
+	}
+
+	private @NotNull MaskFormatter createDateTimeFormatter() {
+		try {
+			final var formatter = new MaskFormatter("##/##/#### ##:##");
+			formatter.setCommitsOnValidEdit(true);
+			return formatter;
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
-

@@ -229,15 +229,13 @@
                   <text value="Time"/>
                 </properties>
               </component>
-              <component id="381a9" class="javax.swing.JTextField" binding="ddMmYyyyTextField" default-binding="true">
+              <component id="92a81" class="javax.swing.JFormattedTextField" binding="dateTimeField" custom-create="true">
                 <constraints>
                   <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties>
-                  <text value="dd/mm/yyyy"/>
-                </properties>
+                <properties/>
               </component>
             </children>
           </grid>
