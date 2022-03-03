@@ -55,7 +55,7 @@ public class Screen extends JFrame {
 	private static final int MAX_CONTROL_TOWERS = 10;
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-	public Screen() throws FlightDataFileHandlerException {
+	public Screen() {
 		super("Flight Tracking System");
 		this.setContentPane(this.panelMain);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,10 +86,15 @@ public class Screen extends JFrame {
 		});
 	}
 
-	private @NotNull FlightData readFlightData() throws FlightDataFileHandlerException {
-		Path fileDirectory = Path.of("src/test/resources/flight-data");
-		this.flightTrackerController.readFlightData(fileDirectory);
-		return this.flightTrackerController.getFlightData();
+	private @NotNull FlightData readFlightData() {
+		try {
+			Path fileDirectory = Path.of("src/test/resources/flight-data");
+			this.flightTrackerController.readFlightData(fileDirectory);
+			return this.flightTrackerController.getFlightData();
+		} catch (FlightDataFileHandlerException ex) {
+			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
+			return new FlightData();
+		}
 	}
 
 	private void initializeComponents(@NotNull FlightData flightData) {
@@ -102,25 +107,28 @@ public class Screen extends JFrame {
 		airlineListModel.addAll(flightData.airlines());
 		airlineBox.setModel(airlineListModel);
 		airlineBox.setRenderer(new AirlineListCellRenderer());
-		airlineBox.setSelectedIndex(0);
 
 		final var aeroplaneListModel = new DefaultComboBoxModel<Aeroplane>();
 		aeroplaneListModel.addAll(flightData.aeroplanes());
 		aeroplaneBox.setModel(aeroplaneListModel);
 		aeroplaneBox.setRenderer(new AeroplaneListCellRenderer());
-		aeroplaneBox.setSelectedIndex(0);
 
 		final var departureListModel = new DefaultComboBoxModel<Airport>();
 		departureListModel.addAll(flightData.airports());
 		departureBox.setModel(departureListModel);
 		departureBox.setRenderer(new AirportListCellRenderer());
-		departureBox.setSelectedIndex(0);
 
 		final var destinationListModel = new DefaultComboBoxModel<Airport>();
 		destinationListModel.addAll(flightData.airports());
 		destinationBox.setModel(destinationListModel);
 		destinationBox.setRenderer(new AirportListCellRenderer());
-		destinationBox.setSelectedIndex(0);
+
+		if (!flightData.airlines().isEmpty()) airlineBox.setSelectedIndex(0);
+		if (!flightData.aeroplanes().isEmpty()) aeroplaneBox.setSelectedIndex(0);
+		if (!flightData.airports().isEmpty()) {
+			departureBox.setSelectedIndex(0);
+			destinationBox.setSelectedIndex(0);
+		}
 
 		IntStream.range(0, MAX_CONTROL_TOWERS).forEach(i -> {
 			flightPlanTable.getColumnModel()
