@@ -48,6 +48,9 @@ public class CsvFileHandler extends Serializer {
 			final var content = getSerializableValues(objectCollection)
 					.map(values -> String.join(separator, values))
 					.collect(Collectors.joining("\n"));
+
+			if (path.getParent() != null) Files.createDirectories(path.getParent());
+			Files.createFile(path);
 			return Files.writeString(path, content);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
