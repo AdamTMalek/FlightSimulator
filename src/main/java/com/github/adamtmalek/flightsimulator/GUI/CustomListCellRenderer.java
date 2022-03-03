@@ -7,6 +7,11 @@ import java.awt.*;
 
 public abstract class CustomListCellRenderer<E> extends JLabel implements ListCellRenderer<E> {
 	@Override
+	public boolean isOpaque() {
+		return true;
+	}
+
+	@Override
 	public Component getListCellRendererComponent(JList<? extends E> list, E value, int index, boolean isSelected, boolean cellHasFocus) {
 		if (value == null) return this;
 
