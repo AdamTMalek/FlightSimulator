@@ -255,6 +255,6 @@ public class Screen extends JFrame {
 	}
 
 	private void saveFlightsReport() {
-		flightTrackerController.writeAirlineReports(Path.of("src/test/resources/reports"));
+		flightTrackerController.writeAirlineReports(Path.of("reports/"));
 	}
 }
