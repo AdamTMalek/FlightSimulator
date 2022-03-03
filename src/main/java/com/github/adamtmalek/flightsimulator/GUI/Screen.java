@@ -1,8 +1,8 @@
 package com.github.adamtmalek.flightsimulator.GUI;
 
-import com.github.adamtmalek.flightsimulator.FlightTrackerController;
 import com.github.adamtmalek.flightsimulator.GUI.models.BoundComboBoxModel;
 import com.github.adamtmalek.flightsimulator.GUI.models.BoundListModel;
+import com.github.adamtmalek.flightsimulator.interfaces.Controller;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
@@ -17,11 +17,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -60,16 +60,15 @@ public class Screen extends JFrame {
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
 	private JLabel flightNumberLabel;
-	private final FlightTrackerController flightTrackerController = new FlightTrackerController();
+	private final @NotNull Controller flightTrackerController;
 
 	private static final int MAX_CONTROL_TOWERS = 10;
 	private static final int MAX_FLIGHT_ID_CHAR_LENGTH = 4;
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-	public Screen() {
+	public Screen(@NotNull Controller controller) {
 		super("Flight Tracking System");
-
-
+		this.flightTrackerController = controller;
 		this.setContentPane(this.panelMain);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -106,7 +105,7 @@ public class Screen extends JFrame {
 			Path fileDirectory = Path.of("src/test/resources/flight-data");
 			this.flightTrackerController.readFlightData(fileDirectory);
 			return this.flightTrackerController.getFlightData();
-		} catch (FlightDataFileHandlerException ex) {
+		} catch (FlightDataFileHandlerException | IOException ex) {
 			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
 			return new FlightData();
 		}
@@ -257,29 +256,11 @@ public class Screen extends JFrame {
 		});
 	}
 
-	public JComboBox getAirlineBox() {
-		return airlineBox;
-	}
-
-	public JComboBox getDepatureBox() {
-		return departureBox;
-	}
-
-	public JButton getAddButton() {
-		return addButton;
-	}
-
-	public JTextField getFlightNumberTextField() {
-		return flightNumberTextField;
-	}
-
 	private void saveFlightsReport() {
-		flightTrackerController.writeAirlineReports(Path.of("reports/"));
+		try {
+			flightTrackerController.writeAirlineReports(Path.of("reports/"));
+		} catch (FlightDataFileHandlerException e) {
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
+		}
 	}
-
-
-
 }
-
-
-
