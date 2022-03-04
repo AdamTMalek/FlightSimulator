@@ -53,7 +53,8 @@ public class FlightTrackerController implements Controller {
 	public void writeAirlineReports(Path destinationPath) {
 		for (var airline : flightData.airlines()) {
 			final var flightsForAirline = filterFlightsByAirline(airline);
-			final var airlineReportPath = destinationPath.resolve(airline.name() + ".csv"); //concatenate destinationPath with the name of the airline.
+			final var escapedName = airline.name().replace("\\", "-").replace("/", "-");
+			final var airlineReportPath = destinationPath.resolve(escapedName + ".csv");
 
 			var csvWriter = new CsvFileHandler(",");
 
@@ -63,11 +64,11 @@ public class FlightTrackerController implements Controller {
 		}
 	}
 
-	public void addFlight(Flight flight){
-			flightData.flights().add(flight);
+	public void addFlight(Flight flight) {
+		flightData.flights().add(flight);
 	}
 
-	public void removeFlight(int index){
+	public void removeFlight(int index) {
 		flightData.flights().remove(index);
 	}
 
