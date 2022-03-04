@@ -1,7 +1,9 @@
 package com.github.adamtmalek.flightsimulator.models;
 
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
+import com.github.adamtmalek.flightsimulator.interfaces.Controller;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,18 +11,21 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class RobotTest {
+	private static final @NotNull Controller flightTrackerController;
+//initiating a robot
 	Robot robot;
 	//connecting robot glass to screen GUI
 	Screen slave;
 
 	//constructor also handles any isssues with the file used to generate the GUI
 	public RobotTest() throws FlightDataFileHandlerException {
+
 		try {
 			robot = new Robot();
 		} catch (AWTException e) {
 			e.printStackTrace();
 		}
-		slave = new Screen();
+		slave = new Screen(flightTrackerController);
 		slave.setVisible(true);
 		//simulates a real user accessing and using the GUI
 		JComboBox components1 = slave.getDepatureBox();
