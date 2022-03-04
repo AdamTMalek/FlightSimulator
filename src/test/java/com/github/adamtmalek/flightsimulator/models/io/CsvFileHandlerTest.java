@@ -161,4 +161,44 @@ public class CsvFileHandlerTest extends TestSuite {
 		Assertions.assertThat(actualFile)
 				.hasSameTextualContentAs(expectedFile);
 	}
+
+	@Test
+	public void testReadingEmptyFileResultsInEmptyList() {
+		final Path emptyFilePath;
+		try {
+			emptyFilePath = Files.createTempFile("emptyFile", ".csv");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		Assertions.assertThat(fileHandler.readFile(emptyFilePath, Aeroplane.class))
+				.isEmpty();
+	}
+
+	@Test
+	public void testSerializationExceptionIsThrownWhenNoSuitableConstructorIsFound() {
+		Assertions.assertThatThrownBy(() -> {
+			try {
+				fileHandler.readFile(
+						getPathFromResources("flight-data/aeroplanes.csv"),
+						TestClass.class
+				);
+			} catch (SerializationException e) {
+				Assertions.fail(String.format("Exception thrown: %s", e));
+			}
+		});
+	}
+
+	public static class TestClass {
+		@SerializableField
+		public String foo;
+		@SerializableField
+		public String bar;
+
+
+		public TestClass() {
+			this.foo = null;
+			this.bar = null;
+		}
+	}
 }
