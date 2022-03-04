@@ -187,6 +187,13 @@ class IntegrationTest extends TestSuite {
 		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
 	}
 
+	static public void mouseMoveAndClick (Robot robot, int xLoc, int yLoc){
+		robot.mouseMove(xLoc, yLoc);
+		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+		robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+		robot.delay(1000);
+	}
+
 	@Test
 	void loadThreeNewFlightsAndWriteReportWithRobotTest() {
 		// Temporary directory for this test
@@ -201,45 +208,78 @@ class IntegrationTest extends TestSuite {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		// Generate some test flights
-		ArrayList<Airport.ControlTower> towers = new ArrayList<Airport.ControlTower>();
-		towers.add(new Airport.ControlTower("EDI", "Edinburgh",
-			new GeodeticCoordinate(55.949997222222215, -3.370163888888889)));
-		towers.add(new Airport.ControlTower("LHR", "Heathrow",
-			new GeodeticCoordinate(300, 200)));
-		Flight testF1 = Flight.buildWithFlightId("AA12",
-			new Airline("AA", "American Airlines"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(200, 100)),
-			ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
-		Flight testF2 = Flight.buildWithFlightId("AA123",
-			new Airline("AA", "American Airlines"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(300, 150)),
-			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
-		Flight testF3 = Flight.buildWithFlightId("BA1234",
-			new Airline("BA", "British Airways"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(300, 2)),
-			new Airport("EDI", "Edinburgh",
-				new GeodeticCoordinate(200, -300.2)),
-			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
+		// Launch Robot
+		Robot robot;
+		try {
+			robot = new Robot();
+		} catch (AWTException e) {
+			throw new RuntimeException(e);
+		}
 
-		mainController.addFlight(testF1);
-		mainController.addFlight(testF2);
-		mainController.addFlight(testF3);
+		// Start GUI
+		Screen screen = new Screen(mainController);
+		screen.setVisible(true);
+
+		// Add a flight using robot
+		JComboBox components1 = screen.getDepartureBox();
+		Point location1 = components1.getLocationOnScreen();
+		System.out.println(location1.x + ", " + location1.y + "");
+		mouseMoveAndClick(robot, location1.x, location1.y);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_ENTER);
+		JTextField components3 = screen.getFlightNumberTextField();
+		Point location3 = components3.getLocationOnScreen();
+		System.out.println(location3.x +", "+location3.y+"");
+		mouseMoveAndClick(robot, location3.x, location3.y);
+		for (int i = 0; i < 4; i++) {
+			robot.keyPress(KeyEvent.VK_7);
+		}
+		JTable components5 = screen.getFlightPlanTable();
+		Point location5 = components5.getLocationOnScreen();
+		System.out.println(location5.x + ", " + location5.y + "");
+		mouseMoveAndClick(robot, location5.x +5, location5.y);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_ENTER);
+		JTable components6 = screen.getFlightPlanTable();
+		Point location6 = components6.getLocationOnScreen();
+		System.out.println(location6.x + ", " + location6.y + "");
+		mouseMoveAndClick(robot,location6.x +105, location6.y);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_ENTER);
+		JTable components7 = screen.getFlightPlanTable();
+		Point location7 = components7.getLocationOnScreen();
+		System.out.println(location7.x + ", " + location7.y + "");
+		mouseMoveAndClick(robot,location7.x +220, location5.y);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.keyPress(KeyEvent.VK_ENTER);
+		JButton components2 = screen.getAddButton();
+		Point location2 = components2.getLocationOnScreen();
+		System.out.println(location2.x +", "+location2.y+"");
+		mouseMoveAndClick(robot,location2.x, location2.y);
+		JButton components4 = screen.getExitButton();
+		Point location4 = components4.getLocationOnScreen();
+		System.out.println(location4.x + ", "+ location4.y+"");
+		mouseMoveAndClick(robot, location4.x, location4.y);
 
 		mainController.writeAirlineReports(tmpDir);
+
+		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
+		for (int i = 0; i < 3; i++) {
+			System.out.println(airlines[i] + ":");
+			try {
+				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
+				Scanner reader = new Scanner(f);
+				while (reader.hasNextLine()) {
+					System.out.println(reader.nextLine());
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 
 		// Check against saved files
 		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
