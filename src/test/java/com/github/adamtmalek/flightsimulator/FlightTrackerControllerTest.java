@@ -132,10 +132,10 @@ public class FlightTrackerControllerTest extends TestSuite {
 					.hasTheSameContentAs(actualAirportsFile);
 
 			// Check Aeroplanes
-			final var expectedAiroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri()).toPath();
-			final var actualAiroplanessFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri()).toPath();
-			CsvFileAssert.assertThat(expectedAiroplanesFile, ";")
-					.hasTheSameContentAs(actualAiroplanessFile);
+			final var expectedAeroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri()).toPath();
+			final var actualAeroplanesFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAeroplanesFile, ";")
+					.hasTheSameContentAs(actualAeroplanesFile);
 
 		} catch (IOException | FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
