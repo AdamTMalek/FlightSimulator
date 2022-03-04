@@ -32,7 +32,15 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void loadFlightsAddWriteRead() {
+	void openAndCloseAppCheckCorrectReadTest() {
+		FlightTrackerController mainController = new FlightTrackerController();
+		Screen screen = new Screen(mainController);
+		screen.setVisible(true);
+		Assertions.assertEquals("OK420", mainController.getFlightData().flights().get(0).flightID());
+	}
+
+	@Test
+	void loadFlightsAddWriteReadTest() {
 		// Temporary directory for this test
 		Path tempDir = genTmpDir();
 
@@ -84,7 +92,7 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void loadFlightsDeleteWriteRead() {
+	void loadFlightsDeleteWriteReadTest() {
 		// Temporary directory for this test
 		Path tempDir = genTmpDir();
 
@@ -127,7 +135,7 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void loadFlightsAddWriteReadDeleteWriteRead() {
+	void loadFlightsAddWriteReadDeleteWriteReadTest() {
 		// Temporary directory for this test
 		Path tempDir = genTmpDir();
 
