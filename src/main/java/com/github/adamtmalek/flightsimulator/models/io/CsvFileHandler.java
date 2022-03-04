@@ -52,7 +52,7 @@ public class CsvFileHandler extends Serializer {
 			if (path.getParent() != null) Files.createDirectories(path.getParent());
 			return Files.writeString(path, content);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new SerializationException(e);
 		}
 	}
 }
