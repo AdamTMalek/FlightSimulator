@@ -22,13 +22,7 @@ public class RobotTest {
 		}
 		slave = new Screen();
 		slave.setVisible(true);
-		JComboBox components = slave.getAirlineBox();
-			Point location = components.getLocationOnScreen();
-			System.out.println(location.x + ", " + location.y + "");
-			mouseMoveAndClick(location.x, location.y);
-			robot.keyPress(KeyEvent.VK_DOWN);
-			robot.keyPress(KeyEvent.VK_DOWN);
-			robot.keyPress(KeyEvent.VK_ENTER);
+		//simulates a real user accessing and using the GUI
 		JComboBox components1 = slave.getDepatureBox();
 		Point location1 = components1.getLocationOnScreen();
 		System.out.println(location1.x + ", " + location1.y + "");
@@ -36,13 +30,21 @@ public class RobotTest {
 		robot.keyPress(KeyEvent.VK_DOWN);
 		robot.keyPress(KeyEvent.VK_DOWN);
 		robot.keyPress(KeyEvent.VK_ENTER);
+		JTextField components3 = slave.getFlightNumberTextField();
+		Point location3 = components3.getLocationOnScreen();
+		System.out.println(location3.x +", "+location3.y+"");
+		mouseMoveAndClick(location3.x, location3.y);
+		for (int i = 0; i < 3; i++) {
+			robot.keyPress(KeyEvent.VK_7);
+		}
 		JButton components2 = slave.getAddButton();
 		Point location2 = components2.getLocationOnScreen();
 		System.out.println(location2.x +", "+location2.y+"");
 		mouseMoveAndClick(location2.x, location2.y);
 
 
-		}
+
+	}
 
 
 
@@ -55,7 +57,7 @@ public class RobotTest {
 
 		}
 
-
+//Opens a new screen so the test can be carrierd out
 		public static void main(String[] args) throws FlightDataFileHandlerException {
 			System.out.println("Start test");
 			new RobotTest();

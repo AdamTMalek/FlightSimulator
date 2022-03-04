@@ -68,12 +68,14 @@ public abstract class Serializer {
 		final Object convertedValue;
 		final var type = param.getType();
 		final var value = valuesList.remove(0);
+
 		if (type == double.class) convertedValue = Double.parseDouble(value);
 		else if (type == float.class) convertedValue = Float.parseFloat(value);
 		else if (type == int.class) convertedValue = Integer.parseInt(value);
 		else if (type == boolean.class) convertedValue = Boolean.parseBoolean(value);
 		else if (type == String.class) convertedValue = value;
 		else throw new ConversionException(type);
+
 		return convertedValue;
 	}
 

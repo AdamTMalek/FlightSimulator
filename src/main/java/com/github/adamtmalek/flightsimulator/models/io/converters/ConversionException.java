@@ -7,7 +7,7 @@ public class ConversionException extends RuntimeException {
 		super(message);
 	}
 
-	public ConversionException(Class<?> unexpectedType) {
+	public ConversionException(@NotNull Class<?> unexpectedType) {
 		super(String.format("Type %s cannot be converted without using a custom converter", unexpectedType.getSimpleName()));
 	}
 }

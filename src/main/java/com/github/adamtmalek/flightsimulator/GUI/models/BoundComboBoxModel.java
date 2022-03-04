@@ -6,6 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.List;
 
+/**
+ * The BoundComboBoxModel is a model for ComboBoxes which data source is bounded
+ * to the data source passed in the constructor.
+ *
+ * This means, that no local copy of the list exists, and any change to the original
+ * list be reflected in the data stored in this class as well.
+ *
+ * @param <E> Type of elements stored in the list.
+ */
 public class BoundComboBoxModel<E> extends AbstractListModel<E> implements MutableComboBoxModel<E> {
 	private final @NotNull List<E> data;
 	private @Nullable E selectedObject = null;
