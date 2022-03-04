@@ -279,15 +279,15 @@ class IntegrationTest extends TestSuite {
 
 		// Check against saved files
 		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
-		File expectedFile1 = new File(getPathFromResources("integration-tests/American Airlines.csv").toString());
+		File expectedFile1 = new File(getPathFromResources("integration-tests/American Airlines2.csv").toString());
 		org.assertj.core.api.Assertions.assertThat(actualFile1).hasSameTextualContentAs(expectedFile1);
 
 		File actualFile2 = new File(tmpDir.resolve("British Airways.csv").toString());
-		File expectedFile2 = new File(getPathFromResources("integration-tests/British Airways.csv").toString());
+		File expectedFile2 = new File(getPathFromResources("integration-tests/British Airways2.csv").toString());
 		org.assertj.core.api.Assertions.assertThat(actualFile2).hasSameTextualContentAs(expectedFile2);
 
 		File actualFile3 = new File(tmpDir.resolve("Czech Airlines.csv").toString());
-		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines.csv").toString());
+		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines2.csv").toString());
 		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
 	}
 
