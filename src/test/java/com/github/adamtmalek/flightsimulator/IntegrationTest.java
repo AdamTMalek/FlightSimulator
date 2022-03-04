@@ -260,22 +260,7 @@ class IntegrationTest extends TestSuite {
 		addDummyFlight(robot, screen);
 
 		// Calling exit will close the JVM so
-		//exit(robot, screen);
 		mainController.writeAirlineReports(tmpDir);
-
-//		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
-//		for (int i = 0; i < 3; i++) {
-//			System.out.println(airlines[i] + ":");
-//			try {
-//				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
-//				Scanner reader = new Scanner(f);
-//				while (reader.hasNextLine()) {
-//					System.out.println(reader.nextLine());
-//				}
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//		}
 
 		// Check against saved files
 		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
@@ -290,7 +275,6 @@ class IntegrationTest extends TestSuite {
 		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines2.csv").toString());
 		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
 	}
-
 
 	@Test
 	void addFlight() {
@@ -327,6 +311,45 @@ class IntegrationTest extends TestSuite {
 		}
 
 	}
+
+	@Test
+	void addDuplicateFlight() {
+
+		// Init robot
+		try {
+			var robot = new Robot();
+			// Init controller
+			var controller = new FlightTrackerController();
+
+			var slave = new Screen(controller);
+			slave.setVisible(true);
+
+			//addDummyFlight adds the same dummy flight twice, which is not allowed.
+			addDummyFlight(robot,slave);
+			addDummyFlight(robot,slave);
+
+			final var addedFlight = controller.getFlightData().flights().get(2);
+			Assertions.assertEquals("AA777", addedFlight.flightID());
+			Assertions.assertEquals("A330", addedFlight.aeroplane().model());
+
+			Assertions.assertEquals("Airbus", addedFlight.aeroplane().manufacturer());
+			Assertions.assertEquals("AA", addedFlight.airline().code());
+			Assertions.assertEquals("American Airlines", addedFlight.airline().name());
+
+			Assertions.assertEquals("EDI",addedFlight.controlTowersToCross().get(0).code);
+			Assertions.assertEquals("LHR",addedFlight.controlTowersToCross().get(1).code);
+			Assertions.assertEquals("CDG",addedFlight.controlTowersToCross().get(2).code);
+
+			Assertions.assertEquals("EDI",addedFlight.departureAirport().code);
+			Assertions.assertEquals("CDG",addedFlight.destinationAirport().code);
+
+
+		}catch(AWTException e){
+			throw new RuntimeException(e);
+		}
+
+	}
+
 
 
 	private void addDummyFlight(Robot robot, Screen slave){
