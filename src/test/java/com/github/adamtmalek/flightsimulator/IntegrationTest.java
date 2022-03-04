@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
+import com.github.adamtmalek.flightsimulator.GUI.Screen;
 import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
@@ -7,6 +8,10 @@ import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -248,5 +253,118 @@ class IntegrationTest extends TestSuite {
 		File actualFile3 = new File(tmpDir.resolve("Czech Airlines.csv").toString());
 		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines.csv").toString());
 		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
+	}
+
+
+	@Test
+	void addFlight() {
+
+		// Init robot
+		try {
+			var robot = new Robot();
+			// Init controller
+			var controller = new FlightTrackerController();
+
+			var slave = new Screen(controller);
+			slave.setVisible(true);
+			addDummyFlight(robot,slave);
+			exit(robot,slave);
+			robot.delay(200);
+
+			final var addedFlight = controller.getFlightData().flights().get(2);
+			Assertions.assertEquals("AA777", addedFlight.flightID());
+
+
+		}catch(AWTException e){
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	private void addDummyFlight(Robot robot, Screen slave){
+		selectDepartureAircraft(robot,slave,2);
+		enterFlightSerialNumber(robot,slave,"777");
+		enterValidFlightPlan(robot,slave);
+		add(robot,slave);
+	}
+
+	private void add(Robot robot, Screen slave){
+		var addButton = slave.getAddButton();
+		var location = addButton.getLocationOnScreen();
+		mouseMoveAndClick(robot,location.x, location.y);
+		robot.delay(200);
+	}
+
+	private  void exit(Robot robot, Screen slave){
+		var exitButton =slave.getExitButton();
+		var location = exitButton.getLocationOnScreen();
+		mouseMoveAndClick(robot,location.x, location.y);
+		robot.delay(200);
+
+
+	}
+	private void enterValidFlightPlan(Robot robot, Screen slave){
+		var flightPlanTable = slave.getFlightPlanTable();
+		var location = flightPlanTable.getLocationOnScreen();
+
+		mouseMoveAndClick(robot,location.x +5, location.y);
+
+		for(int i=0;i<3;i++) {
+			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.delay(200);
+		}
+		robot.keyPress(KeyEvent.VK_ENTER);
+		mouseMoveAndClick(robot,location.x +105, location.y);
+		for(int i=0;i<2;i++) {
+			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.delay(200);
+		}
+		robot.keyPress(KeyEvent.VK_ENTER);
+		mouseMoveAndClick(robot,location.x +220, location.y);
+		robot.delay(200);
+		robot.keyPress(KeyEvent.VK_DOWN);
+		robot.delay(200);
+		robot.keyPress(KeyEvent.VK_ENTER);
+
+	}
+	private void enterFlightSerialNumber(Robot robot, Screen slave, String serialNumber){
+		var flightSerialNumberTextField = slave.getFlightNumberTextField();
+		Point location = flightSerialNumberTextField.getLocationOnScreen();
+		mouseMoveAndClick(robot,location.x, location.y);
+		robot.delay(200);
+		type(robot,serialNumber);
+
+
+	}
+	private void selectDepartureAircraft(Robot robot,Screen slave, int row){
+		var departureBox = slave.getDepartureBox();
+		Point location = departureBox.getLocationOnScreen();
+		mouseMoveAndClick(robot,location.x, location.y);
+		for(int i =0; i<row;i++) {
+			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.keyPress(KeyEvent.VK_DOWN);
+		}
+		robot.keyPress(KeyEvent.VK_ENTER);
+	}
+
+	private void type(Robot robot, String string){
+		for(char c: string.toCharArray()){
+			int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
+			if(keyCode==KeyEvent.CHAR_UNDEFINED){
+				throw new RuntimeException("Key code not found for character " + c);
+			}else{
+				robot.keyPress(keyCode);
+				robot.delay(200);
+				robot.keyRelease(keyCode);
+				robot.delay(200);
+			}
+		}
+	}
+	//creates an object that stimulates a mouse click
+	private void mouseMoveAndClick (Robot robot, int xLoc, int yLoc){
+		robot.mouseMove(xLoc, yLoc);
+		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+		robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+		robot.delay(500);
 	}
 }
