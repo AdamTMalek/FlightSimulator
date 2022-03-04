@@ -5,12 +5,10 @@ import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerExce
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.security.InvalidParameterException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -114,28 +112,28 @@ public class FlightTrackerControllerTest extends TestSuite {
 			controller.writeFlightData(generatedDirectory);
 
 			// Check Flights
-			final var expectedFlightsFile = new File(getPathFromResources("flight-data/flights.csv").toUri());
-			final var actualFlightsFile = new File(generatedDirectory.resolve("flights.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualFlightsFile)
-					.hasSameTextualContentAs(expectedFlightsFile);
+			final var expectedFlightsFile = new File(getPathFromResources("flight-data/flights.csv").toUri()).toPath();
+			final var actualFlightsFile = new File(generatedDirectory.resolve("flights.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(actualFlightsFile, ";")
+					.hasTheSameContentAs(expectedFlightsFile);
 
 			// Check Airlines
-			final var expectedAirlinesFile = new File(getPathFromResources("flight-data/airlines.csv").toUri());
-			final var actualAirlinesFile = new File(generatedDirectory.resolve("airlines.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAirlinesFile)
-					.hasSameTextualContentAs(expectedAirlinesFile);
+			final var expectedAirlinesFile = new File(getPathFromResources("flight-data/airlines.csv").toUri()).toPath();
+			final var actualAirlinesFile = new File(generatedDirectory.resolve("airlines.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAirlinesFile, ";")
+					.hasTheSameContentAs(actualAirlinesFile);
 
 			// Check Airports
-			final var expectedAirportsFile = new File(getPathFromResources("flight-data/airports.csv").toUri());
-			final var actualAirportsFile = new File(generatedDirectory.resolve("airports.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAirportsFile)
-					.hasSameTextualContentAs(expectedAirportsFile);
+			final var expectedAirportsFile = new File(getPathFromResources("flight-data/airports.csv").toUri()).toPath();
+			final var actualAirportsFile = new File(generatedDirectory.resolve("airports.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAirportsFile, ";")
+					.hasTheSameContentAs(actualAirportsFile);
 
 			// Check Aeroplanes
-			final var expectedAiroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri());
-			final var actualAiroplanessFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAiroplanessFile)
-					.hasSameTextualContentAs(expectedAiroplanesFile);
+			final var expectedAeroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri()).toPath();
+			final var actualAeroplanesFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAeroplanesFile, ";")
+					.hasTheSameContentAs(actualAeroplanesFile);
 
 		} catch (IOException | FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
@@ -153,7 +151,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>()));
+				new ArrayList<>()));
 
 		final var addedFlight = controller.getFlightData().flights().get(0);
 		Assertions.assertEquals("newFlightID", addedFlight.flightID());
@@ -170,7 +168,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>()));
+				new ArrayList<>()));
 
 		Assertions.assertEquals(1, controller.getFlightData().flights().size());
 		controller.removeFlight(0);
@@ -181,21 +179,19 @@ public class FlightTrackerControllerTest extends TestSuite {
 	@Test
 	void removeFlightAtInvalidIndex() {
 
-		Assertions.assertThrows(IndexOutOfBoundsException.class, new Executable() {
-			public void execute() throws Throwable {
-				var controller = new FlightTrackerController();
+		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+			var controller = new FlightTrackerController();
 
-				controller.addFlight(Flight.buildWithFlightId("newFlightID",
-						new Airline("a", "a"),
-						new Aeroplane("a", "a", 1, 50),
-						new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-						new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
-						ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-						new ArrayList<Airport.ControlTower>()));
+			controller.addFlight(Flight.buildWithFlightId("newFlightID",
+					new Airline("a", "a"),
+					new Aeroplane("a", "a", 1, 50),
+					new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+					new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+					ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+					new ArrayList<>()));
 
-				controller.removeFlight(1);
+			controller.removeFlight(1);
 
-			}
 		});
 	}
 
@@ -209,7 +205,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>()));
+				new ArrayList<>()));
 
 		var changedFlight = Flight.buildWithFlightId("002",
 				new Airline("a", "a"),
@@ -217,7 +213,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>());
+				new ArrayList<>());
 
 		final var originalFlight = controller.getFlightData().flights().get(0);
 
