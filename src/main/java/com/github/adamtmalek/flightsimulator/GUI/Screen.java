@@ -295,4 +295,10 @@ public class Screen extends JFrame {
 	public JTable getFlightPlanTable() {
 		return flightPlanTable;
 	}
+
+	public JButton getExitButton() {
+		return exitButton;
+	}
+
+
 }
