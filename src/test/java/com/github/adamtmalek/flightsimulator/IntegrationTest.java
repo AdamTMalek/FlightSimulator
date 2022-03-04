@@ -21,7 +21,7 @@ class IntegrationTest extends TestSuite {
 		// Temporary directory for this test
 		Path tempDir;
 		try {
-			tempDir = Files.createTempDirectory("integration-testing");
+			tempDir = Files.createTempDirectory("integration-test");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -41,11 +41,11 @@ class IntegrationTest extends TestSuite {
 
 		// Make new flight and try adding to controller
 		Flight testFlight = Flight.buildWithFlightId("123ID",
-				new Airline("code", "name"),
-				new Aeroplane("model", "manufacturer", 2000, 15),
-				new Airport("code1", "start",
+				new Airline("AA", "name"),
+				new Aeroplane("A330", "manufacturer", 2000, 15),
+				new Airport("CDG", "start",
 						new GeodeticCoordinate(1, 2)),
-				new Airport("code2", "end",
+				new Airport("LHR", "end",
 						new GeodeticCoordinate(200, 100)),
 				ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
 				new ArrayList<Airport.ControlTower>());
@@ -58,12 +58,14 @@ class IntegrationTest extends TestSuite {
 		try {
 			mainController.writeFlightData(tempDir);
 		} catch (FlightDataFileHandlerException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage());
 		}
+
 		// load the file on a new controller/dataset and check if it matches
 		FlightTrackerController readTestController = new FlightTrackerController();
 		FlightData readTestFD;
 		try {
+			System.out.println(tempDir.toFile());
 			readTestFD = readTestController.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
