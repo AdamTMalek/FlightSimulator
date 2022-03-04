@@ -32,11 +32,32 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void openAndCloseAppCheckCorrectReadTest() {
-		FlightTrackerController mainController = new FlightTrackerController();
-		Screen screen = new Screen(mainController);
-		screen.setVisible(true);
-		Assertions.assertEquals("OK420", mainController.getFlightData().flights().get(0).flightID());
+	void openAndCloseAppCheckCorrectReadTest() throws InterruptedException {
+		Path tmpDir = genTmpDir();
+		Robot robot;
+		try {
+			robot = new Robot();
+		} catch (AWTException e) {
+			throw new RuntimeException(e);
+		}
+
+		Runnable run = () -> {
+			FlightTrackerController mainController = new FlightTrackerController();
+			Screen screen = new Screen(mainController);
+			screen.setVisible(true);
+			// manually writing since closing the GUI will sys exit the JVM
+			mainController.writeAirlineReports(tmpDir);
+		};
+
+		Thread thread = new Thread(run);
+		thread.start();
+
+		thread.join(2000);
+
+
+		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
+		File expectedFile1 = new File(getPathFromResources("airline-reports/American Airlines.csv").toString());
+		org.assertj.core.api.Assertions.assertThat(actualFile1).hasSameTextualContentAs(expectedFile1);
 	}
 
 	@Test
@@ -210,88 +231,6 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void loadThreeNewFlightsAndWriteReportTest() {
-		// Temporary directory for this test
-		Path tmpDir = genTmpDir();
-
-		// Initialise controller and load flight data
-		FlightTrackerController mainController = new FlightTrackerController();
-		FlightData flightData;
-		try {
-			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
-		} catch (FlightDataFileHandlerException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-
-		// Generate some test flights
-		ArrayList<Airport.ControlTower> towers = new ArrayList<Airport.ControlTower>();
-		towers.add(new Airport.ControlTower("EDI", "Edinburgh",
-			new GeodeticCoordinate(55.949997222222215, -3.370163888888889)));
-		towers.add(new Airport.ControlTower("LHR", "Heathrow",
-			new GeodeticCoordinate(300, 200)));
-		Flight testF1 = Flight.buildWithFlightId("AA12",
-			new Airline("AA", "American Airlines"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(200, 100)),
-			ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
-		Flight testF2 = Flight.buildWithFlightId("AA123",
-			new Airline("AA", "American Airlines"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("CDG", "Paris Charles de Gaulle",
-				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(300, 150)),
-			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
-		Flight testF3 = Flight.buildWithFlightId("BA1234",
-			new Airline("BA", "British Airways"),
-			new Aeroplane("A330", "Airbus", 800, 768.439),
-			new Airport("LHR", "Heathrow",
-				new GeodeticCoordinate(300, 2)),
-			new Airport("EDI", "Edinburgh",
-				new GeodeticCoordinate(200, -300.2)),
-			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			towers);
-
-		mainController.addFlight(testF1);
-		mainController.addFlight(testF2);
-		mainController.addFlight(testF3);
-
-		mainController.writeAirlineReports(tmpDir);
-
-//		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
-//		for (int i = 0; i < 3; i++) {
-//			System.out.println(airlines[i] + ":");
-//			try {
-//				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
-//				Scanner reader = new Scanner(f);
-//				while (reader.hasNextLine()) {
-//					System.out.println(reader.nextLine());
-//				}
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
-		// Check against saved files
-		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
-		File expectedFile1 = new File(getPathFromResources("integration-tests/American Airlines.csv").toString());
-		org.assertj.core.api.Assertions.assertThat(actualFile1).hasSameTextualContentAs(expectedFile1);
-
-		File actualFile2 = new File(tmpDir.resolve("British Airways.csv").toString());
-		File expectedFile2 = new File(getPathFromResources("integration-tests/British Airways.csv").toString());
-		org.assertj.core.api.Assertions.assertThat(actualFile2).hasSameTextualContentAs(expectedFile2);
-
-		File actualFile3 = new File(tmpDir.resolve("Czech Airlines.csv").toString());
-		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines.csv").toString());
-		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
-	}
-
-	@Test
 	void addNewFlightsAndWriteReportWithRobotTest() {
 		// Temporary directory for this test
 		Path tmpDir = genTmpDir();
@@ -320,21 +259,23 @@ class IntegrationTest extends TestSuite {
 		// Add a flight using robot
 		addDummyFlight(robot, screen);
 
-		exit(robot, screen);
+		// Calling exit will close the JVM so
+		//exit(robot, screen);
+		mainController.writeAirlineReports(tmpDir);
 
-		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
-		for (int i = 0; i < 3; i++) {
-			System.out.println(airlines[i] + ":");
-			try {
-				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
-				Scanner reader = new Scanner(f);
-				while (reader.hasNextLine()) {
-					System.out.println(reader.nextLine());
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+//		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
+//		for (int i = 0; i < 3; i++) {
+//			System.out.println(airlines[i] + ":");
+//			try {
+//				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
+//				Scanner reader = new Scanner(f);
+//				while (reader.hasNextLine()) {
+//					System.out.println(reader.nextLine());
+//				}
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
 
 		// Check against saved files
 		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
