@@ -44,10 +44,10 @@ public class Screen extends JFrame {
 	private JPanel panelBottom;
 	private JPanel panelTopLeft;
 	private JPanel panelTopRight;
-	private JTextField textDistance;
-	private JTextField textTime;
-	private JTextField textFuelConsumption;
-	private JTextField textCo2Emission;
+	private JLabel textDistance;
+	private JLabel textTime;
+	private JLabel textFuelConsumption;
+	private JLabel textCo2Emission;
 	private JList<Flight> flightList;
 	private JTextArea flightPlan;
 	private JPanel addFlightPanel;
@@ -93,6 +93,7 @@ public class Screen extends JFrame {
 			textDistance.setText(Double.toString(flight.distanceTravelled()));
 			textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
 			textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
+			textTime.setText(dateTimeFormatter.format(flight.departureDate()));
 
 			final var flightPlanText = flight.controlTowersToCross()
 					.stream()
