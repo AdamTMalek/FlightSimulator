@@ -31,6 +31,8 @@ public class FilePicker extends JDialog {
 
 	public FilePicker(@NotNull Path pickedDirectory) {
 		setContentPane(contentPane);
+		setTitle("Open Files");
+		setBounds(0, 0, 300, 300);
 		setModal(true);
 		getRootPane().setDefaultButton(buttonOK);
 
