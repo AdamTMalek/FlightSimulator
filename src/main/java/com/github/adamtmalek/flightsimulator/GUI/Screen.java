@@ -13,6 +13,7 @@ import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
 import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -263,15 +264,27 @@ public class Screen extends JFrame {
 			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
+	@TestOnly
+	@NotNull
 	public JButton getAddButton() {
 		return addButton;
 	}
-	public JComboBox getDepatureBox() {
+
+	@TestOnly
+	@NotNull
+	public JComboBox<Airport> getDepartureBox() {
 		return departureBox;
 	}
-	public JComboBox getAirlineBox() {
+
+	@TestOnly
+	@NotNull
+	public JComboBox<Airline> getAirlineBox() {
 		return airlineBox;
 	}
+
+	@TestOnly
+	@NotNull
 	public JTextField getFlightNumberTextField() {
 		return flightNumberTextField;
 	}
