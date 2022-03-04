@@ -27,19 +27,11 @@ public interface Controller {
 
 	public void writeAirlineReports(Path destinationPath) throws FlightDataFileHandlerException;
 
-	public void addFlight(Flight flight) throws
-			UnsupportedOperationException,
-			ClassCastException,
-			NullPointerException,
-			IllegalArgumentException;
+	public void addFlight(Flight flight);
 
-	public void removeFlight(int index) throws
-			IndexOutOfBoundsException,
-			UnsupportedOperationException;
+	public void removeFlight(int index);
 
-	public void editFlight(int index, Flight flight) throws
-			NullPointerException,
-			IndexOutOfBoundsException;
+	public void editFlight(int index, Flight flight);
 
 	public FlightData getFlightData();
 

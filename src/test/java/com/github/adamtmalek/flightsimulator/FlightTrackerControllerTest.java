@@ -5,10 +5,12 @@ import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerExce
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.InvalidParameterException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -174,6 +176,27 @@ public class FlightTrackerControllerTest extends TestSuite {
 		controller.removeFlight(0);
 		Assertions.assertEquals(0, controller.getFlightData().flights().size());
 
+	}
+
+	@Test
+	void removeFlightAtInvalidIndex() {
+
+		Assertions.assertThrows(IndexOutOfBoundsException.class, new Executable() {
+			public void execute() throws Throwable {
+				var controller = new FlightTrackerController();
+
+				controller.addFlight(Flight.buildWithFlightId("newFlightID",
+						new Airline("a", "a"),
+						new Aeroplane("a", "a", 1, 50),
+						new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+						new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+						ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+						new ArrayList<Airport.ControlTower>()));
+
+				controller.removeFlight(1);
+
+			}
+		});
 	}
 
 	@Test

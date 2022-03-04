@@ -63,23 +63,15 @@ public class FlightTrackerController implements Controller {
 		}
 	}
 
-	public void addFlight(Flight flight) throws
-			UnsupportedOperationException,
-			ClassCastException,
-			NullPointerException,
-			IllegalArgumentException {
-		flightData.flights().add(flight);
+	public void addFlight(Flight flight){
+			flightData.flights().add(flight);
 	}
 
-	public void removeFlight(int index) throws
-			IndexOutOfBoundsException,
-			UnsupportedOperationException {
+	public void removeFlight(int index){
 		flightData.flights().remove(index);
 	}
 
-	public void editFlight(int index, Flight flight) throws
-			NullPointerException,
-			IndexOutOfBoundsException {
+	public void editFlight(int index, Flight flight) {
 		flightData.flights().set(index, flight);
 	}
 
