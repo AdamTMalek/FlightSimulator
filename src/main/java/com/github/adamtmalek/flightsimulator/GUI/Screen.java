@@ -78,7 +78,7 @@ public class Screen extends JFrame {
 
 		addListenersForUpdatingAddButtonState();
 		addButton.addActionListener(e -> addNewFlight());
-		exitButton.addActionListener(e -> dispose());
+		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 
 		addFlightSelectionListener();
 		updateAddButtonState();
