@@ -7,12 +7,13 @@ import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 class IntegrationTest extends TestSuite {
 
@@ -68,7 +69,6 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController readTestController = new FlightTrackerController();
 		FlightData readTestFD;
 		try {
-			System.out.println(tempDir.toFile());
 			readTestFD = readTestController.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
@@ -101,29 +101,84 @@ class IntegrationTest extends TestSuite {
 	}
 
 	@Test
-	void reportingTest() {
+	void loadThreeNewFlightsAndWriteReportTest() {
 		// Temporary directory for this test
 		Path tmpDir = genTmpDir();
-	}
-
-	@Test
-	void loadFlightsDeleteReadAddWriteReadWithNewControllers() {
-		Assertions.fail("this isnt implemented");
-		// Temporary directory for this test
 
 		// Initialise controller and load flight data
+		FlightTrackerController mainController = new FlightTrackerController();
+		FlightData flightData;
+		try {
+			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
+		} catch (FlightDataFileHandlerException e) {
+			throw new RuntimeException(e.getMessage());
+		}
 
-		// Find the location of two specific flights and remove only those
+		// Generate some test flights
+		Flight testF1 = Flight.buildWithFlightId("123ID",
+			new Airline("AA", "name"),
+			new Aeroplane("A330", "manufacturer", 2000, 15),
+			new Airport("CDG", "start",
+				new GeodeticCoordinate(1, 2)),
+			new Airport("LHR", "end",
+				new GeodeticCoordinate(200, 100)),
+			ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+			new ArrayList<Airport.ControlTower>());
+		Flight testF2 = Flight.buildWithFlightId("1234ID",
+			new Airline("AA", "name"),
+			new Aeroplane("A330", "manufacturer", 50, 15),
+			new Airport("CDG", "start",
+				new GeodeticCoordinate(1, 2)),
+			new Airport("LHR", "end",
+				new GeodeticCoordinate(300, 150)),
+			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+			new ArrayList<Airport.ControlTower>());
+		Flight testF3 = Flight.buildWithFlightId("1235ID",
+			new Airline("BA", "name"),
+			new Aeroplane("A330", "manufacturer", 200, 15),
+			new Airport("LHR", "start",
+				new GeodeticCoordinate(300, 2)),
+			new Airport("EDI", "end",
+				new GeodeticCoordinate(200, -300.2)),
+			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+			new ArrayList<Airport.ControlTower>());
 
-		// Write and check if removed successfully
+		mainController.addFlight(testF1);
+		mainController.addFlight(testF2);
+		mainController.addFlight(testF3);
 
-		// Make three flights and add to controller
+		mainController.writeAirlineReports(tmpDir);
 
-		// Write this to a file
+		System.out.println("American Airlines:");
+		try {
+			File f = new File(tmpDir.resolve("American Airlines.csv").toString());
+			Scanner reader = new Scanner(f);
+			while (reader.hasNextLine()) {
+				System.out.println(reader.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println("British Airways:");
+		try {
+			File f = new File(tmpDir.resolve("British Airways.csv").toString());
+			Scanner reader = new Scanner(f);
+			while (reader.hasNextLine()) {
+				System.out.println(reader.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Czech Airlines:");
+		try {
+			File f = new File(tmpDir.resolve("Czech Airlines.csv").toString());
+			Scanner reader = new Scanner(f);
+			while (reader.hasNextLine()) {
+				System.out.println(reader.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
-		// Write and check if they saved properly
-
-		// Load the file on a new controller/dataset and check if it matches
 	}
-
 }
