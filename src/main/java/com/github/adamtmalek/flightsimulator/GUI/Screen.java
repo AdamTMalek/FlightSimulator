@@ -186,9 +186,16 @@ public class Screen extends JFrame {
 		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
 				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
-		flightTrackerController.addFlight(flight);
-		flightList.updateUI();
-		resetComponents();
+		flightTrackerController.getFlightData()
+				.flights()
+				.stream()
+				.filter(f -> f.flightID().equals(flight.flightID()))
+				.findAny()
+						.ifPresentOrElse(f -> {
+							flightTrackerController.addFlight(flight);
+							flightList.updateUI();
+							resetComponents();
+						}, () -> JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -327,7 +334,7 @@ public class Screen extends JFrame {
 		}
 	}
 
-	private void saveFlightData(){
+	private void saveFlightData() {
 		try {
 			flightTrackerController.writeFlightData(Path.of("flight-data/"));
 		} catch (FlightDataFileHandlerException e) {
