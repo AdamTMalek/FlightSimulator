@@ -15,10 +15,8 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.ParseException;
@@ -252,6 +250,59 @@ public class Screen extends JFrame {
 					e.consume();
 			}
 		});
+
+		setJMenuBar(createMenuBar());
+	}
+
+	private @NotNull JMenuBar createMenuBar() {
+		final var menuBar = new JMenuBar();
+		menuBar.add(createFileMenu());
+		return menuBar;
+	}
+
+	private @NotNull JMenu createFileMenu() {
+		final var fileMenu = new JMenu("File");
+		final var openItem = new JMenuItem(new AbstractAction("Open") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onOpenClick();
+			}
+		});
+		fileMenu.add(openItem);
+		return fileMenu;
+	}
+
+	private void onOpenClick() {
+		final var fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+		File chosenDirectory = fileChooser.getSelectedFile();
+		File[] csvFiles = chosenDirectory.listFiles(pathname -> pathname.getName().endsWith(".csv"));
+
+		if (csvFiles == null || csvFiles.length < 4) {
+			JOptionPane.showMessageDialog(new JFrame(), "Directory has to contain at least 4 CSV files", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		final var filePicker = new FilePicker(chosenDirectory.toPath());
+		final var selectedPaths = filePicker.showDialog();
+
+		if (selectedPaths == null) {
+			return;
+		}
+
+		try {
+			this.flightTrackerController.readFlightData(
+					selectedPaths.airports(),
+					selectedPaths.aeroplanes(),
+					selectedPaths.airlines(),
+					selectedPaths.flights()
+			);
+			initializeComponents(this.flightTrackerController.getFlightData());
+		} catch (FlightDataFileHandlerException | IOException ex) {
+			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private @NotNull MaskFormatter createDateTimeFormatter() {
