@@ -263,4 +263,16 @@ public class Screen extends JFrame {
 			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	public JButton getAddButton() {
+		return addButton;
+	}
+	public JComboBox getDepatureBox() {
+		return departureBox;
+	}
+	public JComboBox getAirlineBox() {
+		return airlineBox;
+	}
+	public JTextField getFlightNumberTextField() {
+		return flightNumberTextField;
+	}
 }
