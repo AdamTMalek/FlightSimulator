@@ -44,19 +44,19 @@ class IntegrationTest extends TestSuite {
 		Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
 
 		// Make new flight and try adding to controller
-		Flight testFlight = Flight.buildWithFlightId("123ID",
-				new Airline("AA", "name"),
+		Flight testFlight = Flight.buildWithFlightId("AA123",
+				new Airline("AA", "American Airlines"),
 				new Aeroplane("A330", "manufacturer", 2000, 15),
-				new Airport("CDG", "start",
+				new Airport("CDG", "Paris Charles de Gaulle",
 						new GeodeticCoordinate(1, 2)),
-				new Airport("LHR", "end",
+				new Airport("LHR", "Heathrow",
 						new GeodeticCoordinate(200, 100)),
 				ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
 				new ArrayList<Airport.ControlTower>());
 		mainController.addFlight(testFlight);
 
 		// now we check if the last flight matches the one we just added
-		Assertions.assertEquals("123ID", flightData.flights().get(flightData.flights().size() - 1).flightID());
+		Assertions.assertEquals("AA123", flightData.flights().get(flightData.flights().size() - 1).flightID());
 
 		// write this to a file
 		try {
@@ -74,7 +74,7 @@ class IntegrationTest extends TestSuite {
 			throw new RuntimeException(e.getMessage());
 		}
 		Assertions.assertEquals("OK420", readTestFD.flights().get(0).flightID());
-		Assertions.assertEquals("123ID", readTestFD.flights().get(readTestFD.flights().size() - 1).flightID());
+		Assertions.assertEquals("AA123", readTestFD.flights().get(readTestFD.flights().size() - 1).flightID());
 
 		// remove the testFlight/last flight from the controller assert if it worked
 		mainController.removeFlight(flightData.flights().size() - 1);
@@ -115,33 +115,38 @@ class IntegrationTest extends TestSuite {
 		}
 
 		// Generate some test flights
-		Flight testF1 = Flight.buildWithFlightId("123ID",
-			new Airline("AA", "name"),
-			new Aeroplane("A330", "manufacturer", 2000, 15),
-			new Airport("CDG", "start",
+		ArrayList<Airport.ControlTower> towers = new ArrayList<Airport.ControlTower>();
+		towers.add(new Airport.ControlTower("EDI", "Edinburgh",
+			new GeodeticCoordinate(55.949997222222215, -3.370163888888889)));
+		towers.add(new Airport.ControlTower("LHR", "Heathrow",
+			new GeodeticCoordinate(300, 200)));
+		Flight testF1 = Flight.buildWithFlightId("AA12",
+			new Airline("AA", "American Airlines"),
+			new Aeroplane("A330", "Airbus", 800, 768.439),
+			new Airport("CDG", "Paris Charles de Gaulle",
 				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "end",
+			new Airport("LHR", "Heathrow",
 				new GeodeticCoordinate(200, 100)),
 			ZonedDateTime.of(2022, 3, 1, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			new ArrayList<Airport.ControlTower>());
-		Flight testF2 = Flight.buildWithFlightId("1234ID",
-			new Airline("AA", "name"),
-			new Aeroplane("A330", "manufacturer", 50, 15),
-			new Airport("CDG", "start",
+			towers);
+		Flight testF2 = Flight.buildWithFlightId("AA123",
+			new Airline("AA", "American Airlines"),
+			new Aeroplane("A330", "Airbus", 800, 768.439),
+			new Airport("CDG", "Paris Charles de Gaulle",
 				new GeodeticCoordinate(1, 2)),
-			new Airport("LHR", "end",
+			new Airport("LHR", "Heathrow",
 				new GeodeticCoordinate(300, 150)),
 			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			new ArrayList<Airport.ControlTower>());
-		Flight testF3 = Flight.buildWithFlightId("1235ID",
-			new Airline("BA", "name"),
-			new Aeroplane("A330", "manufacturer", 200, 15),
-			new Airport("LHR", "start",
+			towers);
+		Flight testF3 = Flight.buildWithFlightId("BA1234",
+			new Airline("BA", "British Airways"),
+			new Aeroplane("A330", "Airbus", 800, 768.439),
+			new Airport("LHR", "Heathrow",
 				new GeodeticCoordinate(300, 2)),
-			new Airport("EDI", "end",
+			new Airport("EDI", "Edinburgh",
 				new GeodeticCoordinate(200, -300.2)),
 			ZonedDateTime.of(2022, 4, 2, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-			new ArrayList<Airport.ControlTower>());
+			towers);
 
 		mainController.addFlight(testF1);
 		mainController.addFlight(testF2);
@@ -180,5 +185,17 @@ class IntegrationTest extends TestSuite {
 			e.printStackTrace();
 		}
 
+		// Check against saved files
+		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
+		File expectedFile1 = new File(getPathFromResources("integration-tests/American Airlines.csv").toString());
+		org.assertj.core.api.Assertions.assertThat(actualFile1).hasSameTextualContentAs(expectedFile1);
+
+		File actualFile2 = new File(tmpDir.resolve("British Airways.csv").toString());
+		File expectedFile2 = new File(getPathFromResources("integration-tests/British Airways.csv").toString());
+		org.assertj.core.api.Assertions.assertThat(actualFile2).hasSameTextualContentAs(expectedFile2);
+
+		File actualFile3 = new File(tmpDir.resolve("Czech Airlines.csv").toString());
+		File expectedFile3 = new File(getPathFromResources("integration-tests/Czech Airlines.csv").toString());
+		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
 	}
 }
