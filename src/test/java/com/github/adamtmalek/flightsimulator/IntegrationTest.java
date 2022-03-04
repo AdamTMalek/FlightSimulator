@@ -154,36 +154,19 @@ class IntegrationTest extends TestSuite {
 
 		mainController.writeAirlineReports(tmpDir);
 
-		System.out.println("American Airlines:");
-		try {
-			File f = new File(tmpDir.resolve("American Airlines.csv").toString());
-			Scanner reader = new Scanner(f);
-			while (reader.hasNextLine()) {
-				System.out.println(reader.nextLine());
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		System.out.println("British Airways:");
-		try {
-			File f = new File(tmpDir.resolve("British Airways.csv").toString());
-			Scanner reader = new Scanner(f);
-			while (reader.hasNextLine()) {
-				System.out.println(reader.nextLine());
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Czech Airlines:");
-		try {
-			File f = new File(tmpDir.resolve("Czech Airlines.csv").toString());
-			Scanner reader = new Scanner(f);
-			while (reader.hasNextLine()) {
-				System.out.println(reader.nextLine());
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		String[] airlines = {"American Airlines", "British Airways", "Czech Airlines"};
+//		for (int i = 0; i < 3; i++) {
+//			System.out.println(airlines[i] + ":");
+//			try {
+//				File f = new File(tmpDir.resolve(airlines[i] + ".csv").toString());
+//				Scanner reader = new Scanner(f);
+//				while (reader.hasNextLine()) {
+//					System.out.println(reader.nextLine());
+//				}
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//		}
 
 		// Check against saved files
 		File actualFile1 = new File(tmpDir.resolve("American Airlines.csv").toString());
