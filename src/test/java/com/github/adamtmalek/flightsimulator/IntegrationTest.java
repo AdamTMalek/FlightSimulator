@@ -188,15 +188,8 @@ class IntegrationTest extends TestSuite {
 		org.assertj.core.api.Assertions.assertThat(actualFile3).hasSameTextualContentAs(expectedFile3);
 	}
 
-	static public void mouseMoveAndClick (Robot robot, int xLoc, int yLoc){
-		robot.mouseMove(xLoc, yLoc);
-		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-		robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-		robot.delay(1000);
-	}
-
 	@Test
-	void loadThreeNewFlightsAndWriteReportWithRobotTest() {
+	void addNewFlightsAndWriteReportWithRobotTest() {
 		// Temporary directory for this test
 		Path tmpDir = genTmpDir();
 
@@ -222,49 +215,7 @@ class IntegrationTest extends TestSuite {
 		screen.setVisible(true);
 
 		// Add a flight using robot
-		JComboBox components1 = screen.getDepartureBox();
-		Point location1 = components1.getLocationOnScreen();
-		System.out.println(location1.x + ", " + location1.y + "");
-		mouseMoveAndClick(robot, location1.x, location1.y);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_ENTER);
-		JTextField components3 = screen.getFlightNumberTextField();
-		Point location3 = components3.getLocationOnScreen();
-		System.out.println(location3.x +", "+location3.y+"");
-		mouseMoveAndClick(robot, location3.x, location3.y);
-		for (int i = 0; i < 4; i++) {
-			robot.keyPress(KeyEvent.VK_7);
-		}
-		JTable components5 = screen.getFlightPlanTable();
-		Point location5 = components5.getLocationOnScreen();
-		System.out.println(location5.x + ", " + location5.y + "");
-		mouseMoveAndClick(robot, location5.x +5, location5.y);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_ENTER);
-		JTable components6 = screen.getFlightPlanTable();
-		Point location6 = components6.getLocationOnScreen();
-		System.out.println(location6.x + ", " + location6.y + "");
-		mouseMoveAndClick(robot,location6.x +105, location6.y);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_ENTER);
-		JTable components7 = screen.getFlightPlanTable();
-		Point location7 = components7.getLocationOnScreen();
-		System.out.println(location7.x + ", " + location7.y + "");
-		mouseMoveAndClick(robot,location7.x +220, location5.y);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.keyPress(KeyEvent.VK_ENTER);
-		JButton components2 = screen.getAddButton();
-		Point location2 = components2.getLocationOnScreen();
-		System.out.println(location2.x +", "+location2.y+"");
-		mouseMoveAndClick(robot,location2.x, location2.y);
-		JButton components4 = screen.getExitButton();
-		Point location4 = components4.getLocationOnScreen();
-		System.out.println(location4.x + ", "+ location4.y+"");
-		mouseMoveAndClick(robot, location4.x, location4.y);
+		addDummyFlight(robot, screen);
 
 		mainController.writeAirlineReports(tmpDir);
 
@@ -346,7 +297,7 @@ class IntegrationTest extends TestSuite {
 		var addButton = slave.getAddButton();
 		var location = addButton.getLocationOnScreen();
 		mouseMoveAndClick(robot,location.x, location.y);
-		robot.delay(200);
+		robot.delay(500);
 	}
 
 	private  void exit(Robot robot, Screen slave){
@@ -365,13 +316,13 @@ class IntegrationTest extends TestSuite {
 
 		for(int i=0;i<3;i++) {
 			robot.keyPress(KeyEvent.VK_DOWN);
-			robot.delay(200);
+			robot.delay(500);
 		}
 		robot.keyPress(KeyEvent.VK_ENTER);
 		mouseMoveAndClick(robot,location.x +105, location.y);
 		for(int i=0;i<2;i++) {
 			robot.keyPress(KeyEvent.VK_DOWN);
-			robot.delay(200);
+			robot.delay(500);
 		}
 		robot.keyPress(KeyEvent.VK_ENTER);
 		mouseMoveAndClick(robot,location.x +220, location.y);
