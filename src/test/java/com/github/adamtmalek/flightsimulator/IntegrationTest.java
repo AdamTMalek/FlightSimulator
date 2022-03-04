@@ -16,15 +16,18 @@ import java.util.ArrayList;
 
 class IntegrationTest extends TestSuite {
 
-	@Test
-	void loadFlightsAddWriteReadDeleteWriteRead() {
-		// Temporary directory for this test
-		Path tempDir;
+	static Path genTmpDir() {
 		try {
-			tempDir = Files.createTempDirectory("integration-test");
+			return Files.createTempDirectory("integration-test");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Test
+	void loadFlightsAddWriteReadDeleteWriteRead() {
+		// Temporary directory for this test
+		Path tempDir = genTmpDir();
 
 		// Initialise controller and load flight data
 		FlightTrackerController mainController = new FlightTrackerController();
@@ -97,6 +100,11 @@ class IntegrationTest extends TestSuite {
 		Assertions.assertEquals("BA605", readTestFD2.flights().get(readTestFD2.flights().size() - 1).flightID());
 	}
 
+	@Test
+	void reportingTest() {
+		// Temporary directory for this test
+		Path tmpDir = genTmpDir();
+	}
 
 	@Test
 	void loadFlightsDeleteReadAddWriteReadWithNewControllers() {
