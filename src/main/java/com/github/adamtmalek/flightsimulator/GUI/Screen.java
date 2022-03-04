@@ -191,11 +191,13 @@ public class Screen extends JFrame {
 				.stream()
 				.filter(f -> f.flightID().equals(flight.flightID()))
 				.findAny()
-						.ifPresentOrElse(f -> {
-							flightTrackerController.addFlight(flight);
-							flightList.updateUI();
-							resetComponents();
-						}, () -> JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE));
+				.ifPresentOrElse((f) -> {
+					JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE);
+				}, () -> {
+					flightTrackerController.addFlight(flight);
+					flightList.updateUI();
+					resetComponents();
+				});
 	}
 
 	@SuppressWarnings("unchecked")
