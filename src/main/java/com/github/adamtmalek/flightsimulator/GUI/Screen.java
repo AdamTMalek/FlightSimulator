@@ -33,18 +33,12 @@ import java.util.stream.Stream;
 
 public class Screen extends JFrame {
 	private JPanel panelMain;
-	private JPanel panelTop;
-	private JPanel panelBottom;
-	private JPanel panelTopLeft;
-	private JPanel panelTopRight;
 	private JLabel textDistance;
 	private JLabel textTime;
 	private JLabel textFuelConsumption;
 	private JLabel textCo2Emission;
 	private JList<Flight> flightList;
 	private JTextArea flightPlan;
-	private JPanel addFlightPanel;
-	private JPanel addFlightPlanPanel;
 	private JComboBox<Airline> airlineBox;
 	private JComboBox<Aeroplane> aeroplaneBox;
 	private JComboBox<Airport> departureBox;
@@ -54,7 +48,6 @@ public class Screen extends JFrame {
 	private JFormattedTextField dateTimeField;
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
-	private JLabel flightNumberLabel;
 
 	private final @NotNull Controller flightTrackerController;
 	private final @NotNull Airport.ControlTower emptyControlTower = new Airport.ControlTower("(not selected)",
