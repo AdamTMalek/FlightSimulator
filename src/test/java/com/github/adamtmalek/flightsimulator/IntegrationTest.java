@@ -5,6 +5,7 @@ import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -273,6 +274,18 @@ class IntegrationTest extends TestSuite {
 
 			final var addedFlight = controller.getFlightData().flights().get(2);
 			Assertions.assertEquals("AA777", addedFlight.flightID());
+			Assertions.assertEquals("A330", addedFlight.aeroplane().model());
+
+			Assertions.assertEquals("Airbus", addedFlight.aeroplane().manufacturer());
+			Assertions.assertEquals("AA", addedFlight.airline().code());
+			Assertions.assertEquals("American Airlines", addedFlight.airline().name());
+
+			Assertions.assertEquals("EDI",addedFlight.controlTowersToCross().get(0).code);
+			Assertions.assertEquals("LHR",addedFlight.controlTowersToCross().get(1).code);
+			Assertions.assertEquals("CDG",addedFlight.controlTowersToCross().get(2).code);
+
+			Assertions.assertEquals("EDI",addedFlight.departureAirport().code);
+			Assertions.assertEquals("CDG",addedFlight.destinationAirport().code);
 
 
 		}catch(AWTException e){
@@ -280,6 +293,7 @@ class IntegrationTest extends TestSuite {
 		}
 
 	}
+
 
 	private void addDummyFlight(Robot robot, Screen slave){
 		selectDepartureAircraft(robot,slave,2);
