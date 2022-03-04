@@ -269,6 +269,7 @@ public class Screen extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				saveFlightsReport();
+				saveFlightData();
 				super.windowClosing(e);
 			}
 		});
@@ -278,7 +279,15 @@ public class Screen extends JFrame {
 		try {
 			flightTrackerController.writeAirlineReports(Path.of("reports/"));
 		} catch (FlightDataFileHandlerException e) {
-			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight report", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void saveFlightData(){
+		try {
+			flightTrackerController.writeFlightData(Path.of("flight-data/"));
+		} catch (FlightDataFileHandlerException e) {
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight data", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
