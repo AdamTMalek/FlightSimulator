@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class FlightTest {
 
 	@Test
-	void givenSerialNumberThenBuildFlight() {
+	void testFlightBuiltWithSerialNumber() {
 		var flight = Flight.buildWithSerialNumber("001",
 				new Airline("TEST", ""),
 				new Aeroplane("a", "a", 1, 50),
@@ -26,7 +26,7 @@ public class FlightTest {
 	}
 
 	@Test
-	void givenFlightIdThenBuildFlight() {
+	void testFlightBuiltWithFullId() {
 		var flight = Flight.buildWithFlightId("FULL-FLIGHT-ID",
 				new Airline("TEST", ""),
 				new Aeroplane("a", "a", 1, 50),
@@ -39,7 +39,7 @@ public class FlightTest {
 	}
 
 	@Test
-	void givenInvalidSerialNumberThenExceptionThrown() {
+	void testExceptionThrownIfInvalidSerialNumber() {
 		Assertions.assertThrows(InvalidParameterException.class, new Executable() {
 			public void execute() throws Throwable {
 				var flight = Flight.buildWithSerialNumber("Serial numbers containing non-integers is invalid.",
@@ -55,7 +55,7 @@ public class FlightTest {
 	}
 
 	@Test
-	void givenMultipleControlTowersThenCalculateExtraRecordFields() {
+	void testFlightInformationCalculations() {
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));

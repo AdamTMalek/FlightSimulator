@@ -17,7 +17,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 
 
 	@Test
-	void readFilesFromSingleDirectory() {
+	void testReadFilesFromSingleDirectory() {
 		var controller = new FlightTrackerController();
 		try {
 			final var flightData = controller.readFlightData(getPathFromResources("flight-data")).getFlightData();
@@ -35,7 +35,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void readFilesFromSpecificPaths() {
+	void testReadFilesFromSpecificPaths() {
 		var controller = new FlightTrackerController();
 		try {
 			final var flightData = controller.readFlightData(
@@ -56,7 +56,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void writeAirlineReports() {
+	void testWriteAirlineReports() {
 
 		var controller = new FlightTrackerController();
 
@@ -97,7 +97,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void writeFlightData() {
+	void testWriteFlightData() {
 		var controller = new FlightTrackerController();
 
 		// Must give controller airlines and flights in order to filter, requiring file-reading.
@@ -142,7 +142,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void addFlight() {
+	void testAddFlight() {
 		var controller = new FlightTrackerController();
 
 		controller.addFlight(Flight.buildWithFlightId("newFlightID",
@@ -159,7 +159,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void removeFlight() {
+	void testRemoveFlight() {
 		var controller = new FlightTrackerController();
 
 		controller.addFlight(Flight.buildWithFlightId("newFlightID",
@@ -177,7 +177,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void removeFlightAtInvalidIndex() {
+	void testRemoveFlightAtInvalidIndex() {
 
 		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
 			var controller = new FlightTrackerController();
@@ -196,7 +196,7 @@ public class FlightTrackerControllerTest extends TestSuite {
 	}
 
 	@Test
-	void editFlight() {
+	void testEditFlight() {
 		var controller = new FlightTrackerController();
 
 		controller.addFlight(Flight.buildWithFlightId("001",

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class AirlineReportTest {
 
 	@Test
-	void givenPopulatedListThenMembersAreSummed() {
+	void testAirlineReportBuilt() {
 
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
@@ -66,7 +66,7 @@ public class AirlineReportTest {
 	}
 
 	@Test
-	void givenEmptyAirlinesListThenMembersAreSetTo0() {
+	void testAirlineReportBuiltWhenEmptyList() {
 		var flights = new ArrayList<Flight>();
 		final var airlineReport = new AirlineReport(flights);
 		Assertions.assertEquals(0, airlineReport.totalFlights());
