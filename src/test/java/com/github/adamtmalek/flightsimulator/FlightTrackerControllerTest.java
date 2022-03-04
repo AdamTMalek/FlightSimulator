@@ -114,28 +114,28 @@ public class FlightTrackerControllerTest extends TestSuite {
 			controller.writeFlightData(generatedDirectory);
 
 			// Check Flights
-			final var expectedFlightsFile = new File(getPathFromResources("flight-data/flights.csv").toUri());
-			final var actualFlightsFile = new File(generatedDirectory.resolve("flights.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualFlightsFile)
-					.hasSameTextualContentAs(expectedFlightsFile);
+			final var expectedFlightsFile = new File(getPathFromResources("flight-data/flights.csv").toUri()).toPath();
+			final var actualFlightsFile = new File(generatedDirectory.resolve("flights.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(actualFlightsFile, ";")
+					.hasTheSameContentAs(expectedFlightsFile);
 
 			// Check Airlines
-			final var expectedAirlinesFile = new File(getPathFromResources("flight-data/airlines.csv").toUri());
-			final var actualAirlinesFile = new File(generatedDirectory.resolve("airlines.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAirlinesFile)
-					.hasSameTextualContentAs(expectedAirlinesFile);
+			final var expectedAirlinesFile = new File(getPathFromResources("flight-data/airlines.csv").toUri()).toPath();
+			final var actualAirlinesFile = new File(generatedDirectory.resolve("airlines.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAirlinesFile, ";")
+					.hasTheSameContentAs(actualAirlinesFile);
 
 			// Check Airports
-			final var expectedAirportsFile = new File(getPathFromResources("flight-data/airports.csv").toUri());
-			final var actualAirportsFile = new File(generatedDirectory.resolve("airports.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAirportsFile)
-					.hasSameTextualContentAs(expectedAirportsFile);
+			final var expectedAirportsFile = new File(getPathFromResources("flight-data/airports.csv").toUri()).toPath();
+			final var actualAirportsFile = new File(generatedDirectory.resolve("airports.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAirportsFile, ";")
+					.hasTheSameContentAs(actualAirportsFile);
 
 			// Check Aeroplanes
-			final var expectedAiroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri());
-			final var actualAiroplanessFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri());
-			org.assertj.core.api.Assertions.assertThat(actualAiroplanessFile)
-					.hasSameTextualContentAs(expectedAiroplanesFile);
+			final var expectedAiroplanesFile = new File(getPathFromResources("flight-data/aeroplanes.csv").toUri()).toPath();
+			final var actualAiroplanessFile = new File(generatedDirectory.resolve("aeroplanes.csv").toUri()).toPath();
+			CsvFileAssert.assertThat(expectedAiroplanesFile, ";")
+					.hasTheSameContentAs(actualAiroplanessFile);
 
 		} catch (IOException | FlightDataFileHandlerException e) {
 			throw new RuntimeException(e);
