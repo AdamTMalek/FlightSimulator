@@ -3,10 +3,7 @@ package com.github.adamtmalek.flightsimulator.GUI;
 import com.github.adamtmalek.flightsimulator.GUI.models.BoundComboBoxModel;
 import com.github.adamtmalek.flightsimulator.GUI.models.BoundListModel;
 import com.github.adamtmalek.flightsimulator.interfaces.Controller;
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airline;
-import com.github.adamtmalek.flightsimulator.models.Airport;
-import com.github.adamtmalek.flightsimulator.models.Flight;
+import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.models.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
@@ -31,7 +28,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -61,7 +57,10 @@ public class Screen extends JFrame {
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
 	private JLabel flightNumberLabel;
+
 	private final @NotNull Controller flightTrackerController;
+	private final @NotNull Airport.ControlTower emptyControlTower = new Airport.ControlTower("(not selected)",
+			"(not selected)", new GeodeticCoordinate(0, 0));
 
 	private static final int MAX_CONTROL_TOWERS = 10;
 	private static final int MAX_FLIGHT_ID_CHAR_LENGTH = 4;
@@ -130,22 +129,20 @@ public class Screen extends JFrame {
 		destinationBox.setModel(new BoundComboBoxModel<>(flightData.airports()));
 		destinationBox.setRenderer(new AirportListCellRenderer());
 
-		if (!flightData.airlines().isEmpty()) airlineBox.setSelectedIndex(0);
-		if (!flightData.aeroplanes().isEmpty()) aeroplaneBox.setSelectedIndex(0);
-		if (!flightData.airports().isEmpty()) {
-			departureBox.setSelectedIndex(0);
-			destinationBox.setSelectedIndex(0);
-		}
-
 		IntStream.range(0, MAX_CONTROL_TOWERS).forEach(i -> {
 			flightPlanTable.getColumnModel()
 					.getColumn(i)
-					.setCellEditor(new ComboBoxCellEditor(flightData.airports().stream().map(e -> e.controlTower).toList()));
+					.setCellEditor(new ComboBoxCellEditor(Stream.concat(
+							flightData.airports().stream().map(e -> e.controlTower),
+							Stream.of(emptyControlTower)
+					).toList()));
 
 			flightPlanTable.getColumnModel()
 					.getColumn(i)
 					.setCellRenderer(new ControlTowerTableCellRenderer());
 		});
+
+		resetComponents();
 
 		this.flightList.updateUI();
 	}
@@ -200,6 +197,24 @@ public class Screen extends JFrame {
 
 		flightTrackerController.addFlight(flight);
 		flightList.updateUI();
+		resetComponents();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void resetComponents() {
+		IntStream.range(0, MAX_CONTROL_TOWERS)
+				.forEach(i -> {
+					flightPlanTable.setValueAt(emptyControlTower, 0, i);
+				});
+		flightPlanTable.updateUI();
+
+		flightNumberTextField.setText("");
+		if (airlineBox.getModel().getSize() > 0) airlineBox.setSelectedIndex(0);
+		if (aeroplaneBox.getModel().getSize() > 0) aeroplaneBox.setSelectedIndex(0);
+		if (departureBox.getModel().getSize() > 0) {  // If departure box is not empty, then destination box is not either
+			departureBox.setSelectedIndex(0);
+			destinationBox.setSelectedIndex(0);
+		}
 	}
 
 	private @Nullable ZonedDateTime getDateTime() {
@@ -213,7 +228,7 @@ public class Screen extends JFrame {
 	private List<Airport.ControlTower> getFlightPlan() {
 		return IntStream.range(0, MAX_CONTROL_TOWERS)
 				.mapToObj(i -> flightPlanTable.getModel().getValueAt(0, i))
-				.filter(Objects::nonNull)
+				.filter(e -> !e.equals(emptyControlTower))
 				.map(e -> (Airport.ControlTower) e)
 				.toList();
 	}
