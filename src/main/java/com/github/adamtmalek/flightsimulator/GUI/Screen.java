@@ -18,6 +18,7 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -287,5 +288,11 @@ public class Screen extends JFrame {
 	@NotNull
 	public JTextField getFlightNumberTextField() {
 		return flightNumberTextField;
+	}
+
+	@TestOnly
+	@NotNull
+	public JTable getFlightPlanTable() {
+		return flightPlanTable;
 	}
 }

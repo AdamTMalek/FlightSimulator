@@ -1,9 +1,8 @@
 package com.github.adamtmalek.flightsimulator.models;
 
+import com.github.adamtmalek.flightsimulator.FlightTrackerController;
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
-import com.github.adamtmalek.flightsimulator.interfaces.Controller;
 import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +10,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class RobotTest {
-	private static final @NotNull Controller flightTrackerController;
-//initiating a robot
+	//initiating a robot
 	Robot robot;
 	//connecting robot glass to screen GUI
 	Screen slave;
@@ -25,10 +23,12 @@ public class RobotTest {
 		} catch (AWTException e) {
 			e.printStackTrace();
 		}
+//implements the controller interface
+		var flightTrackerController = new FlightTrackerController();
 		slave = new Screen(flightTrackerController);
 		slave.setVisible(true);
 		//simulates a real user accessing and using the GUI
-		JComboBox components1 = slave.getDepatureBox();
+		JComboBox components1 = slave.getDepartureBox();
 		Point location1 = components1.getLocationOnScreen();
 		System.out.println(location1.x + ", " + location1.y + "");
 		mouseMoveAndClick(location1.x, location1.y);
@@ -39,8 +39,17 @@ public class RobotTest {
 		Point location3 = components3.getLocationOnScreen();
 		System.out.println(location3.x +", "+location3.y+"");
 		mouseMoveAndClick(location3.x, location3.y);
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			robot.keyPress(KeyEvent.VK_7);
+		}
+		Component[] components4 = slave.getFlightPlanTable().getComponents();
+		for (int cnt = 0;cnt<3;cnt++) {
+			Point location4 = components4[cnt].getLocationOnScreen();
+			System.out.println(location4.x + ", " + location4.y + "");
+			mouseMoveAndClick(location4.x, location4.y);
+			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.keyPress(KeyEvent.VK_ENTER);
 		}
 		JButton components2 = slave.getAddButton();
 		Point location2 = components2.getLocationOnScreen();
