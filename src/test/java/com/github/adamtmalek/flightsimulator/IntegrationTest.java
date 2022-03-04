@@ -362,9 +362,8 @@ class IntegrationTest extends TestSuite {
 
 			var slave = new Screen(controller);
 			slave.setVisible(true);
+
 			addDummyFlight(robot,slave);
-			exit(robot,slave);
-			robot.delay(200);
 
 			final var addedFlight = controller.getFlightData().flights().get(2);
 			Assertions.assertEquals("AA777", addedFlight.flightID());
@@ -416,23 +415,27 @@ class IntegrationTest extends TestSuite {
 		var location = flightPlanTable.getLocationOnScreen();
 
 		mouseMoveAndClick(robot,location.x +5, location.y);
+		robot.delay(200);
+		robot.keyPress(KeyEvent.VK_UP);
+		robot.delay(500);
+		robot.keyPress(KeyEvent.VK_ENTER);
 
-		for(int i=0;i<3;i++) {
-			robot.keyPress(KeyEvent.VK_DOWN);
-			robot.delay(500);
-		}
-		robot.keyPress(KeyEvent.VK_ENTER);
 		mouseMoveAndClick(robot,location.x +105, location.y);
+		robot.delay(200);
 		for(int i=0;i<2;i++) {
-			robot.keyPress(KeyEvent.VK_DOWN);
+			robot.keyPress(KeyEvent.VK_UP);
 			robot.delay(500);
 		}
 		robot.keyPress(KeyEvent.VK_ENTER);
+
 		mouseMoveAndClick(robot,location.x +220, location.y);
 		robot.delay(200);
-		robot.keyPress(KeyEvent.VK_DOWN);
-		robot.delay(200);
+		for(int i=0;i<3;i++) {
+			robot.keyPress(KeyEvent.VK_UP);
+			robot.delay(500);
+		}
 		robot.keyPress(KeyEvent.VK_ENTER);
+		robot.delay(500);
 
 	}
 	private void enterFlightSerialNumber(Robot robot, Screen slave, String serialNumber){
