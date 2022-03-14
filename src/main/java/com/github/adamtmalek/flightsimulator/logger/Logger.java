@@ -1,57 +1,55 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Logger {
-	private static Logger logger = new Logger();
+	private static final Logger logger = new Logger();
 
 	private Logger() {
-		this.loggerLevel = Level.ALL;
+		this.loggerLevel = LogLevel.ALL;
 	}
 
 	public static Logger getInstance() {
 		return logger;
 	}
 
-	private int loggerLevel;
+	private LogLevel loggerLevel;
 
-	public void setLevel(int level) {
+	public void setLevel(LogLevel level) {
 		loggerLevel = level;
 	}
 
-	public int getLevel() {
+	public LogLevel getLevel() {
 		return loggerLevel;
 	}
 
-	public void log(int level, String msg) {
-		if (level < this.loggerLevel) {return;}
+	public void log(@NotNull LogLevel level, String msg) {
+		if (level.value > this.loggerLevel.value) {return;}
 		// DO STUFF
-		System.out.println();
+		System.out.println(msg);
+	}
+	public void trace(String msg) {
+		logger.log(LogLevel.TRACE, msg);
 	}
 
-	public void severe(String msg) {
-		logger.log(Level.SEVERE, msg);
-	}
-
-	public void warning(String msg) {
-		logger.log(Level.WARNING, msg);
+	public void debug(String msg) {
+		logger.log(LogLevel.DEBUG, msg);
 	}
 
 	public void info(String msg) {
-		logger.log(Level.INFO, msg);
+		logger.log(LogLevel.INFO, msg);
 	}
 
-	public void config(String msg) {
-		logger.log(Level.CONFIG, msg);
+	public void warn(String msg) {
+		logger.log(LogLevel.WARN, msg);
 	}
 
-	public void fine(String msg) {
-		logger.log(Level.FINE, msg);
+
+	public void error(String msg) {
+		logger.log(LogLevel.ERROR, msg);
 	}
 
-	public void finer(String msg) {
-		logger.log(Level.FINER, msg);
-	}
-
-	public void finest(String msg) {
-		logger.log(Level.FINEST, msg);
+	public void fatal(String msg) {
+		logger.log(LogLevel.FATAL, msg);
 	}
 }
