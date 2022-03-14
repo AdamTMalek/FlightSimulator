@@ -22,4 +22,8 @@ public abstract class Publisher<T> {
 			sub.callback(data);
 		}
 	}
+
+	public void publishTo(T data, Subscriber subscriber){
+		subscriber.callback(data);
+	}
 }

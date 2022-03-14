@@ -7,19 +7,19 @@ import org.junit.jupiter.api.Test;
 
 public class PubSubTest {
 
+	private class PublisherTest extends Publisher<String> { }
+
+	private class SubscriberTest implements Subscriber<String>{
+		public String receivedString = new String();
+
+		public void callback(String data){
+			receivedString = data;
+		}
+	}
 
 	@Test
-	void testPubSubConncetion() {
+	void testPubSubConnection() {
 
-		class PublisherTest extends Publisher<String> { }
-
-		class SubscriberTest implements Subscriber<String>{
-			public String receivedString = new String();
-
-			public void callback(String data){
-				receivedString = data;
-			}
-		}
 
 		PublisherTest publisher = new PublisherTest();
 		SubscriberTest subscriber = new SubscriberTest();
@@ -27,6 +27,19 @@ public class PubSubTest {
 		publisher.registerSubscriber(subscriber);
 		String dataToSend = "Hello World!";
 		publisher.publish(dataToSend);
+
+		Assertions.assertEquals(dataToSend,subscriber.receivedString);
+
+	}
+
+	@Test
+	void testPubToConnection(){
+		PublisherTest publisher = new PublisherTest();
+		SubscriberTest subscriber = new SubscriberTest();
+
+		String dataToSend = "Hello World!";
+
+		publisher.publishTo(dataToSend,subscriber);
 
 		Assertions.assertEquals(dataToSend,subscriber.receivedString);
 
