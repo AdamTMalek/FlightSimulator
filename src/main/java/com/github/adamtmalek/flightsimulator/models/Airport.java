@@ -48,7 +48,7 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower implements Subscriber<GeodeticCoordinate> {
+	public static class ControlTower implements Subscriber<Flight> {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
@@ -59,8 +59,8 @@ public class Airport {
 			position = positionIn;
 		}
 
-		public void callback(GeodeticCoordinate data){
-			System.out.println(name + " received `"+data.latitude()+","+data.longitude()+"`");
+		public void callback(Flight data){
+			System.out.println(name + " received `"+data.flightID()+"`");
 		}
 
 		@Override
