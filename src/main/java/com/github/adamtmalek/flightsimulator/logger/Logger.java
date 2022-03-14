@@ -24,36 +24,32 @@ public class Logger {
 	}
 
 	public void log(@NotNull LogLevel level, String msg) {
-		if (level.value < this.loggerLevel.value) {return;}
+		if (level.value > this.loggerLevel.value) {return;}
 		// DO STUFF
 		System.out.println(msg);
 	}
-
-	public void severe(String msg) {
-		logger.log(LogLevel.SEVERE, msg);
+	public void trace(String msg) {
+		logger.log(LogLevel.TRACE, msg);
 	}
 
-	public void warning(String msg) {
-		logger.log(LogLevel.WARNING, msg);
+	public void debug(String msg) {
+		logger.log(LogLevel.DEBUG, msg);
 	}
 
 	public void info(String msg) {
 		logger.log(LogLevel.INFO, msg);
 	}
 
-	public void config(String msg) {
-		logger.log(LogLevel.CONFIG, msg);
+	public void warn(String msg) {
+		logger.log(LogLevel.WARN, msg);
 	}
 
-	public void fine(String msg) {
-		logger.log(LogLevel.FINE, msg);
+
+	public void error(String msg) {
+		logger.log(LogLevel.ERROR, msg);
 	}
 
-	public void finer(String msg) {
-		logger.log(LogLevel.FINER, msg);
-	}
-
-	public void finest(String msg) {
-		logger.log(LogLevel.FINEST, msg);
+	public void fatal(String msg) {
+		logger.log(LogLevel.FATAL, msg);
 	}
 }

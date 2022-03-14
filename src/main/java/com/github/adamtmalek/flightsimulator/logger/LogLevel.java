@@ -1,15 +1,14 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
 public enum LogLevel {
-	OFF		(Integer.MAX_VALUE),
-	SEVERE	(1000),
-	WARNING	(900),
-	INFO	(800),
-	CONFIG	(700),
-	FINE	(500),
-	FINER	(400),
-	FINEST	(300),
-	ALL		(0);
+	ALL		(Integer.MAX_VALUE),
+	TRACE	(600),
+	DEBUG	(500),
+	INFO	(400),
+	WARN	(300),
+	ERROR	(200),
+	FATAL	(100),
+	OFF		(0);
 
 	public final int value;
 
