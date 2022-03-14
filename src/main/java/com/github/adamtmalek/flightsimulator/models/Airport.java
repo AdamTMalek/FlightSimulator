@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models;
 
+import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
 import com.github.adamtmalek.flightsimulator.models.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower {
+	public static class ControlTower implements Subscriber<GeodeticCoordinate> {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
@@ -56,6 +57,10 @@ public class Airport {
 			code = codeIn;
 			name = nameIn;
 			position = positionIn;
+		}
+
+		public void callback(GeodeticCoordinate data){
+			System.out.println(name + " received `"+data.latitude()+","+data.longitude()+"`");
 		}
 
 		@Override

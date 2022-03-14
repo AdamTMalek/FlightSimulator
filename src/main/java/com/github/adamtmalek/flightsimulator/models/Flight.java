@@ -7,9 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import java.security.InvalidParameterException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.ListIterator;
 
 
-public class Flight {
+public class Flight  extends Publisher<GeodeticCoordinate>{
 
 	@SerializableField
 	public final @NotNull String flightID;
@@ -27,6 +28,7 @@ public class Flight {
 	public final double estimatedFuelConsumption; // Units: Litres
 	public final double estimatedCO2Produced; // Units: Kilograms
 
+	private ListIterator<Airport.ControlTower> controlTowerIterator;
 
 	public Flight(
 			@NotNull String flightID,
@@ -50,6 +52,8 @@ public class Flight {
 		this.distanceTravelled = distanceTravelled;
 		this.estimatedFuelConsumption = estimatedFuelConsumption;
 		this.estimatedCO2Produced = estimatedCO2Produced;
+
+		this.controlTowerIterator = controlTowersToCross.subList(1,controlTowersToCross.size()).listIterator();
 	}
 
 	public static Flight buildWithSerialNumber(@NotNull String serialNumber,
@@ -83,8 +87,8 @@ public class Flight {
 																				 @NotNull Airport destinationAirport,
 																				 @NotNull ZonedDateTime departureDate,
 																				 @NotNull List<Airport.ControlTower> controlTowersToCross) {
-		final var distanceTravelled = calculateDistanceTravelled(controlTowersToCross);
-		final var estimatedFuelConsumption = calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), distanceTravelled);
+		final var estimatedTotalDistanceTravelled = calculateDistanceTravelled(controlTowersToCross);
+		final var estimatedFuelConsumption = calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(), estimatedTotalDistanceTravelled);
 		final var estimatedCO2Produced = calculateEstimatedCO2Produced(estimatedFuelConsumption);
 
 		return new Flight(fullFlightId,
@@ -94,9 +98,30 @@ public class Flight {
 				destinationAirport,
 				departureDate,
 				controlTowersToCross,
-				distanceTravelled,
+				estimatedTotalDistanceTravelled,
 				estimatedFuelConsumption,
 				estimatedCO2Produced);
+	}
+
+	public void tick(){
+
+		final var currentCoordinate = calculateCurrentPosition();
+
+			final var nextControlTower = controlTowerIterator.hasNext()
+					? controlTowerIterator.next() : controlTowersToCross.get(controlTowersToCross.size()-1);
+
+		publishTo(currentCoordinate,nextControlTower);
+	}
+
+	private double calculateCurrentDistanceTravelled(){
+		return aeroplane.speed() * getCurrentElapsedDuration();
+	}
+	private GeodeticCoordinate calculateCurrentPosition(){
+		return new GeodeticCoordinate(0.0,0.0);
+	}
+
+	private double getCurrentElapsedDuration(){
+		return 0.0;
 	}
 
 
