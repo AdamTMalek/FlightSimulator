@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models;
 
+import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,26 +8,49 @@ import java.security.InvalidParameterException;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-/**
- * @param distanceTravelled         Units: Kilometre
- * @param estimatedFuelConsumption: Units: Litres
- * @param estimatedCO2Produced      Units: Kilograms
- */
-public record Flight(@SerializableField
-										 @NotNull String flightID,
-										 @NotNull Airline airline,
-										 @SerializableField
-										 @NotNull Aeroplane aeroplane,
-										 @SerializableField
-										 @NotNull Airport departureAirport,
-										 @SerializableField
-										 @NotNull Airport destinationAirport,
-										 @SerializableField
-										 @NotNull ZonedDateTime departureDate,
-										 @NotNull List<Airport.ControlTower> controlTowersToCross,
-										 double distanceTravelled,
-										 double estimatedFuelConsumption,
-										 double estimatedCO2Produced) {
+
+public class Flight {
+
+	@SerializableField
+	public final @NotNull String flightID;
+	public final @NotNull Airline airline;
+	@SerializableField
+	public final @NotNull Aeroplane aeroplane;
+	@SerializableField
+	public final @NotNull Airport departureAirport;
+	@SerializableField
+	public final @NotNull Airport destinationAirport;
+	@SerializableField
+	public final @NotNull ZonedDateTime departureDate;
+	public final @NotNull List<Airport.ControlTower> controlTowersToCross;
+	public final double distanceTravelled; // Units: Kilometre
+	public final double estimatedFuelConsumption; // Units: Litres
+	public final double estimatedCO2Produced; // Units: Kilograms
+
+
+	public Flight(
+			@NotNull String flightID,
+			@NotNull Airline airline,
+			@NotNull Aeroplane aeroplane,
+			@NotNull Airport departureAirport,
+			@NotNull Airport destinationAirport,
+			@NotNull ZonedDateTime departureDate,
+			@NotNull List<Airport.ControlTower> controlTowersToCross,
+			double distanceTravelled,
+			double estimatedFuelConsumption,
+			double estimatedCO2Produced) {
+
+		this.flightID = flightID;
+		this.airline = airline;
+		this.aeroplane = aeroplane;
+		this.departureAirport = departureAirport;
+		this.destinationAirport = destinationAirport;
+		this.departureDate = departureDate;
+		this.controlTowersToCross = controlTowersToCross;
+		this.distanceTravelled = distanceTravelled;
+		this.estimatedFuelConsumption = estimatedFuelConsumption;
+		this.estimatedCO2Produced = estimatedCO2Produced;
+	}
 
 	public static Flight buildWithSerialNumber(@NotNull String serialNumber,
 																						 @NotNull Airline airline,
@@ -107,5 +131,45 @@ public record Flight(@SerializableField
 
 	private static double calculateEstimatedCO2Produced(double estimatedFuelConsumption) {
 		return Aeroplane.AVG_RATE_OF_CO2_EMISSION * estimatedFuelConsumption;
+	}
+
+	public String flightID() {
+		return flightID;
+	}
+
+	public Airline airline() {
+		return airline;
+	}
+
+	public Aeroplane aeroplane() {
+		return aeroplane;
+	}
+
+	public Airport departureAirport() {
+		return departureAirport;
+	}
+
+	public Airport destinationAirport() {
+		return destinationAirport;
+	}
+
+	public ZonedDateTime departureDate() {
+		return departureDate;
+	}
+
+	public List<Airport.ControlTower> controlTowersToCross() {
+		return controlTowersToCross;
+	}
+
+	public double distanceTravelled() {
+		return distanceTravelled;
+	}
+
+	public double estimatedFuelConsumption() {
+		return estimatedFuelConsumption;
+	}
+
+	public double estimatedCO2Produced() {
+		return estimatedCO2Produced;
 	}
 }
