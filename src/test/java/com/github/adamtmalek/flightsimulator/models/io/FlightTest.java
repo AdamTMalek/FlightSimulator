@@ -78,7 +78,7 @@ public class FlightTest {
 		// Distance between Edinburgh and London: 529.46km
 		// Distance between London and New York 5550.14km:
 		// Total Distance 6157.39:
-		Assertions.assertEquals(6157.39, flight.distanceTravelled(), 0.5);
+		Assertions.assertEquals(6157.39, flight.estimatedTotalDistancetoTravel(), 0.5);
 
 		// The aircraft consumes an x litres per 100 kilometre, specified as fuelConsumptionRatio.
 		// As the flight has a total distance of ~6157.39, the estimated fuel consumption is as follows:

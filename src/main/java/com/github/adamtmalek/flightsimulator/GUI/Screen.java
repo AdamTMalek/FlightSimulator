@@ -80,7 +80,7 @@ public class Screen extends JFrame {
 			final var flight = flightList.getSelectedValue();
 			if (flight == null) return;
 
-			textDistance.setText(Double.toString(flight.distanceTravelled()));
+			textDistance.setText(Double.toString(flight.estimatedTotalDistancetoTravel()));
 			textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
 			textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
 			textTime.setText(dateTimeFormatter.format(flight.departureDate()));

@@ -21,7 +21,7 @@ public record Flight(
 			@SerializableField
 			@NotNull ZonedDateTime departureDate,
 			@NotNull List<Airport.ControlTower> controlTowersToCross,
-			double distanceTravelled,
+			double estimatedTotalDistancetoTravel,
 			double estimatedFuelConsumption,
 			double estimatedCO2Produced) {
 

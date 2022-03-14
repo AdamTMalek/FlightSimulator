@@ -24,7 +24,7 @@ public record AirlineReport(
 	}
 
 	private static double calculateTotalDistanceTravelled(ArrayList<Flight> flights) {
-		return flights.stream().mapToDouble(o -> o.distanceTravelled()).sum();
+		return flights.stream().mapToDouble(o -> o.estimatedTotalDistancetoTravel()).sum();
 	}
 
 	private static double calculateEstimatedFuelConsumption(ArrayList<Flight> flights) {
