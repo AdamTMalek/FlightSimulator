@@ -5,39 +5,67 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 
-import java.util.ListIterator;
-
 public class FlightManager extends Publisher<Flight> {
 
+
 	Flight flight;
-	ListIterator<Airport.ControlTower> controlTowerIterator;
+	int duration = 0;
 
 	FlightManager(Flight flight) {
 		this.flight = flight;
-		this.controlTowerIterator = flight.controlTowersToCross()
-				.subList(1, flight.controlTowersToCross().size()).listIterator();
 
 	}
 
 	public void tick() {
 
-		final var currentCoordinate = calculateCurrentPosition();
+		OrientatedGeodeticCoordinate intermittentCoordinate = calculateCurrentPosition(calculateCurrentDistanceTravelled());
+		final var currentPosition = intermittentCoordinate.position;
+		final var nextControlTower = intermittentCoordinate.nextControlTower;
+		System.out.println(nextControlTower.name + ": " + currentPosition.latitude() + ", " + currentPosition.longitude());
 
-		final var nextControlTower = controlTowerIterator.hasNext()
-				? controlTowerIterator.next() : flight.controlTowersToCross().get(flight.controlTowersToCross().size() - 1);
 
-		publishTo(flight, nextControlTower);
+		final var updatedFlight = new Flight(flight.flightID(),
+				flight.airline(),
+				flight.aeroplane(),
+				flight.departureAirport(),
+				flight.destinationAirport(),
+				flight.departureDate(),
+				flight.controlTowersToCross(),
+				flight.estimatedTotalDistancetoTravel(),
+				flight.estimatedFuelConsumption(),
+				flight.estimatedCO2Produced(),
+				currentPosition);
+
+		publishTo(updatedFlight, nextControlTower);
+
+		duration++;
+
+	}
+
+	private OrientatedGeodeticCoordinate calculateCurrentPosition(double distanceTravelled) {
+		var iterator = flight.controlTowersToCross().listIterator();
+		Airport.ControlTower firstCoord = flight.controlTowersToCross().get(0);
+		Airport.ControlTower secondCoord = flight.controlTowersToCross().get(1);
+		double distanceBetweenPreviousControlTowers = 0.0;
+		while (iterator.hasNext() && distanceBetweenPreviousControlTowers < distanceTravelled) { //iterator.nextIndex() + 1 <= flight.controlTowersToCross().size() - 1
+			firstCoord = iterator.next();
+			secondCoord = flight.controlTowersToCross().get(iterator.nextIndex());
+			distanceBetweenPreviousControlTowers += firstCoord.position.calculateDistance(secondCoord.position);
+
+		}
+		distanceBetweenPreviousControlTowers -= firstCoord.position.calculateDistance(secondCoord.position);
+
+		final var azimuthBetweenControlTowers = firstCoord.position.calculateAzimuth(secondCoord.position);
+		final var intermittentCoordinate = firstCoord.position.extendCoordinate(azimuthBetweenControlTowers, distanceTravelled - distanceBetweenPreviousControlTowers);
+		return new OrientatedGeodeticCoordinate(secondCoord, intermittentCoordinate);
 	}
 
 	private double calculateCurrentDistanceTravelled() {
-		return flight.aeroplane().speed() * getCurrentElapsedDuration();
+		return flight.aeroplane().speed() * duration;
 	}
 
-	private GeodeticCoordinate calculateCurrentPosition() {
-		return new GeodeticCoordinate(0.0, 0.0);
+
+	private record OrientatedGeodeticCoordinate(Airport.ControlTower nextControlTower, GeodeticCoordinate position) {
 	}
 
-	private double getCurrentElapsedDuration() {
-		return 0.0;
-	}
 }
