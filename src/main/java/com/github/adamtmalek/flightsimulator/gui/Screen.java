@@ -3,12 +3,8 @@ package com.github.adamtmalek.flightsimulator.gui;
 import com.github.adamtmalek.flightsimulator.gui.models.BoundComboBoxModel;
 import com.github.adamtmalek.flightsimulator.gui.models.BoundListModel;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
-import com.github.adamtmalek.flightsimulator.interfaces.Controller;
-import com.github.adamtmalek.flightsimulator.models.*;
 import com.github.adamtmalek.flightsimulator.io.FlightData;
-import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
-import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
-import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
+import com.github.adamtmalek.flightsimulator.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -16,10 +12,8 @@ import org.jetbrains.annotations.TestOnly;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
+import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -32,7 +26,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
-public class Screen extends JFrame {
+public class Screen extends JFrame implements MainView {
 	private JPanel panelMain;
 	private JLabel textDistance;
 	private JLabel textTime;
@@ -50,7 +44,7 @@ public class Screen extends JFrame {
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
 
-	private final @NotNull Controller flightTrackerController;
+	private final @NotNull MainViewController controller;
 	private final @NotNull Airport.ControlTower emptyControlTower = new Airport.ControlTower("(not selected)",
 			"(not selected)", new GeodeticCoordinate(0, 0));
 
@@ -58,74 +52,114 @@ public class Screen extends JFrame {
 	private static final int MAX_FLIGHT_ID_CHAR_LENGTH = 4;
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-	public Screen(@NotNull Controller controller) {
+	public Screen(@NotNull MainViewController controller) {
 		super("Flight Tracking System");
-		this.flightTrackerController = controller;
+		this.controller = controller;
 		this.setContentPane(this.panelMain);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.pack();
 
-		initializeComponents(readFlightData());
+		initializeComponents();
 
 		addListenersForUpdatingAddButtonState();
-		addButton.addActionListener(e -> addNewFlight());
+		addButton.addActionListener(e -> controller.onAddFlightClicked());
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
-
-		addFlightSelectionListener();
-		updateAddButtonState();
+		flightList.addListSelectionListener(e -> setSelectedFlight());
 		addOnExitEventHandler();
 	}
 
-	private void addFlightSelectionListener() {
-		flightList.addListSelectionListener(e -> {
-			final var flight = flightList.getSelectedValue();
-			if (flight == null) return;
-
-			textDistance.setText(Double.toString(flight.estimatedTotalDistancetoTravel()));
-			textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
-			textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
-			textTime.setText(dateTimeFormatter.format(flight.departureDate()));
-
-			final var flightPlanText = flight.controlTowersToCross()
-					.stream()
-					.map(t -> t.code)
-					.collect(Collectors.joining("\n"));
-			flightPlan.setText(flightPlanText);
-		});
+	private void initializeComponents() {
+		flightList.setCellRenderer(new FlightListCellRenderer());
+		airlineBox.setRenderer(new AirlineListCellRenderer());
+		aeroplaneBox.setRenderer(new AeroplaneListCellRenderer());
+		departureBox.setRenderer(new AirportListCellRenderer());
+		destinationBox.setRenderer(new AirportListCellRenderer());
 	}
 
-	private @NotNull FlightData readFlightData() {
+	private void addListenersForUpdatingAddButtonState() {
+		Stream.of(airlineBox, aeroplaneBox, departureBox,
+						destinationBox, flightPlanTable, dateTimeField,
+						flightNumberTextField)
+				.forEach(e -> e.addPropertyChangeListener(evt -> controller.onAddFlightFormEdited()));
+	}
+
+	private void setSelectedFlight() {
+		final var flight = flightList.getSelectedValue();
+		if (flight == null) return;
+
+		textDistance.setText(Double.toString(flight.estimatedTotalDistancetoTravel()));
+		textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
+		textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
+		textTime.setText(dateTimeFormatter.format(flight.departureDate()));
+
+		final var flightPlanText = flight.controlTowersToCross()
+				.stream()
+				.map(t -> t.code)
+				.collect(Collectors.joining("\n"));
+		flightPlan.setText(flightPlanText);
+	}
+
+	@Override
+	public @NotNull Component getComponent() {
+		return this;
+	}
+
+	@Override
+	public @Nullable String getFlightNumber() {
+		return flightNumberTextField.getText();
+	}
+
+	@Override
+	public @Nullable Airline getSelectedAirline() {
+		return (Airline) airlineBox.getSelectedItem();
+	}
+
+	@Override
+	public @Nullable Aeroplane getSelectedAeroplane() {
+		return (Aeroplane) aeroplaneBox.getSelectedItem();
+	}
+
+	@Override
+	public @Nullable Airport getSelectedDepartureAirport() {
+		return (Airport) departureBox.getSelectedItem();
+	}
+
+	@Override
+	public @Nullable Airport getSelectedArrivalAirport() {
+		return (Airport) destinationBox.getSelectedItem();
+	}
+
+	@Override
+	public ZonedDateTime getDateTimeOfDeparture() {
 		try {
-			Path fileDirectory = Path.of("src/test/resources/flight-data");
-			this.flightTrackerController.readFlightData(fileDirectory);
-			return this.flightTrackerController.getFlightData();
-		} catch (FlightDataFileHandlerException | IOException ex) {
-			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
-			return new FlightData();
+			return LocalDateTime.parse((String) dateTimeField.getValue(), dateTimeFormatter).atZone(ZoneId.systemDefault());
+		} catch (DateTimeParseException ex) {
+			return null;
 		}
 	}
 
-	private void initializeComponents(@NotNull FlightData flightData) {
-		flightList.setModel(new BoundListModel<>(flightData.flights()));
-		flightList.setCellRenderer(new FlightListCellRenderer());
+	@Override
+	public @NotNull List<Airport.ControlTower> getFlightPlan() {
+		return IntStream.range(0, MAX_CONTROL_TOWERS)
+				.mapToObj(i -> flightPlanTable.getModel().getValueAt(0, i))
+				.filter(e -> !e.equals(emptyControlTower))
+				.map(e -> (Airport.ControlTower) e)
+				.toList();
+	}
 
-		airlineBox.setModel(new BoundComboBoxModel<>(flightData.airlines()));
-		airlineBox.setRenderer(new AirlineListCellRenderer());
-
-		aeroplaneBox.setModel(new BoundComboBoxModel<>(flightData.aeroplanes()));
-		aeroplaneBox.setRenderer(new AeroplaneListCellRenderer());
-
-		departureBox.setModel(new BoundComboBoxModel<>(flightData.airports()));
-		departureBox.setRenderer(new AirportListCellRenderer());
-
-		destinationBox.setModel(new BoundComboBoxModel<>(flightData.airports()));
-		destinationBox.setRenderer(new AirportListCellRenderer());
+	@Override
+	public void displayData(@NotNull FlightData data) {
+		flightList.setModel(new BoundListModel<>(data.flights()));
+		airlineBox.setModel(new BoundComboBoxModel<>(data.airlines()));
+		aeroplaneBox.setModel(new BoundComboBoxModel<>(data.aeroplanes()));
+		departureBox.setModel(new BoundComboBoxModel<>(data.airports()));
+		destinationBox.setModel(new BoundComboBoxModel<>(data.airports()));
 
 		IntStream.range(0, MAX_CONTROL_TOWERS).forEach(i -> {
 			flightPlanTable.getColumnModel()
 					.getColumn(i)
 					.setCellEditor(new ComboBoxCellEditor(Stream.concat(
-							flightData.airports().stream().map(e -> e.controlTower),
+							data.airports().stream().map(e -> e.controlTower),
 							Stream.of(emptyControlTower)
 					).toList()));
 
@@ -135,78 +169,22 @@ public class Screen extends JFrame {
 		});
 
 		resetComponents();
-
-		this.flightList.updateUI();
+		updateFlightList();
 	}
 
-	private void addListenersForUpdatingAddButtonState() {
-		Stream.of(airlineBox, aeroplaneBox, departureBox,
-						destinationBox, flightPlanTable, dateTimeField,
-						flightNumberTextField)
-				.forEach(e -> e.addPropertyChangeListener(evt -> updateAddButtonState()));
+	@Override
+	public void updateFlightList() {
+		flightList.updateUI();
 	}
 
-	private void updateAddButtonState() {
-		final var enabled = getDateTime() != null
-				&& airlineBox.getSelectedItem() != null
-				&& aeroplaneBox.getSelectedItem() != null
-				&& departureBox.getSelectedItem() != null
-				&& destinationBox.getSelectedItem() != null
-				&& getFlightPlan().size() >= 2
-				&& !flightNumberTextField.getText().isEmpty();
+	@Override
+	public void setAddButtonEnabled(boolean enabled) {
 		addButton.setEnabled(enabled);
 	}
 
-	public void addNewFlight() {
-		final var airline = (Airline) airlineBox.getSelectedItem();
-		final var aeroplane = (Aeroplane) aeroplaneBox.getSelectedItem();
-		final var departureAirport = (Airport) departureBox.getSelectedItem();
-		final var destinationAirport = (Airport) destinationBox.getSelectedItem();
-		final var flightPlan = getFlightPlan();
-		final var departureDateTime = getDateTime();
-		final var flightNumber = flightNumberTextField.getText();
-
-		assert airline != null;
-		assert aeroplane != null;
-		assert departureAirport != null;
-		assert destinationAirport != null;
-		assert departureDateTime != null;
-		assert !flightNumber.isEmpty();
-
-		final var invalidResults = Stream.of(
-						new FlightValidator(departureAirport).validate(destinationAirport),
-						new FlightPlanValidator(departureAirport, destinationAirport).validate(flightPlan)
-				).filter(e -> !e.isValid())
-				.toList();
-
-		if (!invalidResults.isEmpty()) {
-			invalidResults.forEach(result ->
-					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
-			return;
-		}
-		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
-				departureAirport, destinationAirport, departureDateTime, flightPlan);
-
-		flightTrackerController.getFlightData()
-				.flights()
-				.stream()
-				.filter(f -> f.flightID().equals(flight.flightID()))
-				.findAny()
-				.ifPresentOrElse((f) -> {
-					JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE);
-				}, () -> {
-					flightTrackerController.addFlight(flight);
-					flightList.updateUI();
-					resetComponents();
-				});
-	}
-
-	@SuppressWarnings("unchecked")
 	private void resetComponents() {
 		IntStream.range(0, MAX_CONTROL_TOWERS)
-				.forEach(i -> {
-					flightPlanTable.setValueAt(emptyControlTower, 0, i);
-				});
+				.forEach(i -> flightPlanTable.setValueAt(emptyControlTower, 0, i));
 		flightPlanTable.updateUI();
 
 		flightNumberTextField.setText("");
@@ -216,22 +194,6 @@ public class Screen extends JFrame {
 			departureBox.setSelectedIndex(0);
 			destinationBox.setSelectedIndex(0);
 		}
-	}
-
-	private @Nullable ZonedDateTime getDateTime() {
-		try {
-			return LocalDateTime.parse((String) dateTimeField.getValue(), dateTimeFormatter).atZone(ZoneId.systemDefault());
-		} catch (DateTimeParseException ex) {
-			return null;
-		}
-	}
-
-	private List<Airport.ControlTower> getFlightPlan() {
-		return IntStream.range(0, MAX_CONTROL_TOWERS)
-				.mapToObj(i -> flightPlanTable.getModel().getValueAt(0, i))
-				.filter(e -> !e.equals(emptyControlTower))
-				.map(e -> (Airport.ControlTower) e)
-				.toList();
 	}
 
 	private void createUIComponents() {
@@ -268,44 +230,11 @@ public class Screen extends JFrame {
 		final var openItem = new JMenuItem(new AbstractAction("Open") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onOpenClick();
+				controller.onOpenFileClicked();
 			}
 		});
 		fileMenu.add(openItem);
 		return fileMenu;
-	}
-
-	private void onOpenClick() {
-		final var fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
-
-		File chosenDirectory = fileChooser.getSelectedFile();
-		File[] csvFiles = chosenDirectory.listFiles(pathname -> pathname.getName().endsWith(".csv"));
-
-		if (csvFiles == null || csvFiles.length < 4) {
-			JOptionPane.showMessageDialog(new JFrame(), "Directory has to contain at least 4 CSV files", "Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		final var filePicker = new FilePicker(chosenDirectory.toPath());
-		final var selectedPaths = filePicker.showDialog();
-
-		if (selectedPaths == null) {
-			return;
-		}
-
-		try {
-			this.flightTrackerController.readFlightData(
-					selectedPaths.airports(),
-					selectedPaths.aeroplanes(),
-					selectedPaths.airlines(),
-					selectedPaths.flights()
-			);
-			initializeComponents(this.flightTrackerController.getFlightData());
-		} catch (FlightDataFileHandlerException | IOException ex) {
-			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
-		}
 	}
 
 	private @NotNull MaskFormatter createDateTimeFormatter() {
@@ -322,27 +251,10 @@ public class Screen extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				saveFlightsReport();
-				saveFlightData();
+				controller.onWindowClosing();
 				super.windowClosing(e);
 			}
 		});
-	}
-
-	private void saveFlightsReport() {
-		try {
-			flightTrackerController.writeAirlineReports(Path.of("reports/"));
-		} catch (FlightDataFileHandlerException e) {
-			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight report", JOptionPane.ERROR_MESSAGE);
-		}
-	}
-
-	private void saveFlightData() {
-		try {
-			flightTrackerController.writeFlightData(Path.of("flight-data/"));
-		} catch (FlightDataFileHandlerException e) {
-			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight data", JOptionPane.ERROR_MESSAGE);
-		}
 	}
 
 	@TestOnly
@@ -378,6 +290,4 @@ public class Screen extends JFrame {
 	public JButton getExitButton() {
 		return exitButton;
 	}
-
-
 }

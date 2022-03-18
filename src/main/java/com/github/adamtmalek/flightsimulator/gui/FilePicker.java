@@ -79,14 +79,14 @@ public class FilePicker extends JDialog {
 		dispose();
 	}
 
-	public @Nullable SelectedPaths showDialog() {
+	public @Nullable FlightFilesPaths showDialog() {
 		setVisible(true);
 
 		if (aeroplanesPath == null || airlinesPath == null
 				|| airportsPath == null || flightsPath == null) {
 			return null;
 		} else {
-			return new SelectedPaths(aeroplanesPath, airlinesPath, airportsPath, flightsPath);
+			return new FlightFilesPaths(aeroplanesPath, airlinesPath, airportsPath, flightsPath);
 		}
 	}
 
@@ -121,12 +121,5 @@ public class FilePicker extends JDialog {
 				.filter(e -> e.getFileName().toString().contains(keyName))
 				.findFirst()
 				.ifPresent(comboBox::setSelectedItem);
-	}
-
-	public record SelectedPaths(@NotNull Path aeroplanes,
-															@NotNull Path airlines,
-															@NotNull Path airports,
-															@NotNull Path flights) {
-
 	}
 }
