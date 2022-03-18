@@ -1,4 +1,4 @@
-package com.github.adamtmalek.flightsimulator.GUI;
+package com.github.adamtmalek.flightsimulator.GUI.renderers;
 
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import org.jetbrains.annotations.NotNull;
