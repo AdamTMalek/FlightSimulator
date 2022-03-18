@@ -1,6 +1,5 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.interfaces.Controller;
 import com.github.adamtmalek.flightsimulator.io.*;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Flight;
@@ -8,7 +7,7 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class FlightTrackerController implements Controller {
+public class FlightTrackerController {
 	private FlightData flightData = new FlightData();
 
 	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
@@ -40,7 +39,6 @@ public class FlightTrackerController implements Controller {
 		flightData = handler.readFlightData();
 		return this;
 	}
-
 
 	public void writeFlightData(Path destinationPath) throws FlightDataFileHandlerException {
 		FlightDataFileHandler.getBuilder()
