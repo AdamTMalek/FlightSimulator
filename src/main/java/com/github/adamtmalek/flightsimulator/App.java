@@ -1,9 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
-import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
-
-import java.nio.file.Path;
 
 public class App {
 

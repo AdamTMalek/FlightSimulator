@@ -1,4 +1,4 @@
-package com.github.adamtmalek.flightsimulator.models.io.converters;
+package com.github.adamtmalek.flightsimulator.io.converters;
 
 import org.jetbrains.annotations.NotNull;
 

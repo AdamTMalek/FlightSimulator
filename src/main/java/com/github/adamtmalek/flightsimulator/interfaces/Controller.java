@@ -1,8 +1,8 @@
 package com.github.adamtmalek.flightsimulator.interfaces;
 
 import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.io.FlightData;
-import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
+import com.github.adamtmalek.flightsimulator.io.FlightData;
+import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 
 import java.io.IOException;
 import java.nio.file.Path;

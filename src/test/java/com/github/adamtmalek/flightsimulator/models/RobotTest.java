@@ -2,7 +2,7 @@ package com.github.adamtmalek.flightsimulator.models;
 
 import com.github.adamtmalek.flightsimulator.FlightTrackerController;
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
-import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
+import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
 
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record FlightData(
-
 		@NotNull List<Airport> airports,
 		@NotNull List<Airline> airlines,
 		@NotNull List<Aeroplane> aeroplanes,

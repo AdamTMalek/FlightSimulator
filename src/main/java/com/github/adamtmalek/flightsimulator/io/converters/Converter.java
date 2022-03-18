@@ -1,10 +1,12 @@
-package com.github.adamtmalek.flightsimulator.models.io.converters;
+package com.github.adamtmalek.flightsimulator.io.converters;
 
+
+import com.github.adamtmalek.flightsimulator.io.SerializableField;
 
 /**
  * The converter is used for converting a value of type T from- and to string.
  * A converter is mostly used alongside SerializableField annotation,
- * @see com.github.adamtmalek.flightsimulator.models.io.SerializableField
+ * @see SerializableField
  * where a custom converter is used for conversion performed by the Serializer.
  *
  * @param <T> Type which is handled by the converter

@@ -1,7 +1,7 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
-import com.github.adamtmalek.flightsimulator.models.io.converters.ConversionException;
-import com.github.adamtmalek.flightsimulator.models.io.converters.Converter;
+import com.github.adamtmalek.flightsimulator.io.converters.ConversionException;
+import com.github.adamtmalek.flightsimulator.io.converters.Converter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +92,7 @@ public abstract class Serializer {
 
 	/**
 	 * This method will try to obtain a converter based on any field in the class
-	 * which is marked as serializable {@link com.github.adamtmalek.flightsimulator.models.io.SerializableField}.
+	 * which is marked as serializable {@link SerializableField}.
 	 * This is so that the same annotation does not need to be duplicated, once in the field declaration and once
 	 * in the constructor.
 	 *

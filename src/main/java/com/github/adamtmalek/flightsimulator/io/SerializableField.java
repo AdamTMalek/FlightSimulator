@@ -1,6 +1,6 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
-import com.github.adamtmalek.flightsimulator.models.io.converters.Converter;
+import com.github.adamtmalek.flightsimulator.io.converters.Converter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +37,8 @@ public @interface SerializableField {
 	 */
 	@NotNull Class<? extends Converter<?>> converter() default DefaultConverter.class;
 
+	boolean primaryKey() default false;
+
 	/**
 	 * This class is only meant as a workaround for the converter default value,
 	 * as it cannot accept null, we have to pass some class which meets the criteria
@@ -57,5 +59,10 @@ public @interface SerializableField {
 		public String convertToString(@NotNull Object object) {
 			return object.toString();
 		}
+	}
+
+	enum SerializationType {
+		DIRECT,
+		MAPPING,
 	}
 }

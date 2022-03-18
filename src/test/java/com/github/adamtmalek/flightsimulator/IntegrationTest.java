@@ -2,14 +2,12 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.GUI.Screen;
 import com.github.adamtmalek.flightsimulator.models.*;
-import com.github.adamtmalek.flightsimulator.models.io.FlightData;
-import com.github.adamtmalek.flightsimulator.models.io.FlightDataFileHandlerException;
+import com.github.adamtmalek.flightsimulator.io.FlightData;
+import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -19,7 +17,6 @@ import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 class IntegrationTest extends TestSuite {
 

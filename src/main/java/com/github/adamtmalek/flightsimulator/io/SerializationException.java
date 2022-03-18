@@ -1,4 +1,4 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
 public class SerializationException extends RuntimeException {
 	public SerializationException(String message) {

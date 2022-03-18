@@ -1,9 +1,9 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Controller;
+import com.github.adamtmalek.flightsimulator.io.*;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.io.*;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

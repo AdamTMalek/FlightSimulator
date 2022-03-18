@@ -1,8 +1,8 @@
 package com.github.adamtmalek.flightsimulator.models;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
-import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
-import com.github.adamtmalek.flightsimulator.models.io.converters.GeodeticCoordinateConverter;
+import com.github.adamtmalek.flightsimulator.io.SerializableField;
+import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
