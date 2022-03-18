@@ -49,3 +49,7 @@ hs_err_pid*
 
 # IntelliJ
 /out/
+
+# Coursework-specific
+/flight-data/
+/reports/
