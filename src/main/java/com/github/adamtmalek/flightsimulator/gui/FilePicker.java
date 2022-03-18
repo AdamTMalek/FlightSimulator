@@ -1,6 +1,6 @@
-package com.github.adamtmalek.flightsimulator.GUI;
+package com.github.adamtmalek.flightsimulator.gui;
 
-import com.github.adamtmalek.flightsimulator.GUI.renderers.PathListCellRenderer;
+import com.github.adamtmalek.flightsimulator.gui.renderers.PathListCellRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,6 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.GUI.Screen;
+import com.github.adamtmalek.flightsimulator.gui.Screen;
 
 public class App {
 
