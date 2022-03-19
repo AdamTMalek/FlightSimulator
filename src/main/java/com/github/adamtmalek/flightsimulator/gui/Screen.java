@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 
 
 public class Screen extends JFrame implements MainView {
+	private static final @NotNull String windowTitle = "Flight Tracking System";
+
 	private JPanel panelMain;
 	private JLabel textDistance;
 	private JLabel textTime;
@@ -53,7 +55,7 @@ public class Screen extends JFrame implements MainView {
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	public Screen(@NotNull MainViewController controller) {
-		super("Flight Tracking System");
+		super(windowTitle);
 		this.controller = controller;
 		this.setContentPane(this.panelMain);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
