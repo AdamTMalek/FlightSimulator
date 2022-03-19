@@ -67,7 +67,7 @@ class IntegrationTest extends TestSuite {
 
 		FlightData flightData;
 		try {
-			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			flightData = mainController.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -101,7 +101,7 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController readTestController = new FlightTrackerController();
 		FlightData readTestFD;
 		try {
-			readTestFD = readTestController.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
+			readTestFD = readTestController.readFlightData(tempDir); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -119,7 +119,7 @@ class IntegrationTest extends TestSuite {
 
 		FlightData flightData;
 		try {
-			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			flightData = mainController.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -144,7 +144,7 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController readTestController2 = new FlightTrackerController();
 		FlightData readTestFD2;
 		try {
-			readTestFD2 = readTestController2.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
+			readTestFD2 = readTestController2.readFlightData(tempDir); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -162,7 +162,7 @@ class IntegrationTest extends TestSuite {
 
 		FlightData flightData;
 		try {
-			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			flightData = mainController.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -196,7 +196,7 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController readTestController = new FlightTrackerController();
 		FlightData readTestFD;
 		try {
-			readTestFD = readTestController.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
+			readTestFD = readTestController.readFlightData(tempDir); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -219,7 +219,7 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController readTestController2 = new FlightTrackerController();
 		FlightData readTestFD2;
 		try {
-			readTestFD2 = readTestController2.readFlightData(tempDir).getFlightData(); // Is this how the tempDir works?
+			readTestFD2 = readTestController2.readFlightData(tempDir); // Is this how the tempDir works?
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -236,7 +236,7 @@ class IntegrationTest extends TestSuite {
 		FlightTrackerController mainController = new FlightTrackerController();
 		FlightData flightData;
 		try {
-			flightData = mainController.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			mainController.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}

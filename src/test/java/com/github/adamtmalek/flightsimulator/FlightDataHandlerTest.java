@@ -20,7 +20,7 @@ public class FlightDataHandlerTest extends TestSuite {
 	void testReadFilesFromSingleDirectory() {
 		var controller = new FlightDataHandler();
 		try {
-			final var flightData = controller.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			final var flightData = controller.readFlightData(getPathFromResources("flight-data"));
 
 			// Check each array has been populated. More robust checking of file-reading is outside of this tests code.
 			Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
@@ -42,8 +42,7 @@ public class FlightDataHandlerTest extends TestSuite {
 							getPathFromResources("flight-data/airports.csv"),
 							getPathFromResources("flight-data/aeroplanes.csv"),
 							getPathFromResources("flight-data/airlines.csv"),
-							getPathFromResources("flight-data/flights.csv"))
-					.getFlightData();
+							getPathFromResources("flight-data/flights.csv"));
 			// Check each array has been populated. More robust checking of file-reading is outside of this tests code.
 			Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
 			Assertions.assertEquals("A330", flightData.aeroplanes().get(0).model());
@@ -62,7 +61,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 		// Must give controller airlines and flights in order to filter, requiring file-reading.
 		try {
-			final var flightData = controller.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			controller.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -102,7 +101,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 		// Must give controller airlines and flights in order to filter, requiring file-reading.
 		try {
-			controller.readFlightData(getPathFromResources("flight-data")).getFlightData();
+			controller.readFlightData(getPathFromResources("flight-data"));
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
 		}
@@ -143,9 +142,9 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testAddFlight() {
-		var controller = new FlightDataHandler();
+		var handler = new FlightDataHandler();
 
-		controller.addFlight(Flight.buildWithFlightId("newFlightID",
+		handler.addFlight(Flight.buildWithFlightId("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -153,7 +152,7 @@ public class FlightDataHandlerTest extends TestSuite {
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
 				new ArrayList<>()));
 
-		final var addedFlight = controller.getFlightData().flights().get(0);
+		final var addedFlight = handler.getFlightData().flights().get(0);
 		Assertions.assertEquals("newFlightID", addedFlight.flightID());
 
 	}
@@ -178,7 +177,6 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testRemoveFlightAtInvalidIndex() {
-
 		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
 			var controller = new FlightDataHandler();
 
