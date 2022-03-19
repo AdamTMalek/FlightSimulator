@@ -7,11 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlightDataHandler {
-	private FlightData flightData = new FlightData();
+	private @NotNull FlightData flightData = new FlightData();
 
-	public FlightDataHandler readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
+	public @NotNull FlightData readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 				.withDirectory(fileDirectoryPath)
@@ -22,13 +23,13 @@ public class FlightDataHandler {
 				.build();
 
 		flightData = handler.readFlightData();
-		return this;
+		return flightData;
 	}
 
-	public FlightDataHandler readFlightData(Path airportSourcePath,
-																					Path aeroplaneSourcePath,
-																					Path airlineSourcePath,
-																					Path flightSourcePath) throws FlightDataFileHandlerException {
+	public @NotNull FlightData readFlightData(@NotNull Path airportSourcePath,
+																						@NotNull Path aeroplaneSourcePath,
+																						@NotNull Path airlineSourcePath,
+																						@NotNull Path flightSourcePath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 				.withAirportsPath(airportSourcePath)
@@ -38,7 +39,7 @@ public class FlightDataHandler {
 				.build();
 
 		flightData = handler.readFlightData();
-		return this;
+		return flightData;
 	}
 
 	public void writeFlightData(@NotNull Path destinationPath) throws FlightDataFileHandlerException {
@@ -49,7 +50,7 @@ public class FlightDataHandler {
 				.withAirportsPath(destinationPath.resolve("airports.csv")).build().saveFlights(flightData);
 	}
 
-	public void writeAirlineReports(Path destinationPath) {
+	public void writeAirlineReports(@NotNull Path destinationPath) {
 		for (var airline : flightData.airlines()) {
 			final var flightsForAirline = filterFlightsByAirline(airline);
 			final var escapedName = airline.name().replace("\\", "-").replace("/", "-");
@@ -63,7 +64,11 @@ public class FlightDataHandler {
 		}
 	}
 
-	public void addFlight(Flight flight) {
+	public @NotNull FlightData getFlightData() {
+		return flightData;
+	}
+
+	public void addFlight(@NotNull Flight flight) {
 		flightData.flights().add(flight);
 	}
 
@@ -71,7 +76,7 @@ public class FlightDataHandler {
 		flightData.flights().remove(index);
 	}
 
-	public void editFlight(int index, Flight flight) {
+	public void editFlight(int index, @NotNull Flight flight) {
 		flightData.flights().set(index, flight);
 	}
 
