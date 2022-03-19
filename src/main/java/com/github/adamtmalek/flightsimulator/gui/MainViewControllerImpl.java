@@ -34,7 +34,7 @@ public class MainViewControllerImpl implements MainViewController {
 
 	@Override
 	public void showView() {
-		view.getComponent().setVisible(true);
+		view.setVisible(true);
 		loadAndShowDefaultFlightData();
 	}
 
