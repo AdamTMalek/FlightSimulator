@@ -1,6 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
-import com.github.adamtmalek.flightsimulator.FlightTrackerController;
+import com.github.adamtmalek.flightsimulator.FlightDataHandler;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
 	private final @NotNull MainView view = new Screen(this);
-	private final @NotNull FlightTrackerController flightTrackerController = new FlightTrackerController();
+	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandler();
 
 	@Override
 	public void showView() {
@@ -70,7 +70,7 @@ public class MainViewControllerImpl implements MainViewController {
 		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
 				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
-		flightTrackerController.getFlightData()
+		flightDataHandler.getFlightData()
 				.flights()
 				.stream()
 				.filter(f -> f.flightID().equals(flight.flightID()))
@@ -78,7 +78,7 @@ public class MainViewControllerImpl implements MainViewController {
 				.ifPresentOrElse(
 						(f) -> showNotUniqueFlightIdError(),
 						() -> {
-							flightTrackerController.addFlight(flight);
+							flightDataHandler.addFlight(flight);
 							view.updateFlightList();
 						}
 				);
@@ -97,13 +97,13 @@ public class MainViewControllerImpl implements MainViewController {
 
 	private void readAndDisplayFlightData(@NotNull FlightFilesPaths paths) {
 		try {
-			flightTrackerController.readFlightData(
+			flightDataHandler.readFlightData(
 					paths.airports(),
 					paths.aeroplanes(),
 					paths.airlines(),
 					paths.flights()
 			);
-			view.displayData(this.flightTrackerController.getFlightData());
+			view.displayData(this.flightDataHandler.getFlightData());
 		} catch (FlightDataFileHandlerException ex) {
 			JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE);
 		}
@@ -116,12 +116,12 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void saveFlightsReport() {
-		flightTrackerController.writeAirlineReports(Path.of("reports/"));
+		flightDataHandler.writeAirlineReports(Path.of("reports/"));
 	}
 
 	private void saveFlightData() {
 		try {
-			flightTrackerController.writeFlightData(Path.of("flight-data/"));
+			flightDataHandler.writeFlightData(Path.of("flight-data/"));
 		} catch (FlightDataFileHandlerException e) {
 			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight data", JOptionPane.ERROR_MESSAGE);
 		}
