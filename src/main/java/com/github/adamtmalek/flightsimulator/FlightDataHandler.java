@@ -80,18 +80,10 @@ public class FlightDataHandler {
 		flightData.flights().set(index, flight);
 	}
 
-	public FlightData getFlightData() {
-		return flightData;
-	}
-
-	private @NotNull ArrayList<Flight> filterFlightsByAirline(Airline airline) {
-
-		ArrayList<Flight> filteredFlights = new ArrayList<Flight>();
-		for (var flight : flightData.flights()) {
-			if (flight.flightID().contains(airline.code())) {
-				filteredFlights.add(flight);
-			}
-		}
-		return filteredFlights;
+	private @NotNull List<Flight> filterFlightsByAirline(@NotNull Airline airline) {
+		return flightData.flights()
+				.stream()
+				.filter(flight -> flight.flightID().contains(airline.code()))
+				.toList();
 	}
 }
