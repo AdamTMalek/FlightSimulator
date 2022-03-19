@@ -7,6 +7,7 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
 import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import java.net.URISyntaxException;
@@ -17,6 +18,8 @@ import java.util.stream.Stream;
 public class MainViewControllerImpl implements MainViewController {
 	private final @NotNull MainView view;
 	private final @NotNull FlightDataHandler flightDataHandler;
+	private static final Path flightDataDirectory = Path.of("flight-data/");
+	private static final Path flightsReportDirectory = Path.of("reports/");
 
 	public MainViewControllerImpl(@NotNull MainView view, @NotNull FlightDataHandler flightDataHandler) {
 		this.view = view;
@@ -160,14 +163,24 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void saveFlightsReport() {
-		flightDataHandler.writeAirlineReports(Path.of("reports/"));
+		flightDataHandler.writeAirlineReports(flightsReportDirectory);
 	}
 
 	private void saveFlightData() {
 		try {
-			flightDataHandler.writeFlightData(Path.of("flight-data/"));
+			flightDataHandler.writeFlightData(flightDataDirectory);
 		} catch (FlightDataFileHandlerException e) {
 			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight data", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	@TestOnly
+	public static @NotNull Path getFlightDataDirectory() {
+		return flightDataDirectory;
+	}
+
+	@TestOnly
+	public static @NotNull Path getFlightsReportDirectory() {
+		return flightsReportDirectory;
 	}
 }

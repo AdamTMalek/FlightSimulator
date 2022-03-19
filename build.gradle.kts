@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("commons-io:commons-io:2.11.0")
     implementation("org.jetbrains:annotations:20.1.0")
     compileOnly("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
