@@ -79,13 +79,14 @@ public class FlightDataHandlerImpl implements FlightDataHandler {
 	}
 
 	@Override
-	public void removeFlight(int index) {
-		flightData.flights().remove(index);
+	public void removeFlight(@NotNull Flight flight) {
+		flightData.flights().remove(flight);
 	}
 
 	@Override
-	public void editFlight(int index, @NotNull Flight flight) {
-		flightData.flights().set(index, flight);
+	public void editFlight(@NotNull Flight oldFlight, @NotNull Flight newFlight) {
+		flightData.flights().remove(oldFlight);
+		flightData.flights().add(newFlight);
 	}
 
 	private @NotNull List<Flight> filterFlightsByAirline(@NotNull Airline airline) {

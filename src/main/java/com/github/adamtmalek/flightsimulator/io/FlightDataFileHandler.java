@@ -73,10 +73,10 @@ public class FlightDataFileHandler {
 					.stream().collect(Collectors.toMap(Aeroplane::model, e -> e));
 
 			return new FlightData(
-					new ArrayList<>(airportMap.values()),
-					new ArrayList<>(airlineMap.values()),
-					new ArrayList<>(aeroplaneMap.values()),
-					readFlights(aeroplaneMap, airportMap, airlineMap)
+					new HashSet<>(airportMap.values()),
+					new HashSet<>(airlineMap.values()),
+					new HashSet<>(aeroplaneMap.values()),
+					new HashSet<>(readFlights(aeroplaneMap, airportMap, airlineMap))
 			);
 		} catch (SerializationException | IOException e) {
 			throw new FlightDataFileHandlerException(e);
