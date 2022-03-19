@@ -7,6 +7,7 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
 import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
@@ -16,32 +17,36 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
-	private final @NotNull MainView view;
+	private @Nullable MainView view; // TODO: Nullable :(
 	private final @NotNull FlightDataHandler flightDataHandler;
 	private static final Path flightDataDirectory = Path.of("flight-data/");
 	private static final Path flightsReportDirectory = Path.of("reports/");
 
-	public MainViewControllerImpl(@NotNull MainView view, @NotNull FlightDataHandler flightDataHandler) {
+	public MainViewControllerImpl(@Nullable MainView view, @NotNull FlightDataHandler flightDataHandler) {
 		this.view = view;
 		this.flightDataHandler = flightDataHandler;
 	}
 
-	public MainViewControllerImpl(@NotNull MainView view) {
+	public MainViewControllerImpl(@Nullable MainView view) {
 		this(view, new FlightDataHandlerImpl());
 	}
 
 	public MainViewControllerImpl() {
-		this.view = new Screen(this);
-		this.flightDataHandler = new FlightDataHandlerImpl();
+		this(null, new FlightDataHandlerImpl());
 	}
 
 	@Override
 	public void showView() {
-		view.setVisible(true);
-		loadAndShowDefaultFlightData();
+		SwingUtilities.invokeLater(() -> {
+			if (view == null) view = new Screen(this);
+			view.setVisible(true);
+			loadAndShowDefaultFlightData();
+		});
 	}
 
 	private void loadAndShowDefaultFlightData() {
+		assert view != null;
+
 		final var aeroplanesPath = getPathFromResourcesFlightData("aeroplanes.csv");
 		final var airlinesPath = getPathFromResourcesFlightData("airlines.csv");
 		final var airportsPath = getPathFromResourcesFlightData("airports.csv");
@@ -69,10 +74,12 @@ public class MainViewControllerImpl implements MainViewController {
 
 	@Override
 	public void onAddFlightFormEdited() {
-		view.setAddButtonEnabled(shouldAddButtonBeEnabled());
+		assert view != null;
+		SwingUtilities.invokeLater(() -> view.setAddButtonEnabled(shouldAddButtonBeEnabled()));
 	}
 
 	private boolean shouldAddButtonBeEnabled() {
+		assert view != null;
 		return view.getDateTimeOfDeparture() != null
 				&& view.getSelectedAirline() != null
 				&& view.getSelectedAeroplane() != null
@@ -88,47 +95,53 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void addNewFlight() {
-		final var airline = view.getSelectedAirline();
-		final var aeroplane = view.getSelectedAeroplane();
-		final var departureAirport = view.getSelectedDepartureAirport();
-		final var destinationAirport = view.getSelectedArrivalAirport();
-		final var flightPlan = view.getFlightPlan();
-		final var departureDateTime = view.getDateTimeOfDeparture();
-		final var flightNumber = view.getFlightNumber();
+		assert view != null;
 
-		assert airline != null;
-		assert aeroplane != null;
-		assert departureAirport != null;
-		assert destinationAirport != null;
-		assert departureDateTime != null;
-		assert flightNumber != null && !flightNumber.isEmpty();
+		// TODO: We run all of this on EDT, it'd be better if we can just fetch the selected items
+		//   but run the rest on the calling thread.
+		SwingUtilities.invokeLater(() -> {
+			final var airline = view.getSelectedAirline();
+			final var aeroplane = view.getSelectedAeroplane();
+			final var departureAirport = view.getSelectedDepartureAirport();
+			final var destinationAirport = view.getSelectedArrivalAirport();
+			final var flightPlan = view.getFlightPlan();
+			final var departureDateTime = view.getDateTimeOfDeparture();
+			final var flightNumber = view.getFlightNumber();
 
-		final var invalidResults = Stream.of(
-						new FlightValidator(departureAirport).validate(destinationAirport),
-						new FlightPlanValidator(departureAirport, destinationAirport).validate(flightPlan)
-				).filter(e -> !e.isValid())
-				.toList();
+			assert airline != null;
+			assert aeroplane != null;
+			assert departureAirport != null;
+			assert destinationAirport != null;
+			assert departureDateTime != null;
+			assert flightNumber != null && !flightNumber.isEmpty();
 
-		if (!invalidResults.isEmpty()) {
-			invalidResults.forEach(result ->
-					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
-			return;
-		}
-		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
-				departureAirport, destinationAirport, departureDateTime, flightPlan);
+			final var invalidResults = Stream.of(
+							new FlightValidator(departureAirport).validate(destinationAirport),
+							new FlightPlanValidator(departureAirport, destinationAirport).validate(flightPlan)
+					).filter(e -> !e.isValid())
+					.toList();
 
-		flightDataHandler.getFlightData()
-				.flights()
-				.stream()
-				.filter(f -> f.flightID().equals(flight.flightID()))
-				.findAny()
-				.ifPresentOrElse(
-						(f) -> showNotUniqueFlightIdError(),
-						() -> {
-							flightDataHandler.addFlight(flight);
-							view.updateFlightList();
-						}
-				);
+			if (!invalidResults.isEmpty()) {
+				invalidResults.forEach(result ->
+						JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
+				return;
+			}
+			final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
+					departureAirport, destinationAirport, departureDateTime, flightPlan);
+
+			flightDataHandler.getFlightData()
+					.flights()
+					.stream()
+					.filter(f -> f.flightID().equals(flight.flightID()))
+					.findAny()
+					.ifPresentOrElse(
+							(f) -> showNotUniqueFlightIdError(),
+							() -> {
+								flightDataHandler.addFlight(flight);
+								view.updateFlightList();
+							}
+					);
+		});
 	}
 
 	private void showNotUniqueFlightIdError() {
@@ -137,12 +150,16 @@ public class MainViewControllerImpl implements MainViewController {
 
 	@Override
 	public void onOpenFileClicked() {
+		assert view != null;
+
 		final OpenFileViewController openFileController = new OpenFileViewControllerImpl();
 		openFileController.openDialog(view.getComponent())
 				.ifPresent(this::readAndDisplayFlightData);
 	}
 
 	private void readAndDisplayFlightData(@NotNull FlightFilesPaths paths) {
+		assert view != null;
+
 		try {
 			flightDataHandler.readFlightData(
 					paths.airports(),
