@@ -8,7 +8,9 @@ import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
@@ -26,6 +28,33 @@ public class MainViewControllerImpl implements MainViewController {
 	@Override
 	public void showView() {
 		view.getComponent().setVisible(true);
+		loadAndShowDefaultFlightData();
+	}
+
+	private void loadAndShowDefaultFlightData() {
+		final var aeroplanesPath = getPathFromResourcesFlightData("aeroplanes.csv");
+		final var airlinesPath = getPathFromResourcesFlightData("airlines.csv");
+		final var airportsPath = getPathFromResourcesFlightData("airports.csv");
+		final var flightsPath = getPathFromResourcesFlightData("flights.csv");
+
+		try {
+			final var flightData = flightDataHandler.readFlightData(airportsPath, aeroplanesPath, airlinesPath, flightsPath);
+			view.displayData(flightData);
+		} catch (FlightDataFileHandlerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private @NotNull Path getPathFromResourcesFlightData(@NotNull String name) {
+		try {
+			final var resourceName = String.format("cw-spec-data/%s", name);
+			final var resource = Objects.requireNonNull(getClass().getClassLoader().getResource(resourceName));
+			return Path.of(resource.toURI());
+		} catch (URISyntaxException ex) {
+			// If we're using toURI() function of URL from getResource(), then how can URISyntaxException be possibly thrown?
+			// But we have to do something here - so let's throw a RuntimeException just to "handle" that possibility.
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override
@@ -93,7 +122,7 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void showNotUniqueFlightIdError() {
-		JOptionPane.showMessageDialog(new JFrame(),"Flight ID must be unique","Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
