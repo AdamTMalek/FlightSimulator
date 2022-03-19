@@ -1,11 +1,14 @@
 package com.github.adamtmalek.flightsimulator.models;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
-import com.github.adamtmalek.flightsimulator.io.SerializableField;
-import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
+import com.github.adamtmalek.flightsimulator.models.Flight;
+import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
+import com.github.adamtmalek.flightsimulator.models.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Queue;
 
 public class Airport {
 	@SerializableField
@@ -57,10 +60,13 @@ public class Airport {
 			code = codeIn;
 			name = nameIn;
 			position = positionIn;
+			Queue<Flight> flightQueue = new LinkedList<>();
 		}
 
 		public void callback(Flight data){
+
 			System.out.println(name + " received `"+data.flightID()+"`");
+			flightQueue.add(data);
 		}
 
 		@Override
