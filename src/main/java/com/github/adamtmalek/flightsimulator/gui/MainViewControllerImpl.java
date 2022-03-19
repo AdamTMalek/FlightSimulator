@@ -8,7 +8,6 @@ import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.io.File;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -77,12 +76,7 @@ public class MainViewControllerImpl implements MainViewController {
 				.filter(f -> f.flightID().equals(flight.flightID()))
 				.findAny()
 				.ifPresentOrElse(
-						(f) -> JOptionPane.showMessageDialog(
-								new JFrame(),
-								"Flight ID must be unique",
-								"Error",
-								JOptionPane.ERROR_MESSAGE
-						),
+						(f) -> showNotUniqueFlightIdError(),
 						() -> {
 							flightTrackerController.addFlight(flight);
 							view.updateFlightList();
@@ -90,33 +84,24 @@ public class MainViewControllerImpl implements MainViewController {
 				);
 	}
 
+	private void showNotUniqueFlightIdError() {
+		JOptionPane.showMessageDialog(new JFrame(),"Flight ID must be unique","Error", JOptionPane.ERROR_MESSAGE);
+	}
+
 	@Override
 	public void onOpenFileClicked() {
-		final var fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if (fileChooser.showOpenDialog(view.getComponent()) != JFileChooser.APPROVE_OPTION) return;
+		final OpenFileViewController openFileController = new OpenFileViewControllerImpl();
+		openFileController.openDialog(view.getComponent())
+				.ifPresent(this::readAndDisplayFlightData);
+	}
 
-		File chosenDirectory = fileChooser.getSelectedFile();
-		File[] csvFiles = chosenDirectory.listFiles(pathname -> pathname.getName().endsWith(".csv"));
-
-		if (csvFiles == null || csvFiles.length < 4) {
-			JOptionPane.showMessageDialog(new JFrame(), "Directory has to contain at least 4 CSV files", "Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		final var filePicker = new FilePicker(chosenDirectory.toPath());
-		final var selectedPaths = filePicker.showDialog();
-
-		if (selectedPaths == null) {
-			return;
-		}
-
+	private void readAndDisplayFlightData(@NotNull FlightFilesPaths paths) {
 		try {
 			flightTrackerController.readFlightData(
-					selectedPaths.airports(),
-					selectedPaths.aeroplanes(),
-					selectedPaths.airlines(),
-					selectedPaths.flights()
+					paths.airports(),
+					paths.aeroplanes(),
+					paths.airlines(),
+					paths.flights()
 			);
 			view.displayData(this.flightTrackerController.getFlightData());
 		} catch (FlightDataFileHandlerException ex) {

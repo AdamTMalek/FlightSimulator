@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
+import com.github.adamtmalek.flightsimulator.gui.dialog.Dialog;
 import com.github.adamtmalek.flightsimulator.gui.renderers.PathListCellRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class FilePicker extends JDialog {
+public class FilePicker extends Dialog implements OpenFileView {
 	private JPanel contentPane;
 	private JButton buttonOK;
 	private JButton buttonCancel;
@@ -24,11 +25,6 @@ public class FilePicker extends JDialog {
 	private JComboBox<Path> airlinesComboBox;
 	private JComboBox<Path> airportsComboBox;
 	private JComboBox<Path> flightsComboBox;
-
-	private @Nullable Path aeroplanesPath = null;
-	private @Nullable Path airlinesPath = null;
-	private @Nullable Path airportsPath = null;
-	private @Nullable Path flightsPath = null;
 
 	public FilePicker(@NotNull Path pickedDirectory) {
 		setContentPane(contentPane);
@@ -59,35 +55,44 @@ public class FilePicker extends JDialog {
 		initComponents(files);
 	}
 
-	private void onOK() {
-		aeroplanesPath = (Path) aeroplanesComboBox.getSelectedItem();
-		airlinesPath = (Path) airlinesComboBox.getSelectedItem();
-		airportsPath = (Path) airportsComboBox.getSelectedItem();
-		flightsPath = (Path) flightsComboBox.getSelectedItem();
-
-		setVisible(false);
-		dispose();
+	@Override
+	public @Nullable Path getSelectedAeroplanesFile() {
+		return (Path) aeroplanesComboBox.getSelectedItem();
 	}
 
-	private void onCancel() {
-		aeroplanesPath = null;
-		airlinesPath = null;
-		airportsPath = null;
-		flightsPath = null;
-
-		setVisible(false);
-		dispose();
+	@Override
+	public @Nullable Path getSelectedAirlinesFile() {
+		return (Path) airlinesComboBox.getSelectedItem();
 	}
 
-	public @Nullable FlightFilesPaths showDialog() {
-		setVisible(true);
+	@Override
+	public @Nullable Path getSelectedAirportsFile() {
+		return (Path) airportsComboBox.getSelectedItem();
+	}
 
-		if (aeroplanesPath == null || airlinesPath == null
-				|| airportsPath == null || flightsPath == null) {
-			return null;
-		} else {
-			return new FlightFilesPaths(aeroplanesPath, airlinesPath, airportsPath, flightsPath);
-		}
+	@Override
+	public @Nullable Path getSelectedFlightsFile() {
+		return (Path) flightsComboBox.getSelectedItem();
+	}
+
+	@Override
+	public void setAeroplanesFileSelectionTo(@NotNull Path value) {
+		aeroplanesComboBox.setSelectedItem(value);
+	}
+
+	@Override
+	public void setAirlinesFileSelectionTo(@NotNull Path value) {
+		airlinesComboBox.setSelectedItem(value);
+	}
+
+	@Override
+	public void setAirportsFileSelectionTo(@NotNull Path value) {
+		airportsComboBox.setSelectedItem(value);
+	}
+
+	@Override
+	public void setFlightsFileSelectionTo(@NotNull Path value) {
+		flightsComboBox.setSelectedItem(value);
 	}
 
 	private void createUIComponents() {
@@ -107,19 +112,5 @@ public class FilePicker extends JDialog {
 					model.addAll(files);
 					comboBox.setModel(model);
 				});
-
-		setSelectedPathCandidate(aeroplanesComboBox, files, "aeroplane");
-		setSelectedPathCandidate(airlinesComboBox, files, "airline");
-		setSelectedPathCandidate(airportsComboBox, files, "airport");
-		setSelectedPathCandidate(flightsComboBox, files, "flight");
-	}
-
-	private void setSelectedPathCandidate(@NotNull JComboBox<Path> comboBox,
-																				@NotNull Collection<Path> candidates,
-																				@NotNull String keyName) {
-		candidates.stream()
-				.filter(e -> e.getFileName().toString().contains(keyName))
-				.findFirst()
-				.ifPresent(comboBox::setSelectedItem);
 	}
 }
