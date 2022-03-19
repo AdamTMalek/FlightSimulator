@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models.io;
 
+import com.github.adamtmalek.flightsimulator.TestSuite;
 import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandler;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
