@@ -13,8 +13,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class FlightDataHandlerTest extends TestSuite {
-
-
 	@Test
 	void testReadFilesFromSingleDirectory() {
 		var controller = new FlightDataHandlerImpl();
@@ -22,10 +20,10 @@ public class FlightDataHandlerTest extends TestSuite {
 			final var flightData = controller.readFlightData(getPathFromResources("flight-data"));
 
 			// Check each array has been populated. More robust checking of file-reading is outside of this tests code.
-			Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
-			Assertions.assertEquals("A330", flightData.aeroplanes().get(0).model());
-			Assertions.assertEquals("CDG", flightData.airports().get(0).code);
-			Assertions.assertEquals("AA", flightData.airlines().get(0).code());
+			Assertions.assertTrue(flightData.flights().stream().anyMatch(v -> v.flightID().equals("OK420")));
+			Assertions.assertTrue(flightData.aeroplanes().stream().anyMatch(v -> v.model().equals("A330")));
+			Assertions.assertTrue(flightData.airports().stream().anyMatch(v -> v.code.equals("CDG")));
+			Assertions.assertTrue(flightData.airlines().stream().anyMatch(v -> v.code().equals("AA")));
 
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
@@ -43,10 +41,10 @@ public class FlightDataHandlerTest extends TestSuite {
 							getPathFromResources("flight-data/airlines.csv"),
 							getPathFromResources("flight-data/flights.csv"));
 			// Check each array has been populated. More robust checking of file-reading is outside of this tests code.
-			Assertions.assertEquals("OK420", flightData.flights().get(0).flightID());
-			Assertions.assertEquals("A330", flightData.aeroplanes().get(0).model());
-			Assertions.assertEquals("CDG", flightData.airports().get(0).code);
-			Assertions.assertEquals("AA", flightData.airlines().get(0).code());
+			Assertions.assertTrue(flightData.flights().stream().anyMatch(v -> v.flightID().equals("OK420")));
+			Assertions.assertTrue(flightData.aeroplanes().stream().anyMatch(v -> v.model().equals("A330")));
+			Assertions.assertTrue(flightData.airports().stream().anyMatch(v -> v.code.equals("CDG")));
+			Assertions.assertTrue(flightData.airlines().stream().anyMatch(v -> v.code().equals("AA")));
 
 		} catch (FlightDataFileHandlerException e) {
 			throw new RuntimeException(e.getMessage());
@@ -141,70 +139,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testAddFlight() {
-		var handler = new FlightDataHandlerImpl();
-
-		handler.addFlight(Flight.buildWithFlightId("newFlightID",
-				new Airline("a", "a"),
-				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>()));
-
-		final var addedFlight = handler.getFlightData().flights().get(0);
-		Assertions.assertEquals("newFlightID", addedFlight.flightID());
-
-	}
-
-	@Test
-	void testRemoveFlight() {
-		var controller = new FlightDataHandlerImpl();
-
-		controller.addFlight(Flight.buildWithFlightId("newFlightID",
-				new Airline("a", "a"),
-				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>()));
-
-		Assertions.assertEquals(1, controller.getFlightData().flights().size());
-		controller.removeFlight(0);
-		Assertions.assertEquals(0, controller.getFlightData().flights().size());
-
-	}
-
-	@Test
-	void testRemoveFlightAtInvalidIndex() {
-		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-			var controller = new FlightDataHandlerImpl();
-
-			controller.addFlight(Flight.buildWithFlightId("newFlightID",
-					new Airline("a", "a"),
-					new Aeroplane("a", "a", 1, 50),
-					new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-					new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
-					ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-					new ArrayList<>()));
-
-			controller.removeFlight(1);
-
-		});
-	}
-
-	@Test
-	void testEditFlight() {
-		var controller = new FlightDataHandlerImpl();
-
-		controller.addFlight(Flight.buildWithFlightId("001",
-				new Airline("a", "a"),
-				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>()));
-
-		var changedFlight = Flight.buildWithFlightId("002",
+		final var flight = Flight.buildWithFlightId("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -212,12 +147,54 @@ public class FlightDataHandlerTest extends TestSuite {
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
 				new ArrayList<>());
 
-		final var originalFlight = controller.getFlightData().flights().get(0);
+		var handler = new FlightDataHandlerImpl();
+		handler.addFlight(flight);
 
-		Assertions.assertEquals("001", originalFlight.flightID());
-		controller.editFlight(0, changedFlight);
-		final var editedFlight = controller.getFlightData().flights().get(0);
-		Assertions.assertEquals("002", editedFlight.flightID());
+		//noinspection OptionalGetWithoutIsPresent
+		Assertions.assertEquals(flight, handler.getFlightData().flights().stream().findFirst().get());
+	}
 
+	@Test
+	void testRemoveFlight() {
+		final var flight = Flight.buildWithFlightId("newFlightID",
+				new Airline("a", "a"),
+				new Aeroplane("a", "a", 1, 50),
+				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				new ArrayList<>());
+
+		var handler = new FlightDataHandlerImpl();
+		handler.addFlight(flight);
+
+		Assertions.assertEquals(1, handler.getFlightData().flights().size());
+		handler.removeFlight(flight);
+		Assertions.assertEquals(0, handler.getFlightData().flights().size());
+
+	}
+
+	@Test
+	void testEditFlight() {
+		final var originalFlight = Flight.buildWithFlightId("001",
+				new Airline("a", "a"),
+				new Aeroplane("a", "a", 1, 50),
+				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				new ArrayList<>());
+		final var changedFlight = Flight.buildWithFlightId("002",
+				new Airline("a", "a"),
+				new Aeroplane("a", "a", 1, 50),
+				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				new ArrayList<>());
+
+		final var handler = new FlightDataHandlerImpl();
+		handler.addFlight(originalFlight);
+		handler.editFlight(originalFlight, changedFlight);
+
+		//noinspection OptionalGetWithoutIsPresent
+		Assertions.assertEquals(changedFlight, handler.getFlightData().flights().stream().findFirst().get());
 	}
 }

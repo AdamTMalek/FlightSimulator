@@ -7,17 +7,16 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public record FlightData(
-		@NotNull List<Airport> airports,
-		@NotNull List<Airline> airlines,
-		@NotNull List<Aeroplane> aeroplanes,
-		@NotNull List<Flight> flights) {
+		@NotNull Set<Airport> airports,
+		@NotNull Set<Airline> airlines,
+		@NotNull Set<Aeroplane> aeroplanes,
+		@NotNull Set<Flight> flights) {
 
 	public FlightData() {
-		this(new ArrayList<Airport>(), new ArrayList<Airline>(), new ArrayList<Aeroplane>(), new ArrayList<Flight>());
+		this(new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 	}
-
 }

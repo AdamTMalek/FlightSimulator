@@ -23,7 +23,7 @@ public interface FlightDataHandler {
 
 	void addFlight(@NotNull Flight flight);
 
-	void removeFlight(int index);
+	void removeFlight(@NotNull Flight flight);
 
-	void editFlight(int index, @NotNull Flight flight);
+	void editFlight(@NotNull Flight oldFlight, @NotNull Flight newFlight);
 }

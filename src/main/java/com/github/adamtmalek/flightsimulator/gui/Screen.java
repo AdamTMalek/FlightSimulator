@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -149,11 +150,11 @@ public class Screen extends JFrame implements MainView {
 
 	@Override
 	public void displayData(@NotNull FlightData data) {
-		flightList.setModel(new BoundListModel<>(data.flights()));
-		airlineBox.setModel(new BoundComboBoxModel<>(data.airlines()));
-		aeroplaneBox.setModel(new BoundComboBoxModel<>(data.aeroplanes()));
-		departureBox.setModel(new BoundComboBoxModel<>(data.airports()));
-		destinationBox.setModel(new BoundComboBoxModel<>(data.airports()));
+		flightList.setModel(new BoundListModel<>(new ArrayList<>(data.flights())));
+		airlineBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airlines())));
+		aeroplaneBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.aeroplanes())));
+		departureBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airports())));
+		destinationBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airports())));
 
 		IntStream.range(0, MAX_CONTROL_TOWERS).forEach(i -> {
 			flightPlanTable.getColumnModel()
