@@ -1,6 +1,7 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
 import com.github.adamtmalek.flightsimulator.FlightDataHandler;
+import com.github.adamtmalek.flightsimulator.FlightDataHandlerImpl;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
@@ -15,14 +16,20 @@ import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
 	private final @NotNull MainView view;
-	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandler();
+	private final @NotNull FlightDataHandler flightDataHandler;
+
+	public MainViewControllerImpl(@NotNull MainView view, @NotNull FlightDataHandler flightDataHandler) {
+		this.view = view;
+		this.flightDataHandler = flightDataHandler;
+	}
 
 	public MainViewControllerImpl(@NotNull MainView view) {
-		this.view = view;
+		this(view, new FlightDataHandlerImpl());
 	}
 
 	public MainViewControllerImpl() {
 		this.view = new Screen(this);
+		this.flightDataHandler = new FlightDataHandlerImpl();
 	}
 
 	@Override

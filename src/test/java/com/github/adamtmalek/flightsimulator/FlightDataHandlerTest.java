@@ -17,7 +17,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testReadFilesFromSingleDirectory() {
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 		try {
 			final var flightData = controller.readFlightData(getPathFromResources("flight-data"));
 
@@ -35,7 +35,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testReadFilesFromSpecificPaths() {
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 		try {
 			final var flightData = controller.readFlightData(
 							getPathFromResources("flight-data/airports.csv"),
@@ -56,7 +56,7 @@ public class FlightDataHandlerTest extends TestSuite {
 	@Test
 	void testWriteAirlineReports() {
 
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 
 		// Must give controller airlines and flights in order to filter, requiring file-reading.
 		try {
@@ -96,7 +96,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testWriteFlightData() {
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 
 		// Must give controller airlines and flights in order to filter, requiring file-reading.
 		try {
@@ -141,7 +141,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testAddFlight() {
-		var handler = new FlightDataHandler();
+		var handler = new FlightDataHandlerImpl();
 
 		handler.addFlight(Flight.buildWithFlightId("newFlightID",
 				new Airline("a", "a"),
@@ -158,7 +158,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testRemoveFlight() {
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 
 		controller.addFlight(Flight.buildWithFlightId("newFlightID",
 				new Airline("a", "a"),
@@ -177,7 +177,7 @@ public class FlightDataHandlerTest extends TestSuite {
 	@Test
 	void testRemoveFlightAtInvalidIndex() {
 		Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-			var controller = new FlightDataHandler();
+			var controller = new FlightDataHandlerImpl();
 
 			controller.addFlight(Flight.buildWithFlightId("newFlightID",
 					new Airline("a", "a"),
@@ -194,7 +194,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testEditFlight() {
-		var controller = new FlightDataHandler();
+		var controller = new FlightDataHandlerImpl();
 
 		controller.addFlight(Flight.buildWithFlightId("001",
 				new Airline("a", "a"),
