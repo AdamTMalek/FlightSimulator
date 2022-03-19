@@ -12,8 +12,16 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
-	private final @NotNull MainView view = new Screen(this);
+	private final @NotNull MainView view;
 	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandler();
+
+	public MainViewControllerImpl(@NotNull MainView view) {
+		this.view = view;
+	}
+
+	public MainViewControllerImpl() {
+		this.view = new Screen(this);
+	}
 
 	@Override
 	public void showView() {
