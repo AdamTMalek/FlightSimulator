@@ -7,7 +7,6 @@ import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -256,39 +255,5 @@ public class Screen extends JFrame implements MainView {
 				super.windowClosing(e);
 			}
 		});
-	}
-
-	@TestOnly
-	@NotNull
-	public JButton getAddButton() {
-		return addButton;
-	}
-
-	@TestOnly
-	@NotNull
-	public JComboBox<Airport> getDepartureBox() {
-		return departureBox;
-	}
-
-	@TestOnly
-	@NotNull
-	public JComboBox<Airline> getAirlineBox() {
-		return airlineBox;
-	}
-
-	@TestOnly
-	@NotNull
-	public JTextField getFlightNumberTextField() {
-		return flightNumberTextField;
-	}
-
-	@TestOnly
-	@NotNull
-	public JTable getFlightPlanTable() {
-		return flightPlanTable;
-	}
-
-	public JButton getExitButton() {
-		return exitButton;
 	}
 }
