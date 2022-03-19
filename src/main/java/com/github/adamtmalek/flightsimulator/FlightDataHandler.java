@@ -3,14 +3,15 @@ package com.github.adamtmalek.flightsimulator;
 import com.github.adamtmalek.flightsimulator.io.*;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class FlightTrackerController {
+public class FlightDataHandler {
 	private FlightData flightData = new FlightData();
 
-	public FlightTrackerController readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
+	public FlightDataHandler readFlightData(Path fileDirectoryPath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 				.withDirectory(fileDirectoryPath)
@@ -24,10 +25,10 @@ public class FlightTrackerController {
 		return this;
 	}
 
-	public FlightTrackerController readFlightData(Path airportSourcePath,
-																								Path aeroplaneSourcePath,
-																								Path airlineSourcePath,
-																								Path flightSourcePath) throws FlightDataFileHandlerException {
+	public FlightDataHandler readFlightData(Path airportSourcePath,
+																					Path aeroplaneSourcePath,
+																					Path airlineSourcePath,
+																					Path flightSourcePath) throws FlightDataFileHandlerException {
 
 		final var handler = FlightDataFileHandler.getBuilder()
 				.withAirportsPath(airportSourcePath)
@@ -40,7 +41,7 @@ public class FlightTrackerController {
 		return this;
 	}
 
-	public void writeFlightData(Path destinationPath) throws FlightDataFileHandlerException {
+	public void writeFlightData(@NotNull Path destinationPath) throws FlightDataFileHandlerException {
 		FlightDataFileHandler.getBuilder()
 				.withFlightsPath(destinationPath.resolve("flights.csv"))
 				.withAeroplanesPath(destinationPath.resolve("aeroplanes.csv"))
@@ -78,7 +79,7 @@ public class FlightTrackerController {
 		return flightData;
 	}
 
-	private ArrayList<Flight> filterFlightsByAirline(Airline airline) {
+	private @NotNull ArrayList<Flight> filterFlightsByAirline(Airline airline) {
 
 		ArrayList<Flight> filteredFlights = new ArrayList<Flight>();
 		for (var flight : flightData.flights()) {
