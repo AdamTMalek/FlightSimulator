@@ -12,6 +12,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface MainView {
+	void setVisible(boolean visible);
+
 	@NotNull Component getComponent();
 
 	@Nullable String getFlightNumber();
