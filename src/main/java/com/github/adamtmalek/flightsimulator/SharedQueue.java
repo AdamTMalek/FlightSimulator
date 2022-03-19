@@ -2,19 +2,14 @@ package com.github.adamtmalek.flightsimulator;
 
 public class SharedQueue {
 
-	protected int queueSize;
-	private Flight[] queue;
+	protected int queueSize = 20;
+	private final Flight[] queue;
 	private int startIndex = 0;
 	private int endIndex = 0;
 	private int count = 0;
 
-	SharedQueue(int queueSize) {
-
-		if (queueSize <= 0 || queueSize > 20){
-			throw new IllegalArgumentException("Invalid shared queue size");
-		}
-		this.queueSize = queueSize;
-		buffer = new Flight[queueSize];
+	public SharedQueue() {
+		queue = new Flight[queueSize];
 	}
 
 	public synchronized void push(Flight flight) throws InterruptedException {
@@ -37,5 +32,5 @@ public class SharedQueue {
 		notifyAll();
 		return flight;
 	}
-	
+
 }
