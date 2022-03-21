@@ -8,22 +8,24 @@ package com.github.adamtmalek.flightsimulator;
  * may vary between runs (data-dependent).
  */
 public class FlightSimulationThreadManagement {
-	private static double THREAD_FREQUENCY = 5; //Hz
-	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
+	private static long THREAD_FREQUENCY = 2; //Hz
+	private static long FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 
-	public static double getApproxThreadPeriod() {
-		return (1.0 / THREAD_FREQUENCY);
+	public static long getApproxThreadPeriodMs() {
+		double periodS = (1.0 / THREAD_FREQUENCY);
+		return (long) (periodS * 1000.0);
 	}
 
-	public static void setThreadFrequency(double frequency) {
+	public static void setThreadFrequency(long frequency) {
 		THREAD_FREQUENCY = frequency;
 	}
 
-	public static double getApproxFlightSimulationPeriod() {
-		return (1.0 / FLIGHT_SIMULATION_FREQUENCY);
+	public static long getApproxFlightSimulationPeriodMs() {
+		double periodS = (1.0 / FLIGHT_SIMULATION_FREQUENCY);
+		return (long) (periodS * 1000.0);
 	}
 
-	public static void setFlightSimulationFrequency(double frequency) {
+	public static void setFlightSimulationFrequency(long frequency) {
 		FLIGHT_SIMULATION_FREQUENCY = frequency;
 	}
 
