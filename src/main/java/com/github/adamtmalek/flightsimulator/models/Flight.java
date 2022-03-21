@@ -77,7 +77,7 @@ public record Flight(
 				new GeodeticCoordinate(0, 0)
 		);
 	}
-	
+
 	private static String constructFlightId(String serialNumber, Airline airline) throws InvalidParameterException {
 		try {
 			Integer.parseInt(serialNumber);
@@ -109,6 +109,20 @@ public record Flight(
 
 	private static double calculateEstimatedCO2Produced(double estimatedFuelConsumption) {
 		return Aeroplane.AVG_RATE_OF_CO2_EMISSION * estimatedFuelConsumption;
+	}
+
+	public Flight buildWithNewPosition(GeodeticCoordinate position) {
+		return new Flight(this.flightID,
+				this.airline,
+				this.aeroplane,
+				this.departureAirport,
+				this.destinationAirport,
+				this.departureDate,
+				this.controlTowersToCross,
+				this.estimatedTotalDistancetoTravel,
+				this.estimatedFuelConsumption,
+				this.estimatedCO2Produced,
+				position);
 	}
 
 

@@ -24,17 +24,7 @@ public class FlightManager extends Publisher<Flight> {
 		System.out.println(nextControlTower.name + ": " + currentPosition.latitude() + ", " + currentPosition.longitude());
 
 
-		final var updatedFlight = new Flight(flight.flightID(),
-				flight.airline(),
-				flight.aeroplane(),
-				flight.departureAirport(),
-				flight.destinationAirport(),
-				flight.departureDate(),
-				flight.controlTowersToCross(),
-				flight.estimatedTotalDistancetoTravel(),
-				flight.estimatedFuelConsumption(),
-				flight.estimatedCO2Produced(),
-				currentPosition);
+		final var updatedFlight = flight.buildWithNewPosition(currentPosition);
 
 		publishTo(updatedFlight, nextControlTower);
 
