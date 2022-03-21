@@ -8,8 +8,8 @@ import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 public class FlightTracker extends Publisher<Flight> {
 
 
-	Flight flight;
-	int duration = 0;
+	private final Flight flight;
+	private int duration = 0;
 
 	FlightTracker(Flight flight) {
 		this.flight = flight;
@@ -27,7 +27,7 @@ public class FlightTracker extends Publisher<Flight> {
 		final var updatedFlight = flight.buildWithNewPosition(currentPosition);
 
 		publishTo(updatedFlight, nextControlTower);
-
+		
 		duration++;
 
 	}
