@@ -49,7 +49,7 @@ public record Flight(
 				distanceTravelled,
 				estimatedFuelConsumption,
 				estimatedCO2Produced,
-				new GeodeticCoordinate(0, 0)
+				departureAirport.position
 		);
 	}
 
@@ -74,7 +74,7 @@ public record Flight(
 				estimatedTotalDistance,
 				estimatedFuelConsumption,
 				estimatedCO2Produced,
-				new GeodeticCoordinate(0, 0)
+				departureAirport.position
 		);
 	}
 
