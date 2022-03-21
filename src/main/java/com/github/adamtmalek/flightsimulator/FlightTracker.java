@@ -5,31 +5,41 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 
-public class FlightTracker extends Publisher<Flight> {
+public class FlightTracker extends Publisher<Flight> implements Runnable {
 
 
 	private final Flight flight;
-	private int duration = 0;
+	private double duration;
+	private volatile boolean isRunning;
 
 	FlightTracker(Flight flight) {
 		this.flight = flight;
-
+		this.duration = 0;
+		this.isRunning = true;
 	}
 
-	public void tick() {
+	public void run() {
 
-		OrientatedGeodeticCoordinate intermittentCoordinate = calculateCurrentPosition(calculateCurrentDistanceTravelled());
-		final var currentPosition = intermittentCoordinate.position;
-		final var nextControlTower = intermittentCoordinate.nextControlTower;
-		System.out.println(nextControlTower.name + ": " + currentPosition.latitude() + ", " + currentPosition.longitude());
+		while (isRunning) {
+			OrientatedGeodeticCoordinate intermittentCoordinate = calculateCurrentPosition(calculateCurrentDistanceTravelled());
+			final var currentPosition = intermittentCoordinate.position;
+			final var nextControlTower = intermittentCoordinate.nextControlTower;
 
+			final var updatedFlight = flight.buildWithNewPosition(currentPosition);
 
-		final var updatedFlight = flight.buildWithNewPosition(currentPosition);
+			publishTo(updatedFlight, nextControlTower);
+			duration += FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs();
+			try {
+				final var sleepFor = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
+				Thread.sleep(FlightSimulationThreadManagement.getApproxThreadPeriodMs());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-		publishTo(updatedFlight, nextControlTower);
-		
-		duration++;
-
+	public void stop() {
+		isRunning = false;
 	}
 
 	private OrientatedGeodeticCoordinate calculateCurrentPosition(double distanceTravelled) {
