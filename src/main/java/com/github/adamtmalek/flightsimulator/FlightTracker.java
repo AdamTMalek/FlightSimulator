@@ -5,13 +5,13 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 
-public class FlightManager extends Publisher<Flight> {
+public class FlightTracker extends Publisher<Flight> {
 
 
 	Flight flight;
 	int duration = 0;
 
-	FlightManager(Flight flight) {
+	FlightTracker(Flight flight) {
 		this.flight = flight;
 
 	}
