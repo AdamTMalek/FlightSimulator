@@ -23,12 +23,17 @@ public class SynchronizedQueue {
 	}
 
 	public synchronized Flight pop() throws InterruptedException {
-		while (queue.size() == 0){
+		while (queue.isEmpty()){
 			wait();
 		}
 		Flight flight = queue.poll();
 		notifyAll();
 		return flight;
+	}
+
+	public synchronized boolean isEmpty() {
+
+		return queue.isEmpty();
 	}
 
 }

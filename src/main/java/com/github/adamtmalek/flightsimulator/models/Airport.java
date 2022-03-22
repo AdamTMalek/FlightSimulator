@@ -82,13 +82,17 @@ public class Airport {
 		public void run() {
 			try{
 				while (true) {
-					Flight flight = synchronizedQueue.pop();
 
-					if (flightMap.get(flight.flightID()) == null){
-						flightMap.put(flight.flightID(), flight);
-					}
-					else {
-						flightMap.replace(flight.flightID(), flight);
+					while (!synchronizedQueue.isEmpty()){
+
+						Flight flight = synchronizedQueue.pop();
+
+						if (flightMap.get(flight.flightID()) == null){
+							flightMap.put(flight.flightID(), flight);
+						}
+						else {
+							flightMap.replace(flight.flightID(), flight);
+						}
 					}
 
 					Collection<Object> updatedFlights = flightMap.values();
