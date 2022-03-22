@@ -7,7 +7,7 @@ import java.util.Queue;
 
 public class SynchronizedQueue {
 
-	private final Queue<Flight> queue;
+	public final Queue<Flight> queue;
 	int maxQueueSize = 20;
 
 	public SynchronizedQueue() {
@@ -29,7 +29,6 @@ public class SynchronizedQueue {
 		Flight flight = queue.poll();
 		notifyAll();
 		return flight;
-
 	}
 
 }

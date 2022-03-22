@@ -68,7 +68,6 @@ public class Airport {
 			position = positionIn;
 			synchronizedQueue = new SynchronizedQueue();
 			flightMap = new HashMap<>();
-
 		}
 
 		public void callback(Flight data) {
@@ -78,13 +77,11 @@ public class Airport {
 			} catch (InterruptedException e){
 				e.printStackTrace();
 			}
-
 		}
 
 		public void run() {
 			try{
-
-				while(true){
+				while (true) {
 					Flight flight = synchronizedQueue.pop();
 
 					if (flightMap.get(flight.flightID()) == null){
@@ -94,7 +91,7 @@ public class Airport {
 						flightMap.replace(flight.flightID(), flight);
 					}
 
-					Collection updatedFlights = flightMap.values();
+					Collection<Object> updatedFlights = flightMap.values();
 
 					// TODO publish to GUI
 
@@ -104,7 +101,6 @@ public class Airport {
 			} catch(InterruptedException e){
 				e.printStackTrace();
 			}
-
 		}
 
 		@Override
