@@ -1,15 +1,18 @@
 package com.github.adamtmalek.flightsimulator.models;
 
+import com.github.adamtmalek.flightsimulator.FlightSimulationThreadManagement;
 import com.github.adamtmalek.flightsimulator.SynchronizedQueue;
+import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
-import com.github.adamtmalek.flightsimulator.models.Flight;
-import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
-import com.github.adamtmalek.flightsimulator.models.io.converters.GeodeticCoordinateConverter;
+import com.github.adamtmalek.flightsimulator.io.SerializableField;
+import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Objects;
-import java.util.Queue;
+
+import static java.lang.Thread.sleep;
 
 public class Airport {
 	@SerializableField
@@ -52,23 +55,56 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower implements Subscriber<Flight>  {
+	public static class ControlTower extends Publisher<Flight> implements Subscriber<Flight>, Runnable  {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
 		private final SynchronizedQueue synchronizedQueue;
+		private final HashMap<String, Object> flightMap;
 
 		public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
 			code = codeIn;
 			name = nameIn;
 			position = positionIn;
 			synchronizedQueue = new SynchronizedQueue();
+			flightMap = new HashMap<>();
 
 		}
 
 		public void callback(Flight data) {
-			System.out.println(name + " received `"+data.flightID()+"`");
-			synchronizedQueue.push(data);
+			try{
+				System.out.println(name + " received `"+data.flightID()+"`");
+				synchronizedQueue.push(data);
+			} catch (InterruptedException e){
+				e.printStackTrace();
+			}
+
+		}
+
+		public void run() {
+			try{
+
+				while(true){
+					Flight flight = synchronizedQueue.pop();
+
+					if (flightMap.get(flight.flightID()) == null){
+						flightMap.put(flight.flightID(), flight);
+					}
+					else {
+						flightMap.replace(flight.flightID(), flight);
+					}
+
+					Collection updatedFlights = flightMap.values();
+
+					// TODO publish to GUI
+
+					long waitTime = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
+					sleep(waitTime);
+				}
+			} catch(InterruptedException e){
+				e.printStackTrace();
+			}
+
 		}
 
 		@Override

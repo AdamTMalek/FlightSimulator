@@ -8,12 +8,16 @@ import java.util.Queue;
 public class SynchronizedQueue {
 
 	private final Queue<Flight> queue;
+	int maxQueueSize = 20;
 
 	public SynchronizedQueue() {
 		queue = new LinkedList<>();
 	}
 
-	public synchronized void push(Flight flight) {
+	public synchronized void push(Flight flight) throws InterruptedException {
+		while(queue.size() == maxQueueSize){
+			wait();
+		}
 		queue.offer(flight);
 		notifyAll();
 	}
@@ -22,7 +26,10 @@ public class SynchronizedQueue {
 		while (queue.size() == 0){
 			wait();
 		}
-		return queue.poll();
+		Flight flight = queue.poll();
+		notifyAll();
+		return flight;
+
 	}
 
 }
