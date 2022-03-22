@@ -1,6 +1,6 @@
 package com.github.adamtmalek.flightsimulator.models;
 
-import com.github.adamtmalek.flightsimulator.SharedQueue;
+import com.github.adamtmalek.flightsimulator.SynchronizedQueue;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.io.SerializableField;
@@ -52,24 +52,23 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower implements Subscriber<Flight> {
+	public static class ControlTower implements Subscriber<Flight>  {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
-		private SharedQueue sharedQueue;
+		private final SynchronizedQueue synchronizedQueue;
 
 		public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
 			code = codeIn;
 			name = nameIn;
 			position = positionIn;
-			sharedQueue = new SharedQueue();
-			
+			synchronizedQueue = new SynchronizedQueue();
+
 		}
 
-		public void callback(Flight data){
-
+		public void callback(Flight data) {
 			System.out.println(name + " received `"+data.flightID()+"`");
-			flightQueue.add(data);
+			synchronizedQueue.push(data);
 		}
 
 		@Override
