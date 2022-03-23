@@ -8,25 +8,39 @@ package com.github.adamtmalek.flightsimulator;
  * may vary between runs (data-dependent).
  */
 public class FlightSimulationThreadManagement {
-	private static long THREAD_FREQUENCY = 2; //Hz
-	private static long FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
+	private static double THREAD_FREQUENCY = 2; //Hz
+	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
+	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
 
 	public static long getApproxThreadPeriodMs() {
-		double periodS = (1.0 / THREAD_FREQUENCY);
-		return (long) (periodS * 1000.0);
-	}
-
-	public static void setThreadFrequency(long frequency) {
-		THREAD_FREQUENCY = frequency;
+		return getPeriodMs(THREAD_FREQUENCY);
 	}
 
 	public static long getApproxFlightSimulationPeriodMs() {
-		double periodS = (1.0 / FLIGHT_SIMULATION_FREQUENCY);
+		return getPeriodMs(FLIGHT_SIMULATION_FREQUENCY);
+
+	}
+
+	public static long getApproxGuiUpdateFrequency() {
+		return getPeriodMs(GUI_UPDATE_FREQUENCY);
+
+	}
+
+	private static long getPeriodMs(double frequency) {
+		double periodS = (1.0 / frequency);
 		return (long) (periodS * 1000.0);
 	}
 
-	public static void setFlightSimulationFrequency(long frequency) {
+	public static void setThreadFrequency(double frequency) {
+		THREAD_FREQUENCY = frequency;
+	}
+
+	public static void setFlightSimulationFrequency(double frequency) {
 		FLIGHT_SIMULATION_FREQUENCY = frequency;
+	}
+
+	public static void setGuiUpdateFrequency(double frequency) {
+		GUI_UPDATE_FREQUENCY = frequency;
 	}
 
 

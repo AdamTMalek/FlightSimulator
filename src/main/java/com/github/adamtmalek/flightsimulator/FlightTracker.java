@@ -28,7 +28,8 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 			final var updatedFlight = flight.buildWithNewPosition(currentPosition);
 
 			publishTo(updatedFlight, nextControlTower);
-			duration += FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs();
+			duration += (FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000.0);
+
 			try {
 				final var sleepFor = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
 				Thread.sleep(FlightSimulationThreadManagement.getApproxThreadPeriodMs());

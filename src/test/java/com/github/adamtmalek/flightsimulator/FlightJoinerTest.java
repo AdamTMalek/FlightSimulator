@@ -11,8 +11,16 @@ import java.util.ArrayList;
 
 public class FlightJoinerTest {
 
+
 	@Test
-	void testJoinFlightsAfterPassingControlTower() {
+	void testJoinFlightAfterPassingControlTower() {
+
+		// Configure thread timing for test case.
+		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.005);
+		FlightSimulationThreadManagement.setThreadFrequency(2);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
+
+
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
@@ -47,12 +55,9 @@ public class FlightJoinerTest {
 		tracker.start();
 		joinerThread.start();
 		try {
-			System.out.println("sleeping for 2000ms");
 			Thread.sleep(2000);
-			System.out.println("========= Done sleeping ==============");
 			tracker.stop();
 			joinerThread.stop();
-			System.out.println("========= Done stopping ==============");
 
 		} catch (Exception e) {
 			e.printStackTrace();
