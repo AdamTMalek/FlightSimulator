@@ -13,7 +13,9 @@ public class FlightJoinerTest {
 
 	@Test
 	void testJoinFlightBetweenControlTowers() {
-
+		/**
+		 * Tests what happens when a flight travels between control towers, before crossing any.
+		 */
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.05); // Flight travelling between G-E within test duration.
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
@@ -72,7 +74,10 @@ public class FlightJoinerTest {
 
 	@Test
 	void testJoinFlightAfterPassingControlTower() {
-
+		/**
+		 * Tests what happens when a flight crosses over a control tower, upon which it should communicate with the next control
+		 * tower on its path.
+		 */
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.005); // Flight travelling between G-E-L within test duration.
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
@@ -131,7 +136,10 @@ public class FlightJoinerTest {
 
 	@Test
 	void testJoinMultipleFlightCrossingSameControlTowers() {
-
+		/**
+		 * Tests what happens when multiple flights travels between control towers.
+		 */
+		
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.05); // Flight travelling between G-E within test duration.
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
