@@ -44,21 +44,27 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	}
 
 	private OrientatedGeodeticCoordinate calculateCurrentPosition(double distanceTravelled) {
-		var iterator = flight.controlTowersToCross().listIterator();
-		Airport.ControlTower firstCoord = flight.controlTowersToCross().get(0);
-		Airport.ControlTower secondCoord = flight.controlTowersToCross().get(1);
-		double distanceBetweenPreviousControlTowers = 0.0;
-		while (iterator.hasNext() && distanceBetweenPreviousControlTowers < distanceTravelled) { //iterator.nextIndex() + 1 <= flight.controlTowersToCross().size() - 1
-			firstCoord = iterator.next();
-			secondCoord = flight.controlTowersToCross().get(iterator.nextIndex());
-			distanceBetweenPreviousControlTowers += firstCoord.position.calculateDistance(secondCoord.position);
+		if (distanceTravelled > 0.0) {
+			var iterator = flight.controlTowersToCross().listIterator();
+			Airport.ControlTower firstCoord = flight.controlTowersToCross().get(0);
+			Airport.ControlTower secondCoord = flight.controlTowersToCross().get(1);
+			double distanceBetweenPreviousControlTowers = 0.0;
+			while (iterator.hasNext() && distanceBetweenPreviousControlTowers < distanceTravelled) { //iterator.nextIndex() + 1 <= flight.controlTowersToCross().size() - 1
+				firstCoord = iterator.next();
+				secondCoord = flight.controlTowersToCross().get(iterator.nextIndex());
+				distanceBetweenPreviousControlTowers += firstCoord.position.calculateDistance(secondCoord.position);
 
+			}
+			distanceBetweenPreviousControlTowers -= firstCoord.position.calculateDistance(secondCoord.position);
+
+			final var azimuthBetweenControlTowers = firstCoord.position.calculateAzimuth(secondCoord.position);
+			final var intermittentCoordinate = firstCoord.position.extendCoordinate(azimuthBetweenControlTowers, distanceTravelled - distanceBetweenPreviousControlTowers);
+			return new OrientatedGeodeticCoordinate(secondCoord, intermittentCoordinate);
+		} else {
+			// Distance is 0.0, therefore the flight shall be travelling to the 2nd control tower (1 index)
+			// , and is currently at the position of the departure airport control tower (0 index).
+			return new OrientatedGeodeticCoordinate(flight.controlTowersToCross().get(1), flight.controlTowersToCross().get(0).position);
 		}
-		distanceBetweenPreviousControlTowers -= firstCoord.position.calculateDistance(secondCoord.position);
-
-		final var azimuthBetweenControlTowers = firstCoord.position.calculateAzimuth(secondCoord.position);
-		final var intermittentCoordinate = firstCoord.position.extendCoordinate(azimuthBetweenControlTowers, distanceTravelled - distanceBetweenPreviousControlTowers);
-		return new OrientatedGeodeticCoordinate(secondCoord, intermittentCoordinate);
 	}
 
 	private double calculateCurrentDistanceTravelled() {
