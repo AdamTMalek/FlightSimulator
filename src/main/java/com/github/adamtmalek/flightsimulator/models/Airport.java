@@ -55,12 +55,13 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower extends Publisher<Flight> implements Subscriber<Flight>, Runnable  {
+	public static class ControlTower extends Publisher<Flight> implements Subscriber<Flight>, Runnable {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
 		private final SynchronizedQueue synchronizedQueue;
 		private final HashMap<String, Object> flightMap;
+		private volatile boolean isRunning;
 
 		public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
 			code = codeIn;
@@ -68,29 +69,29 @@ public class Airport {
 			position = positionIn;
 			synchronizedQueue = new SynchronizedQueue();
 			flightMap = new HashMap<>();
+			isRunning = true;
 		}
 
 		public void callback(Flight data) {
-			try{
-				System.out.println(name + " received `"+data.flightID()+"`");
+			try {
+				System.out.println(name + " received `" + data.flightID() + "`");
 				synchronizedQueue.push(data);
-			} catch (InterruptedException e){
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 
 		public void run() {
-			try{
-				while (true) {
+			try {
+				while (isRunning) {
 
-					while (!synchronizedQueue.isEmpty()){
+					while (!synchronizedQueue.isEmpty()) {
 
 						Flight flight = synchronizedQueue.pop();
 
-						if (flightMap.get(flight.flightID()) == null){
+						if (flightMap.get(flight.flightID()) == null) {
 							flightMap.put(flight.flightID(), flight);
-						}
-						else {
+						} else {
 							flightMap.replace(flight.flightID(), flight);
 						}
 					}
@@ -102,9 +103,13 @@ public class Airport {
 					long waitTime = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
 					sleep(waitTime);
 				}
-			} catch(InterruptedException e){
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+
+		public void stop() {
+			isRunning = false;
 		}
 
 		@Override
