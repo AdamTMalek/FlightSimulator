@@ -9,7 +9,23 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-public class FlightJoinerTest {
+public class FlightTrackingTest {
+	/**
+	 * Tests the system's capability to track flights concurrently. Every time a flight calculates its new position,
+	 * it is published to the next control tower. The next control tower then publishes the most up-to-date tracked position for
+	 * each received flight.
+	 * <p>
+	 * eg. If a flight is travelling from controlTowerA to controlTowerB, it will publish coordinates [0,0], [1,1], [2,2] and so on.
+	 * The control tower will receive this data and store it. However, when publishing, we only care about the most recently received
+	 * data.
+	 * <p>
+	 * The FlightJoiner subscribes to these positions, which is responsible for joining flights that have travelled between control towers.
+	 * <p>
+	 * eg. if a flight travels from controlTowerA, to controlTowerB, and then to controlTowerC, the flight shall publish it's tracked
+	 * position to controlTowerB, and then to controlTowerC once it passes over controlTowerB. As such, controlTowerB and controlTowerC
+	 * will publish the same flight. Therefore, the FlightJoiner joins these 2 Flights together by removing controlTowerA's flight. This
+	 * is so that view components are provided with a single, most up-to-date instance per flight.
+	 */
 
 	@Test
 	void testJoinFlightBetweenControlTowers() {
@@ -139,7 +155,7 @@ public class FlightJoinerTest {
 		/**
 		 * Tests what happens when multiple flights travels between control towers.
 		 */
-		
+
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.05); // Flight travelling between G-E within test duration.
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
