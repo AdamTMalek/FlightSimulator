@@ -23,6 +23,7 @@ public class Airport {
 	@SerializableField(converter = GeodeticCoordinateConverter.class)
 	public final GeodeticCoordinate position;
 	public final ControlTower controlTower;
+	public final Thread controlTowerThread;
 
 	public Airport(@NotNull String code,
 								 @NotNull String name,
@@ -31,6 +32,8 @@ public class Airport {
 		this.name = name;
 		this.position = position;
 		this.controlTower = new ControlTower(code, name, position);
+		this.controlTowerThread = new Thread(this.controlTower);
+		this.controlTowerThread.start();
 	}
 
 	@Override
@@ -55,7 +58,7 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower extends Publisher<Flight> implements Subscriber<Flight>, Runnable {
+	public static class ControlTower extends Publisher<ArrayList<DirectedFlight>> implements Subscriber<Flight>, Runnable {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
@@ -74,7 +77,7 @@ public class Airport {
 
 		public void callback(Flight data) {
 			try {
-				System.out.println(name + " received `" + data.flightID() + "`");
+				System.out.println(name + " received `" + data.flightID() + "` at `" + data.estimatedPosition().latitude() + ", " + data.estimatedPosition().longitude() + "`");
 				synchronizedQueue.push(data);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -98,7 +101,12 @@ public class Airport {
 						}
 
 						var updatedFlights = new ArrayList<Flight>(flightMap.values());
+						var toSend = new ArrayList<DirectedFlight>();
+						for (var flight : updatedFlights) {
+							toSend.add(new DirectedFlight(flight, this.code));
 
+						}
+						publish(toSend);
 						// TODO publish to GUI
 					}
 					long waitTime = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
