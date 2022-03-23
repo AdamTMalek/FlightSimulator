@@ -4,6 +4,7 @@ import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.DirectedFlight;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,16 +80,12 @@ public class FlightJoiner extends Publisher<ArrayList<DirectedFlight>> implement
 		}
 	}
 
-	private int getIndexOfControlTower(List<Airport.ControlTower> flightPlan, String controlTowerId) {
-
-		int indexOfControlTower = -1;
+	private int getIndexOfControlTower(@NotNull List<Airport.ControlTower> flightPlan, @NotNull String controlTowerId) {
 		for (int i = 0; i < flightPlan.size(); i++) {
-
-			if (flightPlan.get(i).code == controlTowerId) {
-				indexOfControlTower = i;
+			if (flightPlan.get(i).code.equals(controlTowerId)) {
+				return i;
 			}
 		}
-		return indexOfControlTower;
+		return -1;
 	}
-
 }
