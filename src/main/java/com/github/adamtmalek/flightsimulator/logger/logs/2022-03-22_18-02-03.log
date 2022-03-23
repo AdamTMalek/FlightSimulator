@@ -1,0 +1,6 @@
+[FATAL]: this is a fatal
+[ERROR]: this is an error
+[WARN]: this is a warn
+[INFO]: this is an info
+[DEBUG]: this is a debug
+[TRACE]: this is a trace
