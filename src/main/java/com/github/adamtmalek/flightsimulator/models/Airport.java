@@ -8,7 +8,7 @@ import com.github.adamtmalek.flightsimulator.io.SerializableField;
 import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -60,7 +60,7 @@ public class Airport {
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
 		private final SynchronizedQueue synchronizedQueue;
-		private final HashMap<String, Object> flightMap;
+		private final HashMap<String, Flight> flightMap;
 		private volatile boolean isRunning;
 
 		public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
@@ -68,7 +68,7 @@ public class Airport {
 			name = nameIn;
 			position = positionIn;
 			synchronizedQueue = new SynchronizedQueue();
-			flightMap = new HashMap<>();
+			flightMap = new HashMap<String, Flight>();
 			isRunning = true;
 		}
 
@@ -85,21 +85,22 @@ public class Airport {
 			try {
 				while (isRunning) {
 
-					while (!synchronizedQueue.isEmpty()) {
+					if (!synchronizedQueue.isEmpty()) {
 
-						Flight flight = synchronizedQueue.pop();
+						// Each element in queue is inserted into map and cleared.
+						while (!synchronizedQueue.isEmpty()) {
 
-						if (flightMap.get(flight.flightID()) == null) {
+							Flight flight = synchronizedQueue.pop();
+
+							// If exists FlightID exists in map, it is replaced. Otherwise, a new
+							// entry is inserted into the map.
 							flightMap.put(flight.flightID(), flight);
-						} else {
-							flightMap.replace(flight.flightID(), flight);
 						}
+
+						var updatedFlights = new ArrayList<Flight>(flightMap.values());
+
+						// TODO publish to GUI
 					}
-
-					Collection<Object> updatedFlights = flightMap.values();
-
-					// TODO publish to GUI
-
 					long waitTime = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
 					sleep(waitTime);
 				}
