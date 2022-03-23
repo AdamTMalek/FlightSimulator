@@ -31,7 +31,7 @@ public class SynchronizedQueueTest {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>());;
+				new ArrayList<Airport.ControlTower>());
 
 		testSynchronizedQueue.push(flight1);
 		testSynchronizedQueue.push(flight2);
@@ -43,7 +43,7 @@ public class SynchronizedQueueTest {
 	}
 
 	@Test
-	void testQueuePop() throws InterruptedException {
+	void testQueuePoll() throws InterruptedException {
 
 		testSynchronizedQueue = new SynchronizedQueue();
 
@@ -61,11 +61,11 @@ public class SynchronizedQueueTest {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>());;
+				new ArrayList<Airport.ControlTower>());
 
 		testSynchronizedQueue.push(flight1);
 		testSynchronizedQueue.push(flight2);
-		testSynchronizedQueue.pop();
+		testSynchronizedQueue.poll();
 
 		int queueSize = testSynchronizedQueue.queue.size();
 

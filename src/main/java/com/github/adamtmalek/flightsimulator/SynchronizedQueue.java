@@ -15,15 +15,16 @@ public class SynchronizedQueue {
 	}
 
 	public synchronized void push(Flight flight) throws InterruptedException {
-		while(queue.size() == maxQueueSize){
+		while (queue.size() == maxQueueSize) {
 			wait();
 		}
 		queue.offer(flight);
 		notifyAll();
 	}
 
-	public synchronized Flight pop() throws InterruptedException {
-		while (queue.isEmpty()){
+	// Removes head of queue and returns it.
+	public synchronized Flight poll() throws InterruptedException {
+		while (queue.isEmpty()) {
 			wait();
 		}
 		Flight flight = queue.poll();

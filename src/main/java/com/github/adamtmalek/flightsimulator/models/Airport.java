@@ -90,7 +90,7 @@ public class Airport {
 						// Each element in queue is inserted into map and cleared.
 						while (!synchronizedQueue.isEmpty()) {
 
-							Flight flight = synchronizedQueue.pop();
+							Flight flight = synchronizedQueue.poll();
 
 							// If exists FlightID exists in map, it is replaced. Otherwise, a new
 							// entry is inserted into the map.
