@@ -23,7 +23,6 @@ public class Airport {
 	@SerializableField(converter = GeodeticCoordinateConverter.class)
 	public final GeodeticCoordinate position;
 	public final ControlTower controlTower;
-	public final Thread controlTowerThread;
 
 	public Airport(@NotNull String code,
 								 @NotNull String name,
@@ -32,8 +31,6 @@ public class Airport {
 		this.name = name;
 		this.position = position;
 		this.controlTower = new ControlTower(code, name, position);
-		this.controlTowerThread = new Thread(this.controlTower);
-		this.controlTowerThread.start();
 	}
 
 	@Override
@@ -87,7 +84,7 @@ public class Airport {
 		public void run() {
 			try {
 				while (isRunning) {
-
+					System.out.println(this.code + " is running!");
 					if (!synchronizedQueue.isEmpty()) {
 
 						// Each element in queue is inserted into map and cleared.

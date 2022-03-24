@@ -21,6 +21,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	public void run() {
 
 		while (isRunning) {
+			System.out.println(this.flight.flightID() + " is running!");
 			OrientatedGeodeticCoordinate intermittentCoordinate = calculateCurrentPosition(calculateCurrentDistanceTravelled());
 			final var currentPosition = intermittentCoordinate.position;
 			final var nextControlTower = intermittentCoordinate.nextControlTower;
