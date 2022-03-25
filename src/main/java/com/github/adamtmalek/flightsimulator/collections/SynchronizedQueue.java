@@ -1,35 +1,33 @@
 package com.github.adamtmalek.flightsimulator.collections;
 
-import com.github.adamtmalek.flightsimulator.models.Flight;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class SynchronizedQueue {
+public class SynchronizedQueue<T> {
 
-	public final Queue<Flight> queue;
+	public final Queue<T> queue;
 	int maxQueueSize = 20;
 
 	public SynchronizedQueue() {
 		queue = new LinkedList<>();
 	}
 
-	public synchronized void push(Flight flight) throws InterruptedException {
+	public synchronized void push(T object) throws InterruptedException {
 		while (queue.size() == maxQueueSize) {
 			wait();
 		}
-		queue.offer(flight);
+		queue.offer(object);
 		notifyAll();
 	}
 
 	// Removes head of queue and returns it.
-	public synchronized Flight poll() throws InterruptedException {
+	public synchronized T poll() throws InterruptedException {
 		while (queue.isEmpty()) {
 			wait();
 		}
-		Flight flight = queue.poll();
+		T object = queue.poll();
 		notifyAll();
-		return flight;
+		return object;
 	}
 
 	public synchronized boolean isEmpty() {

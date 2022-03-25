@@ -11,12 +11,12 @@ import java.util.List;
 
 public class SynchronizedQueueTest {
 
-	private SynchronizedQueue testSynchronizedQueue;
+	private SynchronizedQueue<Flight> testSynchronizedQueue;
 
 	@Test
 	void testQueuePush() throws InterruptedException {
 
-		testSynchronizedQueue = new SynchronizedQueue();
+		testSynchronizedQueue = new SynchronizedQueue<>();
 
 		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		final var destinationAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
@@ -49,7 +49,7 @@ public class SynchronizedQueueTest {
 	@Test
 	void testQueuePoll() throws InterruptedException {
 
-		testSynchronizedQueue = new SynchronizedQueue();
+		testSynchronizedQueue = new SynchronizedQueue<>();
 
 		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		final var destinationAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));

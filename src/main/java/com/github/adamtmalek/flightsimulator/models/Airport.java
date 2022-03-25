@@ -59,7 +59,7 @@ public class Airport {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
-		private final SynchronizedQueue synchronizedQueue;
+		private final SynchronizedQueue<Flight> synchronizedQueue;
 		private final HashMap<String, Flight> flightMap;
 		private volatile boolean isRunning;
 
@@ -67,7 +67,7 @@ public class Airport {
 			code = codeIn;
 			name = nameIn;
 			position = positionIn;
-			synchronizedQueue = new SynchronizedQueue();
+			synchronizedQueue = new SynchronizedQueue<>();
 			flightMap = new HashMap<>();
 			isRunning = true;
 		}
