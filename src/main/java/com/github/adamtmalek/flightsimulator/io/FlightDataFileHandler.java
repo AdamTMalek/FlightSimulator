@@ -118,7 +118,7 @@ public class FlightDataFileHandler {
 					.map(c -> airportMap.get(c).controlTower)
 					.toList();
 
-			return Flight.buildWithFlightId(code, airline, aeroplane, departureAirport, arrivalAirport, dateTime, flightPlan);
+			return new Flight(code, airline, aeroplane, departureAirport, arrivalAirport, dateTime, flightPlan);
 		}).collect(Collectors.toCollection(ArrayList<Flight>::new));
 	}
 

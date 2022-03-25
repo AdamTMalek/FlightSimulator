@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlightSimulationThreadManagementTest {
 	@Test
@@ -24,47 +25,32 @@ public class FlightSimulationThreadManagementTest {
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var flightA = Flight.buildWithFlightId("FA",
+		var flightA = new Flight("FA",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
-		var flightB = Flight.buildWithFlightId("FB",
+		var flightB = new Flight("FB",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
 		var flightJoiner = new FlightJoiner();
 		var stubOutputSub = new StubFlightJoinerSubscriber();
 		flightJoiner.registerSubscriber(stubOutputSub);
 
 		var flightSimManager = new FlightSimulationThreadManagement(
-				new ArrayList<Flight>() {{
-					add(flightA);
-					add(flightB);
-				}},
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}},
+				List.of(flightA, flightB),
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower),
 				flightJoiner);
 
 		flightSimManager.startThreads();
@@ -101,47 +87,32 @@ public class FlightSimulationThreadManagementTest {
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var flightA = Flight.buildWithFlightId("FA",
+		var flightA = new Flight("FA",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
-		var flightB = Flight.buildWithFlightId("FB",
+		var flightB = new Flight("FB",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
 		var flightJoiner = new FlightJoiner();
 		var stubOutputSub = new StubFlightJoinerSubscriber();
 		flightJoiner.registerSubscriber(stubOutputSub);
 
 		var flightSimManager = new FlightSimulationThreadManagement(
-				new ArrayList<Flight>() {{
-					add(flightA);
-					add(flightB);
-				}},
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}},
+				List.of(flightA, flightB),
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower),
 				flightJoiner);
 
 		flightSimManager.startThreads();
@@ -196,47 +167,32 @@ public class FlightSimulationThreadManagementTest {
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var flightA = Flight.buildWithFlightId("FA",
+		var flightA = new Flight("FA",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
-		var flightB = Flight.buildWithFlightId("FB",
+		var flightB = new Flight("FB",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}});
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower));
 
 		var flightJoiner = new FlightJoiner();
 		var stubOutputSub = new StubFlightJoinerSubscriber();
 		flightJoiner.registerSubscriber(stubOutputSub);
 
 		var flightSimManager = new FlightSimulationThreadManagement(
-				new ArrayList<Flight>() {{
-					add(flightA);
-					add(flightB);
-				}},
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}},
+				List.of(flightA, flightB),
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower),
 				flightJoiner);
 
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlightTrackingTest {
 	/**
@@ -177,31 +178,25 @@ public class FlightTrackingTest {
 		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
 		joiner.registerSubscriber(stubJoinerSubscriber);
 
-		var flightATracker = new Thread(new FlightTracker(Flight.buildWithFlightId("FA",
+		var flightATracker = new Thread(new FlightTracker(new Flight("FA",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}})));
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower)
+		)));
 
-		var flightBTracker = new Thread(new FlightTracker(Flight.buildWithFlightId("FB",
+		var flightBTracker = new Thread(new FlightTracker(new Flight("FB",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}})));
+				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
+						londonAirport.controlTower, newYorkAirport.controlTower)
+		)));
 
 
 		var joinerThread = new Thread(joiner);

@@ -139,7 +139,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testAddFlight() {
-		final var flight = Flight.buildWithFlightId("newFlightID",
+		final var flight = new Flight("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -156,7 +156,7 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testRemoveFlight() {
-		final var flight = Flight.buildWithFlightId("newFlightID",
+		final var flight = new Flight("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
@@ -175,14 +175,14 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testEditFlight() {
-		final var originalFlight = Flight.buildWithFlightId("001",
+		final var originalFlight = new Flight("001",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
 				new ArrayList<>());
-		final var changedFlight = Flight.buildWithFlightId("002",
+		final var changedFlight = new Flight("002",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),

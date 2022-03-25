@@ -19,37 +19,34 @@ public class FlightTest {
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>());
+				new ArrayList<>());
 
 		Assertions.assertEquals("TEST001", flight.flightID());
 	}
 
 	@Test
 	void testFlightBuiltWithFullId() {
-		var flight = Flight.buildWithFlightId("FULL-FLIGHT-ID",
+		var flight = new Flight("FULL-FLIGHT-ID",
 				new Airline("TEST", ""),
 				new Aeroplane("a", "a", 1, 50),
 				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
 				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>());
+				new ArrayList<>());
 
 		Assertions.assertEquals("FULL-FLIGHT-ID", flight.flightID());
 	}
 
 	@Test
 	void testExceptionThrownIfInvalidSerialNumber() {
-		Assertions.assertThrows(InvalidParameterException.class, new Executable() {
-			public void execute() throws Throwable {
-				var flight = Flight.buildWithSerialNumber("Serial numbers containing non-integers is invalid.",
-						new Airline("TEST", ""),
-						new Aeroplane("a", "a", 1, 50),
-						new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-						new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
-						ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-						new ArrayList<Airport.ControlTower>());
-
-			}
+		Assertions.assertThrows(InvalidParameterException.class, () -> {
+			Flight.buildWithSerialNumber("Serial numbers containing non-integers is invalid.",
+					new Airline("TEST", ""),
+					new Aeroplane("a", "a", 1, 50),
+					new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
+					new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
+					ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+					new ArrayList<>());
 		});
 	}
 

@@ -30,7 +30,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 		final var actual = flightData.flights();
 
 		final var expected = new Flight[]{
-				Flight.buildWithFlightId("OK420",
+				new Flight("OK420",
 						flightData.airlines().stream().filter(v -> v.code().equals("OK")).findFirst().orElseThrow(),
 						flightData.aeroplanes().stream().filter(v -> v.model().equals("B777")).findFirst().orElseThrow(),
 						flightData.airports().stream().filter(v -> v.code.equals("CDG")).findFirst().orElseThrow(),
@@ -42,7 +42,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 						)
 				),
 				// BA605; A330; EDI; LHR; 15:01:2022; 06:00; EDI; CDG; LHR
-				Flight.buildWithFlightId("BA605",
+				new Flight("BA605",
 						flightData.airlines().stream().filter(v -> v.code().equals("BA")).findFirst().orElseThrow(),
 						flightData.aeroplanes().stream().filter(v -> v.model().equals("A330")).findFirst().orElseThrow(),
 						flightData.airports().stream().filter(v -> v.code.equals("EDI")).findFirst().orElseThrow(),
