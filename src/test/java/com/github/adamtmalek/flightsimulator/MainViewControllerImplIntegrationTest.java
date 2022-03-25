@@ -25,8 +25,8 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 	@AfterEach
 	void removeReportAndFlightDataDirectories() {
 		try {
-			FileUtils.deleteDirectory(MainViewControllerImpl.getFlightDataDirectory().toFile());
-			FileUtils.deleteDirectory(MainViewControllerImpl.getFlightsReportDirectory().toFile());
+			FileUtils.deleteDirectory(Simulator.FLIGHT_DATA_DIRECTORY.toFile());
+			FileUtils.deleteDirectory(Simulator.FLIGHTS_REPORT_DIRECTORY.toFile());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -34,11 +34,11 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 
 	@Test
 	void testAirlineReportIsSavedOnClose() {
-		final var controller = new MainViewControllerImpl(new MainViewStub());
+		final var controller = new MainViewControllerImpl(new MainViewStub(), new Simulator());
 		controller.showView();
 		controller.onWindowClosing();
 
-		File actualFile = MainViewControllerImpl.getFlightsReportDirectory().resolve("American Airlines.csv").toFile();
+		File actualFile = Simulator.FLIGHTS_REPORT_DIRECTORY.resolve("American Airlines.csv").toFile();
 		File expectedFile = getPathFromResources("airline-reports/American Airlines.csv").toFile();
 		org.assertj.core.api.Assertions.assertThat(actualFile).hasSameTextualContentAs(expectedFile);
 	}

@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
+import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.gui.models.BoundComboBoxModel;
 import com.github.adamtmalek.flightsimulator.gui.models.BoundListModel;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
@@ -54,9 +55,12 @@ public class Screen extends JFrame implements MainView {
 	private static final int MAX_FLIGHT_ID_CHAR_LENGTH = 4;
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-	public Screen(@NotNull MainViewController controller) {
+	private final @NotNull Simulator simulator;
+
+	public Screen(@NotNull MainViewController controller, @NotNull Simulator simulator) {
 		super(windowTitle);
 		this.controller = controller;
+		this.simulator = simulator;
 		this.setContentPane(this.panelMain);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -68,6 +72,7 @@ public class Screen extends JFrame implements MainView {
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		flightList.addListSelectionListener(e -> setSelectedFlight());
 		addOnExitEventHandler();
+		addListenersToSimulatorCollections();
 	}
 
 	private void initializeComponents() {
@@ -99,6 +104,10 @@ public class Screen extends JFrame implements MainView {
 				.map(t -> t.code)
 				.collect(Collectors.joining("\n"));
 		flightPlan.setText(flightPlanText);
+	}
+
+	private void addListenersToSimulatorCollections() {
+		// TODO: Add listeners to change the compoenents
 	}
 
 	@Override

@@ -6,7 +6,8 @@ import com.github.adamtmalek.flightsimulator.gui.MainViewControllerImpl;
 public class App {
 
 	public static void main(String[] args) {
-		final MainViewController controller = new MainViewControllerImpl();
+		final var simulator = new Simulator();
+		final var controller = new MainViewControllerImpl(simulator);
 		controller.showView();
 	}
 }

@@ -1,8 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
-import com.github.adamtmalek.flightsimulator.FlightDataHandler;
-import com.github.adamtmalek.flightsimulator.FlightDataHandlerImpl;
-import com.github.adamtmalek.flightsimulator.io.FlightData;
+import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
@@ -10,74 +8,35 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
 import com.github.adamtmalek.flightsimulator.validators.FlightValidator;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
 	private MainView view;
-	private final @NotNull FlightDataHandler flightDataHandler;
-	private static final Path flightDataDirectory = Path.of("flight-data/");
-	private static final Path flightsReportDirectory = Path.of("reports/");
+	private final @NotNull Simulator simulator;
 
-	public MainViewControllerImpl(@NotNull MainView view, @NotNull FlightDataHandler flightDataHandler) {
+	public MainViewControllerImpl(@NotNull MainView view, @NotNull Simulator simulator) {
 		this.view = view;
-		this.flightDataHandler = flightDataHandler;
+		this.simulator = simulator;
 	}
 
-	public MainViewControllerImpl(@NotNull MainView view) {
-		this(view, new FlightDataHandlerImpl());
-	}
-
-	public MainViewControllerImpl() {
-		this.flightDataHandler = new FlightDataHandlerImpl();
-		SwingUtilities.invokeLater(() -> view = new Screen(this));
+	public MainViewControllerImpl(@NotNull Simulator simulator) {
+		this.simulator = simulator;
+		SwingUtilities.invokeLater(() -> view = new Screen(this, simulator));
 	}
 
 	@Override
 	public void showView() {
-		final var flightData = loadFlightData();
 		SwingUtilities.invokeLater(() -> {
 			view.setVisible(true);
-			view.displayData(flightData);
 		});
-	}
-
-	@Contract(pure = true)
-	private @NotNull FlightData loadFlightData() {
-		final var aeroplanesPath = getPathFromResourcesFlightData("aeroplanes.csv");
-		final var airlinesPath = getPathFromResourcesFlightData("airlines.csv");
-		final var airportsPath = getPathFromResourcesFlightData("airports.csv");
-		final var flightsPath = getPathFromResourcesFlightData("flights.csv");
-
-		try {
-			return flightDataHandler.readFlightData(airportsPath, aeroplanesPath, airlinesPath, flightsPath);
-		} catch (FlightDataFileHandlerException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private @NotNull Path getPathFromResourcesFlightData(@NotNull String name) {
-		try {
-			final var resourceName = String.format("cw-spec-data/%s", name);
-			final var resource = Objects.requireNonNull(getClass().getClassLoader().getResource(resourceName));
-			return Path.of(resource.toURI());
-		} catch (URISyntaxException ex) {
-			// If we're using toURI() function of URL from getResource(), then how can URISyntaxException be possibly thrown?
-			// But we have to do something here - so let's throw a RuntimeException just to "handle" that possibility.
-			throw new RuntimeException(ex);
-		}
 	}
 
 	@Override
@@ -145,15 +104,14 @@ public class MainViewControllerImpl implements MainViewController {
 		final var flight = Flight.buildWithSerialNumber(flightNumber.get(), airline.get(), aeroplane.get(),
 				departureAirport.get(), destinationAirport.get(), departureDateTime.get(), flightPlan);
 
-		flightDataHandler.getFlightData()
-				.flights()
+		simulator.getFlights()
 				.stream()
 				.filter(f -> f.flightID().equals(flight.flightID()))
 				.findAny()
 				.ifPresentOrElse(
 						(f) -> showNotUniqueFlightIdError(),
 						() -> {
-							flightDataHandler.addFlight(flight);
+							simulator.addFlight(flight);
 							SwingUtilities.invokeLater(() -> view.updateFlightList());
 						}
 				);
@@ -168,18 +126,17 @@ public class MainViewControllerImpl implements MainViewController {
 	public void onOpenFileClicked() {
 		final OpenFileViewController openFileController = new OpenFileViewControllerImpl();
 		SwingUtilities.invokeLater(() -> openFileController.openDialog(view.getComponent())
-				.ifPresent(this::readAndDisplayFlightData));
+				.ifPresent(this::readFlightData));
 	}
 
-	private void readAndDisplayFlightData(@NotNull FlightFilesPaths paths) {
+	private void readFlightData(@NotNull FlightFilesPaths paths) {
 		try {
-			final var data = flightDataHandler.readFlightData(
+			simulator.readFlightData(
 					paths.airports(),
 					paths.aeroplanes(),
 					paths.airlines(),
 					paths.flights()
 			);
-			SwingUtilities.invokeLater(() -> view.displayData(data));
 		} catch (FlightDataFileHandlerException ex) {
 			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
 					new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE)
@@ -194,24 +151,10 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void saveFlightsReport() {
-		flightDataHandler.writeAirlineReports(flightsReportDirectory);
+		simulator.writeAirlineReports();
 	}
 
 	private void saveFlightData() {
-		try {
-			flightDataHandler.writeFlightData(flightDataDirectory);
-		} catch (FlightDataFileHandlerException e) {
-			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Failed to write flight data", JOptionPane.ERROR_MESSAGE);
-		}
-	}
-
-	@TestOnly
-	public static @NotNull Path getFlightDataDirectory() {
-		return flightDataDirectory;
-	}
-
-	@TestOnly
-	public static @NotNull Path getFlightsReportDirectory() {
-		return flightsReportDirectory;
+		simulator.writeFlightData();
 	}
 }
