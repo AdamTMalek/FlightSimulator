@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Class containing configurable values thread frequency and period.
@@ -19,27 +20,29 @@ public class FlightSimulationThreadManagement {
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
 
-	private final List<Thread> flightTrackerThreads;
-	private final List<Thread> controlTowerThreads;
-	private final Thread flightJoinerThread;
+	private final Collection<Thread> threads;
 
 	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
 																					@NotNull Collection<Airport.ControlTower> controlTowers,
 																					@NotNull FlightJoiner flightJoiner) {
 
-		this.flightTrackerThreads = flights
+		final var flightTrackerThreads = flights
 				.stream()
 				.map(flight -> new Thread(new FlightTracker(flight)))
 				.toList();
 
-		this.controlTowerThreads = controlTowers
+		final var controlTowerThreads = controlTowers
 				.stream()
 				.map(controlTower -> {
 					controlTower.registerSubscriber(flightJoiner);
 					return new Thread(controlTower);
 				})
 				.toList();
-		this.flightJoinerThread = new Thread(flightJoiner);
+		final var flightJoinerThread = new Thread(flightJoiner);
+
+		this.threads = Stream.of(flightTrackerThreads, controlTowerThreads, List.of(flightJoinerThread))
+				.flatMap(Collection::stream)
+				.toList();
 	}
 
 	public static long getApproxThreadPeriodMs() {
@@ -75,34 +78,22 @@ public class FlightSimulationThreadManagement {
 
 	public void startThreads() {
 		System.out.println("Starting threads. ================== ");
-
-		this.flightTrackerThreads.forEach(Thread::start);
-		this.controlTowerThreads.forEach(Thread::start);
-		this.flightJoinerThread.start();
+		this.threads.forEach(Thread::start);
 	}
 
 	public void stopThreads() {
 		System.out.println("Stopping threads. ================== ");
-
-		this.flightTrackerThreads.forEach(Thread::stop);
-		this.controlTowerThreads.forEach(Thread::stop);
-		this.flightJoinerThread.stop();
+		this.threads.forEach(Thread::stop);
 	}
 
 	public void pauseThreads() {
 		System.out.println("Pausing threads. ================== ");
-
-		this.flightTrackerThreads.forEach(Thread::suspend);
-		this.controlTowerThreads.forEach(Thread::suspend);
-		this.flightJoinerThread.suspend();
+		this.threads.forEach(Thread::suspend);
 	}
 
 	public void resumeThreads() {
 		System.out.println("Resuming threads. ================== ");
-
-		this.flightTrackerThreads.forEach(Thread::resume);
-		this.controlTowerThreads.forEach(Thread::resume);
-		this.flightJoinerThread.resume();
+		this.threads.forEach(Thread::resume);
 	}
 
 
