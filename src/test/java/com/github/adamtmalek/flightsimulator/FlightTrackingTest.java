@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+// TODO: Assertions in this test that rely on the position change are pretty much guaranteed to fail,
+//   as they are extremely time dependent. We need to have a better way of checking if we're traveling
+//   in the right direction without relying on hardcoded numbers.
 public class FlightTrackingTest {
 	/**
 	 * Tests the system's capability to track flights concurrently. Every time a flight calculates its new position,
@@ -45,11 +49,12 @@ public class FlightTrackingTest {
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
 		var joiner = new FlightJoiner();
+		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
+		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
+		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
 
-		glasgowAirport.controlTower.registerSubscriber(joiner);
-		edinburghAirport.controlTower.registerSubscriber(joiner);
-		londonAirport.controlTower.registerSubscriber(joiner);
-		newYorkAirport.controlTower.registerSubscriber(joiner);
+		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
+		controlTowerThreads.forEach(Thread::start);
 
 		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
 		joiner.registerSubscriber(stubJoinerSubscriber);
@@ -60,12 +65,8 @@ public class FlightTrackingTest {
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}})));
+				controlTowers
+		)));
 
 
 		var joinerThread = new Thread(joiner);
@@ -76,6 +77,7 @@ public class FlightTrackingTest {
 			Thread.sleep(2000);
 			tracker.stop();
 			joinerThread.stop();
+			controlTowerThreads.forEach(Thread::stop);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,10 +85,7 @@ public class FlightTrackingTest {
 
 		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
 		Assertions.assertEquals(1, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).controlTowerCode());
-		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(0).flight().estimatedPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(0).flight().estimatedPosition().longitude());
-
+		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
 	}
 
 	@Test
@@ -108,10 +107,12 @@ public class FlightTrackingTest {
 
 		var joiner = new FlightJoiner();
 
-		glasgowAirport.controlTower.registerSubscriber(joiner);
-		edinburghAirport.controlTower.registerSubscriber(joiner);
-		londonAirport.controlTower.registerSubscriber(joiner);
-		newYorkAirport.controlTower.registerSubscriber(joiner);
+		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
+		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
+		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
+
+		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
+		controlTowerThreads.forEach(Thread::start);
 
 		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
 		joiner.registerSubscriber(stubJoinerSubscriber);
@@ -122,12 +123,8 @@ public class FlightTrackingTest {
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
-					add(glasgowAirport.controlTower);
-					add(edinburghAirport.controlTower);
-					add(londonAirport.controlTower);
-					add(newYorkAirport.controlTower);
-				}})));
+				controlTowers
+		)));
 
 
 		var joinerThread = new Thread(joiner);
@@ -138,6 +135,7 @@ public class FlightTrackingTest {
 			Thread.sleep(2000);
 			tracker.stop();
 			joinerThread.stop();
+			controlTowerThreads.forEach(Thread::stop);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -145,10 +143,9 @@ public class FlightTrackingTest {
 
 		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
 		Assertions.assertEquals(1, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("L", stubJoinerSubscriberData.get(0).controlTowerCode());
-		Assertions.assertEquals(53.233916335001446, stubJoinerSubscriberData.get(0).flight().estimatedPosition().latitude());
-		Assertions.assertEquals(-1.4620081301856966, stubJoinerSubscriberData.get(0).flight().estimatedPosition().longitude());
-
+		Assertions.assertEquals("L", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(53.233916335001446, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-1.4620081301856966, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().longitude());
 	}
 
 	@Test
@@ -170,10 +167,12 @@ public class FlightTrackingTest {
 
 		var joiner = new FlightJoiner();
 
-		glasgowAirport.controlTower.registerSubscriber(joiner);
-		edinburghAirport.controlTower.registerSubscriber(joiner);
-		londonAirport.controlTower.registerSubscriber(joiner);
-		newYorkAirport.controlTower.registerSubscriber(joiner);
+		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
+		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
+		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
+
+		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
+		controlTowerThreads.forEach(Thread::start);
 
 		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
 		joiner.registerSubscriber(stubJoinerSubscriber);
@@ -184,8 +183,7 @@ public class FlightTrackingTest {
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
-						londonAirport.controlTower, newYorkAirport.controlTower)
+				controlTowers
 		)));
 
 		var flightBTracker = new Thread(new FlightTracker(new Flight("FB",
@@ -194,8 +192,7 @@ public class FlightTrackingTest {
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
-						londonAirport.controlTower, newYorkAirport.controlTower)
+				controlTowers
 		)));
 
 
@@ -210,6 +207,7 @@ public class FlightTrackingTest {
 			flightATracker.stop();
 			flightBTracker.stop();
 			joinerThread.stop();
+			controlTowerThreads.forEach(Thread::stop);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,20 +215,20 @@ public class FlightTrackingTest {
 
 		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
 		Assertions.assertEquals(2, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).controlTowerCode());
-		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(0).flight().estimatedPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(0).flight().estimatedPosition().longitude());
+		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().longitude());
 
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(1).controlTowerCode());
-		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(1).flight().estimatedPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(1).flight().estimatedPosition().longitude());
+		Assertions.assertEquals("E", stubJoinerSubscriberData.get(1).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(1).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(1).flightStatus().getCurrentPosition().longitude());
 
 	}
 
-	private class StubFlightJoinerSubscriber implements Subscriber<ArrayList<DirectedFlight>> {
-		public ArrayList<DirectedFlight> receivedData = new ArrayList<DirectedFlight>();
+	private static class StubFlightJoinerSubscriber implements Subscriber<Collection<Flight>> {
+		public ArrayList<Flight> receivedData = new ArrayList<>();
 
-		public void callback(ArrayList<DirectedFlight> data) {
+		public void callback(Collection<Flight> data) {
 			receivedData.addAll(data);
 		}
 	}

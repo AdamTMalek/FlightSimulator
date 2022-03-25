@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class FlightSimulationThreadManagementTest {
@@ -206,10 +207,10 @@ public class FlightSimulationThreadManagementTest {
 
 	}
 
-	private class StubFlightJoinerSubscriber implements Subscriber<ArrayList<DirectedFlight>> {
+	private static class StubFlightJoinerSubscriber implements Subscriber<Collection<Flight>> {
 		public int timesReceivedData = 0;
 
-		public void callback(ArrayList<DirectedFlight> data) {
+		public void callback(Collection<Flight> data) {
 			timesReceivedData++;
 		}
 	}

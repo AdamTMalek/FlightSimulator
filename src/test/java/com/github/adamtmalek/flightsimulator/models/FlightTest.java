@@ -8,31 +8,38 @@ import java.security.InvalidParameterException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlightTest {
 
 	@Test
 	void testFlightBuiltWithSerialNumber() {
+		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		final var destinationAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
+
 		var flight = Flight.buildWithSerialNumber("001",
 				new Airline("TEST", ""),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				List.of(departureAirport.controlTower, destinationAirport.controlTower));
 
 		Assertions.assertEquals("TEST001", flight.flightID());
 	}
 
 	@Test
 	void testFlightBuiltWithFullId() {
+		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		final var destinationAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
+
 		var flight = new Flight("FULL-FLIGHT-ID",
 				new Airline("TEST", ""),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				List.of(departureAirport.controlTower, destinationAirport.controlTower));
 
 		Assertions.assertEquals("FULL-FLIGHT-ID", flight.flightID());
 	}
@@ -40,13 +47,16 @@ public class FlightTest {
 	@Test
 	void testExceptionThrownIfInvalidSerialNumber() {
 		Assertions.assertThrows(InvalidParameterException.class, () -> {
+			final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+			final var destinationAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
+
 			Flight.buildWithSerialNumber("Serial numbers containing non-integers is invalid.",
 					new Airline("TEST", ""),
 					new Aeroplane("a", "a", 1, 50),
-					new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-					new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19)),
+					departureAirport,
+					destinationAirport,
 					ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-					new ArrayList<>());
+					List.of(departureAirport.controlTower, destinationAirport.controlTower));
 		});
 	}
 
@@ -63,7 +73,7 @@ public class FlightTest {
 				glasgowAirport,
 				newYorkAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<Airport.ControlTower>() {{
+				new ArrayList<>() {{
 					add(glasgowAirport.controlTower);
 					add(edinburghAirport.controlTower);
 					add(londonAirport.controlTower);

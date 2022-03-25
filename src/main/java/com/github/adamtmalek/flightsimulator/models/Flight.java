@@ -3,9 +3,11 @@ package com.github.adamtmalek.flightsimulator.models;
 import com.github.adamtmalek.flightsimulator.io.SerializableField;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.security.InvalidParameterException;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,10 +25,11 @@ public final class Flight {
 	@SerializableField
 	private final @NotNull ZonedDateTime departureDate;
 	private final @NotNull List<Airport.ControlTower> controlTowersToCross;
+	private final @NotNull FlightStatus flightStatus;
+
 	private final double estimatedTotalDistanceToTravel;
 	private final double estimatedFuelConsumption;
 	private final double estimatedCO2Produced;
-	private final GeodeticCoordinate estimatedPosition;
 
 	@Contract(pure = true)
 	public @NotNull String flightID() {
@@ -79,8 +82,8 @@ public final class Flight {
 	}
 
 	@Contract(pure = true)
-	public GeodeticCoordinate estimatedPosition() {
-		return estimatedPosition;
+	public FlightStatus flightStatus() {
+		return flightStatus;
 	}
 
 	public Flight(
@@ -91,7 +94,9 @@ public final class Flight {
 			@NotNull Airport destinationAirport,
 			@NotNull ZonedDateTime departureDate,
 			@NotNull List<Airport.ControlTower> controlTowersToCross,
-			@NotNull GeodeticCoordinate currentPosition
+			@NotNull Airport.ControlTower currentControlTower,
+			@NotNull GeodeticCoordinate currentPosition,
+			@NotNull FlightStatus.Status status
 	) {
 		this.flightID = flightID;
 		this.airline = airline;
@@ -105,7 +110,8 @@ public final class Flight {
 		this.estimatedFuelConsumption = calculateEstimatedFuelConsumption(aeroplane.fuelConsumptionRate(),
 				estimatedTotalDistanceToTravel);
 		this.estimatedCO2Produced = calculateEstimatedCO2Produced(this.estimatedFuelConsumption);
-		this.estimatedPosition = currentPosition;
+
+		this.flightStatus = new FlightStatus(currentControlTower, currentPosition, status);
 	}
 
 	public Flight(
@@ -118,7 +124,8 @@ public final class Flight {
 			@NotNull List<Airport.ControlTower> controlTowersToCross) {
 		this(flightID, airline, aeroplane,
 				departureAirport, destinationAirport, departureDate,
-				controlTowersToCross,	departureAirport.position);
+				controlTowersToCross, controlTowersToCross.get(0),
+				departureAirport.position, FlightStatus.Status.WAITING_FOR_DEPARTURE);
 	}
 
 	@Contract("_, _, _, _, _, _, _ -> new")
@@ -176,8 +183,10 @@ public final class Flight {
 		return Aeroplane.AVG_RATE_OF_CO2_EMISSION * estimatedFuelConsumption;
 	}
 
-	@Contract("_ -> new")
-	public @NotNull Flight buildWithNewPosition(GeodeticCoordinate position) {
+	@Contract("_, _, _ -> new")
+	public @NotNull Flight withNewFlightStatus(@NotNull Airport.ControlTower currentControlTower,
+																						 @NotNull GeodeticCoordinate currentPosition,
+																						 @NotNull FlightStatus.Status status) {
 		return new Flight(
 				this.flightID,
 				this.airline,
@@ -186,7 +195,25 @@ public final class Flight {
 				this.destinationAirport,
 				this.departureDate,
 				this.controlTowersToCross,
-				position
+				currentControlTower,
+				currentPosition,
+				status
+		);
+	}
+
+	@Contract(" -> new")
+	public @NotNull Flight withFlightStatusTerminated() {
+		return new Flight(
+				this.flightID,
+				this.airline,
+				this.aeroplane,
+				this.departureAirport,
+				this.destinationAirport,
+				this.departureDate,
+				this.controlTowersToCross,
+				controlTowersToCross.get(controlTowersToCross.size() - 1),
+				destinationAirport.position,
+				FlightStatus.Status.TERMINATED
 		);
 	}
 
@@ -205,27 +232,104 @@ public final class Flight {
 				Double.doubleToLongBits(this.estimatedTotalDistanceToTravel) == Double.doubleToLongBits(that.estimatedTotalDistanceToTravel) &&
 				Double.doubleToLongBits(this.estimatedFuelConsumption) == Double.doubleToLongBits(that.estimatedFuelConsumption) &&
 				Double.doubleToLongBits(this.estimatedCO2Produced) == Double.doubleToLongBits(that.estimatedCO2Produced) &&
-				Objects.equals(this.estimatedPosition, that.estimatedPosition);
+				Objects.equals(this.flightStatus, that.flightStatus);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(flightID, airline, aeroplane, departureAirport, destinationAirport, departureDate, controlTowersToCross, estimatedTotalDistanceToTravel, estimatedFuelConsumption, estimatedCO2Produced, estimatedPosition);
+		return Objects.hash(flightID, airline, aeroplane, departureAirport, destinationAirport, departureDate, controlTowersToCross, estimatedTotalDistanceToTravel, estimatedFuelConsumption, estimatedCO2Produced, flightStatus);
 	}
 
 	@Override
 	public String toString() {
-		return "Flight[" +
-				"flightID=" + flightID + ", " +
-				"airline=" + airline + ", " +
-				"aeroplane=" + aeroplane + ", " +
-				"departureAirport=" + departureAirport + ", " +
-				"destinationAirport=" + destinationAirport + ", " +
-				"departureDate=" + departureDate + ", " +
-				"controlTowersToCross=" + controlTowersToCross + ", " +
-				"estimatedTotalDistanceToTravel=" + estimatedTotalDistanceToTravel + ", " +
-				"estimatedFuelConsumption=" + estimatedFuelConsumption + ", " +
-				"estimatedCO2Produced=" + estimatedCO2Produced + ", " +
-				"estimatedPosition=" + estimatedPosition + ']';
+		return "Flight{" +
+				"flightID='" + flightID + '\'' +
+				", airline=" + airline +
+				", aeroplane=" + aeroplane +
+				", departureAirport=" + departureAirport +
+				", destinationAirport=" + destinationAirport +
+				", departureDate=" + departureDate +
+				", controlTowersToCross=" + controlTowersToCross +
+				", flightStatus=" + flightStatus +
+				", estimatedTotalDistanceToTravel=" + estimatedTotalDistanceToTravel +
+				", estimatedFuelConsumption=" + estimatedFuelConsumption +
+				", estimatedCO2Produced=" + estimatedCO2Produced +
+				'}';
+	}
+
+	public final class FlightStatus {
+		private final Airport.ControlTower currentControlTower;
+		private final GeodeticCoordinate currentPosition;
+		private final Status status;
+
+		public Airport.ControlTower getCurrentControlTower() {
+			return currentControlTower;
+		}
+
+		public GeodeticCoordinate getCurrentPosition() {
+			return currentPosition;
+		}
+
+		public Status getStatus() {
+			return status;
+		}
+
+		public FlightStatus(@NotNull Airport.ControlTower currentControlTower,
+												@NotNull GeodeticCoordinate currentPosition,
+												@NotNull Status status) {
+			this.currentControlTower = currentControlTower;
+			this.currentPosition = currentPosition;
+			this.status = status;
+		}
+
+		public FlightStatus() {
+			this(controlTowersToCross.get(0),
+					departureAirport.position,
+					Status.WAITING_FOR_DEPARTURE);
+		}
+
+		public @NotNull @Unmodifiable List<Airport.ControlTower> getControlTowersPassed() {
+			final var currentControlTowerIndex = controlTowersToCross.indexOf(currentControlTower);
+			final var lastIndex = controlTowersToCross.size() - 1;
+
+			if (currentControlTowerIndex == lastIndex) return Collections.emptyList();
+			return controlTowersToCross.subList(0, currentControlTowerIndex);
+		}
+
+		public @NotNull @Unmodifiable List<Airport.ControlTower> getControlTowersStillToCross() {
+			final var currentControlTowerIndex = controlTowersToCross.indexOf(currentControlTower);
+			final var lastIndex = controlTowersToCross.size() - 1;
+
+			if (currentControlTowerIndex == lastIndex) return Collections.emptyList();
+			return controlTowersToCross.subList(currentControlTowerIndex + 1, lastIndex);
+		}
+
+		public enum Status {
+			WAITING_FOR_DEPARTURE,
+			IN_PROGRESS,
+			TERMINATED
+		}
+
+		@Override
+		public String toString() {
+			return "FlightStatus{" +
+					"currentControlTower=" + currentControlTower +
+					", currentPosition=" + currentPosition +
+					", status=" + status +
+					'}';
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			FlightStatus that = (FlightStatus) o;
+			return Objects.equals(currentControlTower, that.currentControlTower) && Objects.equals(currentPosition, that.currentPosition) && status == that.status;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(currentControlTower, currentPosition, status);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.io;
 
+import com.github.adamtmalek.flightsimulator.CsvFileAssert;
 import com.github.adamtmalek.flightsimulator.TestSuite;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.assertj.core.api.Assertions;
@@ -83,7 +84,7 @@ class FlightDataFileHandlerTest extends TestSuite {
 			return;
 		}
 
-		Assertions.assertThat(actual)
-				.hasSameTextualContentAs(expectedFile);
+		CsvFileAssert.assertThat(actual)
+				.hasTheSameContentAs(expectedFile);
 	}
 }

@@ -8,7 +8,7 @@ import com.github.adamtmalek.flightsimulator.io.SerializableField;
 import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -55,7 +55,7 @@ public class Airport {
 		return Objects.hash(code, name, position.latitude(), position.longitude());
 	}
 
-	public static class ControlTower extends Publisher<ArrayList<DirectedFlight>> implements Subscriber<Flight>, Runnable {
+	public static class ControlTower extends Publisher<Collection<Flight>> implements Subscriber<Flight>, Runnable {
 		public final @NotNull String code;
 		public final @NotNull String name;
 		public final @NotNull GeodeticCoordinate position;
@@ -68,13 +68,20 @@ public class Airport {
 			name = nameIn;
 			position = positionIn;
 			synchronizedQueue = new SynchronizedQueue();
-			flightMap = new HashMap<String, Flight>();
+			flightMap = new HashMap<>();
 			isRunning = true;
 		}
 
 		public void callback(Flight data) {
 			try {
-				System.out.println(name + " received `" + data.flightID() + "` at `" + data.estimatedPosition().latitude() + ", " + data.estimatedPosition().longitude() + "`");
+				final var message = "%s received `%s` at `%s, %s`"
+						.formatted(
+								name,
+								data.flightID(),
+								data.flightStatus().getCurrentPosition().latitude(),
+								data.flightStatus().getCurrentPosition().longitude()
+						);
+				System.out.println(message);
 				synchronizedQueue.push(data);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -96,14 +103,7 @@ public class Airport {
 							// entry is inserted into the map.
 							flightMap.put(flight.flightID(), flight);
 						}
-
-						var updatedFlights = new ArrayList<Flight>(flightMap.values());
-						var toSend = new ArrayList<DirectedFlight>();
-						for (var flight : updatedFlights) {
-							toSend.add(new DirectedFlight(flight, this.code));
-
-						}
-						publish(toSend);
+						publish(flightMap.values());
 						// TODO publish to GUI
 					}
 					long waitTime = FlightSimulationThreadManagement.getApproxThreadPeriodMs();

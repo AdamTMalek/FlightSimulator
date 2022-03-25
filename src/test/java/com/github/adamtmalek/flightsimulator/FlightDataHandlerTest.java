@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FlightDataHandlerTest extends TestSuite {
 	@Test
@@ -139,13 +140,16 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testAddFlight() {
+		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		final var destinationAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
+
 		final var flight = new Flight("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				List.of(departureAirport.controlTower, destinationAirport.controlTower));
 
 		var handler = new FlightDataHandlerImpl();
 		handler.addFlight(flight);
@@ -156,13 +160,16 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testRemoveFlight() {
+		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		final var destinationAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
+
 		final var flight = new Flight("newFlightID",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				List.of(departureAirport.controlTower, destinationAirport.controlTower));
 
 		var handler = new FlightDataHandlerImpl();
 		handler.addFlight(flight);
@@ -175,20 +182,26 @@ public class FlightDataHandlerTest extends TestSuite {
 
 	@Test
 	void testEditFlight() {
+		final var departureAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		final var destinationAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
+		final var flightPlan = List.of(departureAirport.controlTower, destinationAirport.controlTower);
+
 		final var originalFlight = new Flight("001",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				flightPlan
+		);
 		final var changedFlight = new Flight("002",
 				new Airline("a", "a"),
 				new Aeroplane("a", "a", 1, 50),
-				new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43)),
-				new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01)),
+				departureAirport,
+				destinationAirport,
 				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				new ArrayList<>());
+				flightPlan
+		);
 
 		final var handler = new FlightDataHandlerImpl();
 		handler.addFlight(originalFlight);
