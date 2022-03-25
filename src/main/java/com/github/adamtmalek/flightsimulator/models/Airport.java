@@ -1,7 +1,7 @@
 package com.github.adamtmalek.flightsimulator.models;
 
 import com.github.adamtmalek.flightsimulator.FlightSimulationThreadManagement;
-import com.github.adamtmalek.flightsimulator.SynchronizedQueue;
+import com.github.adamtmalek.flightsimulator.collections.SynchronizedQueue;
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.io.SerializableField;
