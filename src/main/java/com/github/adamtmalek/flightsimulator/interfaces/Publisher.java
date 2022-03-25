@@ -1,29 +1,32 @@
 package com.github.adamtmalek.flightsimulator.interfaces;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Publisher<T> {
-	private List<Subscriber<T>> subscribers = new ArrayList<Subscriber<T>>();
+	private final List<Subscriber<T>> subscribers = new ArrayList<>();
 
-	public void registerSubscriber(Subscriber sub){
+	public void registerSubscriber(@NotNull Subscriber<T> sub) {
 		subscribers.add(sub);
 	}
 
-	public void deregisterSubscriber(Subscriber sub){
+	public void deregisterSubscriber(@NotNull Subscriber<T> sub) {
 		subscribers.remove(sub);
 	}
 
-	public void publish(T data){
-		if(subscribers.isEmpty()){
+	public void publish(@NotNull T data) {
+		if (subscribers.isEmpty()) {
 			System.out.println("Warning, no subscribers attached!");
 		}
-		for(Subscriber sub: subscribers){
+
+		for (Subscriber<T> sub : subscribers) {
 			sub.callback(data);
 		}
 	}
 
-	public void publishTo(T data, Subscriber subscriber){
+	public void publishTo(T data, @NotNull Subscriber<T> subscriber) {
 		subscriber.callback(data);
 	}
 }
