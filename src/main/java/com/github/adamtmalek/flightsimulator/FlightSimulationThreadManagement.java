@@ -28,15 +28,13 @@ public class FlightSimulationThreadManagement {
 
 		final var flightTrackerThreads = flights
 				.stream()
-				.map(flight -> new Thread(new FlightTracker(flight)))
+				.map(FlightTracker::new)
+				.map(Thread::new)
 				.toList();
 
 		final var controlTowerThreads = controlTowers
 				.stream()
-				.map(controlTower -> {
-					controlTower.registerSubscriber(flightJoiner);
-					return new Thread(controlTower);
-				})
+				.map(Thread::new)
 				.toList();
 		final var flightJoinerThread = new Thread(flightJoiner);
 
