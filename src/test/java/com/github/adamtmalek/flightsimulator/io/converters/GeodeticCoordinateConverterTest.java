@@ -1,6 +1,5 @@
-package com.github.adamtmalek.flightsimulator.models.io.converters;
+package com.github.adamtmalek.flightsimulator.io.converters;
 
-import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;

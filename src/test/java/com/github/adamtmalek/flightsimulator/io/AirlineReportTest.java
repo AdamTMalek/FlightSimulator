@@ -1,6 +1,5 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
-import com.github.adamtmalek.flightsimulator.io.AirlineReport;
 import com.github.adamtmalek.flightsimulator.models.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

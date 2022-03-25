@@ -1,9 +1,6 @@
-package com.github.adamtmalek.flightsimulator.models.io;
+package com.github.adamtmalek.flightsimulator.io;
 
 import com.github.adamtmalek.flightsimulator.TestSuite;
-import com.github.adamtmalek.flightsimulator.io.FlightData;
-import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandler;
-import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
