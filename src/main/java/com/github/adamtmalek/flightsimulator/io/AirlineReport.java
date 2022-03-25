@@ -30,7 +30,7 @@ public record AirlineReport(
 	}
 
 	private static double calculateTotalDistanceTravelled(@NotNull Collection<Flight> flights) {
-		return flights.stream().mapToDouble(Flight::estimatedTotalDistancetoTravel).sum();
+		return flights.stream().mapToDouble(Flight::estimatedTotalDistanceToTravel).sum();
 	}
 
 	private static double calculateEstimatedFuelConsumption(@NotNull Collection<Flight> flights) {

@@ -21,7 +21,7 @@ public record Flight(
 		@SerializableField
 		@NotNull ZonedDateTime departureDate,
 		@NotNull List<Airport.ControlTower> controlTowersToCross,
-		double estimatedTotalDistancetoTravel,
+		double estimatedTotalDistanceToTravel,
 		double estimatedFuelConsumption,
 		double estimatedCO2Produced,
 		GeodeticCoordinate estimatedPosition) {
@@ -119,7 +119,7 @@ public record Flight(
 				this.destinationAirport,
 				this.departureDate,
 				this.controlTowersToCross,
-				this.estimatedTotalDistancetoTravel,
+				this.estimatedTotalDistanceToTravel,
 				this.estimatedFuelConsumption,
 				this.estimatedCO2Produced,
 				position);
