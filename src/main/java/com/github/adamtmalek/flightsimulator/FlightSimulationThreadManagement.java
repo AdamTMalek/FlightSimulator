@@ -2,7 +2,9 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,7 +23,9 @@ public class FlightSimulationThreadManagement {
 	private final List<Thread> controlTowerThreads;
 	private final Thread flightJoinerThread;
 
-	public FlightSimulationThreadManagement(List<Flight> flights, List<Airport.ControlTower> controlTowers, FlightJoiner flightJoiner) {
+	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
+																					@NotNull Collection<Airport.ControlTower> controlTowers,
+																					@NotNull FlightJoiner flightJoiner) {
 
 		this.flightTrackerThreads = flights
 				.stream()
