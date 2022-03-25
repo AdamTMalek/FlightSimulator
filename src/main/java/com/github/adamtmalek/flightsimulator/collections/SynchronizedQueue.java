@@ -1,4 +1,4 @@
-package com.github.adamtmalek.flightsimulator;
+package com.github.adamtmalek.flightsimulator.collections;
 
 import com.github.adamtmalek.flightsimulator.models.Flight;
 
