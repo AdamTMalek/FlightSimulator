@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("idea")
+    id("org.openjfx.javafxplugin") version "0.0.12"
 }
 
 group = "com.github.adamtmalek"
@@ -8,6 +9,10 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+
+javafx {
+    modules("javafx.base")
 }
 
 dependencies {
