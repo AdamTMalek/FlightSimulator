@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -20,7 +21,8 @@ public class FlightSimulationThreadManagement {
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
 
-	private final Collection<Thread> threads;
+
+	private Collection<Thread> threads;
 
 	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
 																					@NotNull Collection<Airport.ControlTower> controlTowers,
@@ -40,7 +42,7 @@ public class FlightSimulationThreadManagement {
 
 		this.threads = Stream.of(flightTrackerThreads, controlTowerThreads, List.of(flightJoinerThread))
 				.flatMap(Collection::stream)
-				.toList();
+				.collect(Collectors.toSet());
 	}
 
 	public static long getApproxThreadPeriodMs() {
@@ -72,6 +74,12 @@ public class FlightSimulationThreadManagement {
 
 	public static void setGuiUpdateFrequency(double frequency) {
 		GUI_UPDATE_FREQUENCY = frequency;
+	}
+
+	public void startTrackingNewFlight(@NotNull Flight flight) {
+		var newFlightThread = new Thread(new FlightTracker(flight));
+		newFlightThread.start();
+		threads.add(newFlightThread);
 	}
 
 	public void startThreads() {
