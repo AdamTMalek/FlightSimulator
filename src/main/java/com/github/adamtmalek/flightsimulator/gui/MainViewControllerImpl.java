@@ -132,9 +132,9 @@ public class MainViewControllerImpl implements MainViewController {
 	private void readFlightData(@NotNull FlightFilesPaths paths) {
 		try {
 			simulator.readFlightData(
-					paths.airports(),
 					paths.aeroplanes(),
 					paths.airlines(),
+					paths.airports(),
 					paths.flights()
 			);
 		} catch (FlightDataFileHandlerException ex) {
