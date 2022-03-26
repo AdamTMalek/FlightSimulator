@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 
-public final class Simulator {
+public class Simulator {
 	public static final Path FLIGHT_DATA_DIRECTORY = Path.of("flight-data/");
 	public static final Path FLIGHTS_REPORT_DIRECTORY = Path.of("reports/");
 
