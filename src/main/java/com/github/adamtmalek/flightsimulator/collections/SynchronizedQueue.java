@@ -20,7 +20,11 @@ public class SynchronizedQueue<T> {
 		notifyAll();
 	}
 
-	// Removes head of queue and returns it.
+	/**
+	 * Retries and removes the head from the queue.
+	 * @return Head of the queue
+	 * @throws InterruptedException May throw interrupted exception, as wait() is used underneath
+	 */
 	public synchronized T poll() throws InterruptedException {
 		while (queue.isEmpty()) {
 			wait();
