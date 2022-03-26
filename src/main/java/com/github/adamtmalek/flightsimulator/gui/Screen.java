@@ -1,11 +1,9 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
 import com.github.adamtmalek.flightsimulator.Simulator;
-import com.github.adamtmalek.flightsimulator.gui.models.BoundComboBoxModel;
-import com.github.adamtmalek.flightsimulator.gui.models.BoundListModel;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
-import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.*;
+import javafx.collections.SetChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +18,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -46,6 +44,12 @@ public class Screen extends JFrame implements MainView {
 	private JFormattedTextField dateTimeField;
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
+
+	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
+	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
+	private final @NotNull MutableComboBoxModel<Aeroplane> aeroplanesModel = new DefaultComboBoxModel<>();
+	private final @NotNull MutableComboBoxModel<Airport> departureAirportsModel = new DefaultComboBoxModel<>();
+	private final @NotNull MutableComboBoxModel<Airport> destinationAirportModel = new DefaultComboBoxModel<>();
 
 	private final @NotNull MainViewController controller;
 	private final @NotNull Airport.ControlTower emptyControlTower = new Airport.ControlTower("(not selected)",
@@ -77,10 +81,15 @@ public class Screen extends JFrame implements MainView {
 
 	private void initializeComponents() {
 		flightList.setCellRenderer(new FlightListCellRenderer());
+		flightList.setModel(flightsModel);
 		airlineBox.setRenderer(new AirlineListCellRenderer());
+		airlineBox.setModel(airlinesModel);
 		aeroplaneBox.setRenderer(new AeroplaneListCellRenderer());
+		aeroplaneBox.setModel(aeroplanesModel);
 		departureBox.setRenderer(new AirportListCellRenderer());
+		departureBox.setModel(departureAirportsModel);
 		destinationBox.setRenderer(new AirportListCellRenderer());
+		destinationBox.setModel(destinationAirportModel);
 	}
 
 	private void addListenersForUpdatingAddButtonState() {
@@ -107,7 +116,38 @@ public class Screen extends JFrame implements MainView {
 	}
 
 	private void addListenersToSimulatorCollections() {
-		// TODO: Add listeners to change the compoenents
+		simulator.addFlightCollectionListener(change -> handleChange(flightList, flightsModel, change));
+		simulator.addAirlineCollectionListener(change -> handleChange(airlineBox, airlinesModel, change));
+		simulator.addAeroplaneCollectionListener(change -> handleChange(aeroplaneBox, aeroplanesModel, change));
+		simulator.addAirportCollectionListener(change -> {
+			handleChange(departureBox, departureAirportsModel, change);
+			handleChange(destinationBox, destinationAirportModel, change);
+			SwingUtilities.invokeLater(this::populateFlightPlanTable);
+		});
+	}
+
+	private <T> void handleChange(@NotNull JComponent component,
+																@NotNull DefaultListModel<T> model,
+																@NotNull SetChangeListener.Change<? extends T> change) {
+		if (change.wasAdded()) {
+			model.addElement(change.getElementAdded());
+		} else {
+			model.removeElement(change.getElementRemoved());
+		}
+
+		SwingUtilities.invokeLater(component::updateUI);
+	}
+
+	private <T> void handleChange(@NotNull JComponent component,
+																@NotNull MutableComboBoxModel<T> model,
+																@NotNull SetChangeListener.Change<? extends T> change) {
+		if (change.wasAdded()) {
+			model.addElement(change.getElementAdded());
+		} else {
+			model.removeElement(change.getElementRemoved());
+		}
+
+		SwingUtilities.invokeLater(component::updateUI);
 	}
 
 	@Override
@@ -153,34 +193,28 @@ public class Screen extends JFrame implements MainView {
 	public @NotNull List<Airport.ControlTower> getFlightPlan() {
 		return IntStream.range(0, MAX_CONTROL_TOWERS)
 				.mapToObj(i -> flightPlanTable.getModel().getValueAt(0, i))
+				.filter(Objects::nonNull)
 				.filter(e -> !e.equals(emptyControlTower))
 				.map(e -> (Airport.ControlTower) e)
 				.toList();
 	}
 
-	@Override
-	public void displayData(@NotNull FlightData data) {
-		flightList.setModel(new BoundListModel<>(new ArrayList<>(data.flights())));
-		airlineBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airlines())));
-		aeroplaneBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.aeroplanes())));
-		departureBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airports())));
-		destinationBox.setModel(new BoundComboBoxModel<>(new ArrayList<>(data.airports())));
+	private void populateFlightPlanTable() {
+		final var controlTowers = IntStream.range(0, departureAirportsModel.getSize())
+				.mapToObj(departureAirportsModel::getElementAt)
+				.map(airport -> airport.controlTower);
+
+		final var controlTowerChoices = Stream.concat(controlTowers, Stream.of(emptyControlTower)).toList();
 
 		IntStream.range(0, MAX_CONTROL_TOWERS).forEach(i -> {
 			flightPlanTable.getColumnModel()
 					.getColumn(i)
-					.setCellEditor(new ComboBoxCellEditor(Stream.concat(
-							data.airports().stream().map(e -> e.controlTower),
-							Stream.of(emptyControlTower)
-					).toList()));
+					.setCellEditor(new ComboBoxCellEditor(controlTowerChoices));
 
 			flightPlanTable.getColumnModel()
 					.getColumn(i)
 					.setCellRenderer(new ControlTowerTableCellRenderer());
 		});
-
-		resetComponents();
-		updateFlightList();
 	}
 
 	@Override

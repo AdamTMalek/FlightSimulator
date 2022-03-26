@@ -2,8 +2,6 @@ package com.github.adamtmalek.flightsimulator.gui;
 
 import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
@@ -13,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,6 +32,11 @@ public class MainViewControllerImpl implements MainViewController {
 	public void showView() {
 		SwingUtilities.invokeLater(() -> {
 			view.setVisible(true);
+			try {
+				simulator.readFlightData();
+			} catch (FlightDataFileHandlerException e) {
+				JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		});
 	}
 
