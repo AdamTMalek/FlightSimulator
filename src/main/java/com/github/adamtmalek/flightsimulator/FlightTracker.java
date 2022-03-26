@@ -27,8 +27,12 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 			final var updatedFlight = trackFlight();
 			publishTo(updatedFlight, updatedFlight.flightStatus().getCurrentControlTower());
 
-			duration += (FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000.0);
+			if (updatedFlight.flightStatus().getStatus() == Flight.FlightStatus.Status.TERMINATED) {
+				System.out.println("Flight has terminated. Stopping track.");
+				stop();
+			}
 
+			this.duration += (FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000.0);
 			try {
 				final var sleepFor = FlightSimulationThreadManagement.getApproxThreadPeriodMs();
 				Thread.sleep(FlightSimulationThreadManagement.getApproxThreadPeriodMs());
