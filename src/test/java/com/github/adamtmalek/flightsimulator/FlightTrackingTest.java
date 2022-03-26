@@ -249,4 +249,68 @@ public class FlightTrackingTest {
 
 	}
 
+	@Test
+	void testFlightReachDestination() {
+		/**
+		 * Tests what happens when a flight reaches its destination.
+		 */
+		// Configure thread timing for test case.
+		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.001); // Flight travelling between G-E within test duration.
+		FlightSimulationThreadManagement.setThreadFrequency(1.9);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(3);
+
+		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
+		observableFlights
+				.addListener((SetChangeListener<Flight>) changeListener -> {
+					final var newFlight = changeListener.getElementAdded();
+					final var message = "Listener received data from `%s`: %s at `%s, %s`"
+							.formatted(newFlight.flightStatus().getCurrentControlTower(),
+									newFlight.flightID(),
+									newFlight.flightStatus().getCurrentPosition().latitude(),
+									newFlight.flightStatus().getCurrentPosition().longitude());
+					System.out.println(message);
+				});
+
+		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
+
+		var joiner = new FlightJoiner(observableFlights);
+
+		final var airports = List.of(glasgowAirport, londonAirport);
+		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
+		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
+
+		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
+		controlTowerThreads.forEach(Thread::start);
+
+		var tracker = new Thread(new FlightTracker(Flight.buildWithSerialNumber("001",
+				new Airline("", ""),
+				new Aeroplane("a", "a", 1, 50),
+				glasgowAirport,
+				londonAirport,
+				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				controlTowers
+		)));
+
+
+		var joinerThread = new Thread(joiner);
+
+		tracker.start();
+		joinerThread.start();
+		try {
+			Thread.sleep(2000);
+			tracker.stop();
+			joinerThread.stop();
+			controlTowerThreads.forEach(Thread::stop);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		final var finalFlight = observableFlights.stream().toList().stream().filter(f -> f.flightStatus().getStatus() == Flight.FlightStatus.Status.TERMINATED).findFirst();
+		Assertions.assertEquals(true, finalFlight.isPresent());
+		Assertions.assertEquals(Flight.FlightStatus.Status.TERMINATED, finalFlight.get().flightStatus().getStatus());
+		Assertions.assertEquals(londonAirport.controlTower.code, finalFlight.get().flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(londonAirport.position, finalFlight.get().flightStatus().getCurrentPosition());
+
+	}
 }
