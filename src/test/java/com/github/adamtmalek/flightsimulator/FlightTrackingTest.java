@@ -1,14 +1,14 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.models.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 // TODO: Assertions in this test that rely on the position change are pretty much guaranteed to fail,
@@ -42,22 +42,31 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
+		observableFlights
+				.addListener((SetChangeListener<Flight>) changeListener -> {
+					final var newFlight = changeListener.getElementAdded();
+					final var message = "Listener received data from `%s`: %s at `%s, %s`"
+							.formatted(newFlight.flightStatus().getCurrentControlTower(),
+									newFlight.flightID(),
+									newFlight.flightStatus().getCurrentPosition().latitude(),
+									newFlight.flightStatus().getCurrentPosition().longitude());
+					System.out.println(message);
+				});
 
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var joiner = new FlightJoiner();
+		var joiner = new FlightJoiner(observableFlights);
+
 		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
 		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
 		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
 
 		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
 		controlTowerThreads.forEach(Thread::start);
-
-		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
-		joiner.registerSubscriber(stubJoinerSubscriber);
 
 		var tracker = new Thread(new FlightTracker(Flight.buildWithSerialNumber("001",
 				new Airline("", ""),
@@ -83,9 +92,8 @@ public class FlightTrackingTest {
 			e.printStackTrace();
 		}
 
-		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
-		Assertions.assertEquals(1, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(1, observableFlights.stream().toList().size());
+		Assertions.assertEquals("E", observableFlights.stream().toList().get(0).flightStatus().getCurrentControlTower().code);
 	}
 
 	@Test
@@ -99,13 +107,24 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
+		observableFlights
+				.addListener((SetChangeListener<Flight>) changeListener -> {
+					final var newFlight = changeListener.getElementAdded();
+					final var message = "Listener received data from `%s`: %s at `%s, %s`"
+							.formatted(newFlight.flightStatus().getCurrentControlTower(),
+									newFlight.flightID(),
+									newFlight.flightStatus().getCurrentPosition().latitude(),
+									newFlight.flightStatus().getCurrentPosition().longitude());
+					System.out.println(message);
+				});
 
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var joiner = new FlightJoiner();
+		var joiner = new FlightJoiner(observableFlights);
 
 		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
 		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
@@ -114,8 +133,6 @@ public class FlightTrackingTest {
 		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
 		controlTowerThreads.forEach(Thread::start);
 
-		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
-		joiner.registerSubscriber(stubJoinerSubscriber);
 
 		var tracker = new Thread(new FlightTracker(Flight.buildWithSerialNumber("001",
 				new Airline("", ""),
@@ -141,11 +158,10 @@ public class FlightTrackingTest {
 			e.printStackTrace();
 		}
 
-		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
-		Assertions.assertEquals(1, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("L", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
-		Assertions.assertEquals(53.233916335001446, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().latitude());
-		Assertions.assertEquals(-1.4620081301856966, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().longitude());
+		Assertions.assertEquals(1, observableFlights.stream().toList().size());
+		Assertions.assertEquals("L", observableFlights.stream().toList().get(0).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(53.233916335001446, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-1.4620081301856966, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().longitude());
 	}
 
 	@Test
@@ -156,16 +172,27 @@ public class FlightTrackingTest {
 
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.05); // Flight travelling between G-E within test duration.
-		FlightSimulationThreadManagement.setThreadFrequency(1.9);
+		FlightSimulationThreadManagement.setThreadFrequency(1.8);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
+		observableFlights
+				.addListener((SetChangeListener<Flight>) changeListener -> {
+					final var newFlight = changeListener.getElementAdded();
+					final var message = "Listener received data from `%s`: %s at `%s, %s`"
+							.formatted(newFlight.flightStatus().getCurrentControlTower(),
+									newFlight.flightID(),
+									newFlight.flightStatus().getCurrentPosition().latitude(),
+									newFlight.flightStatus().getCurrentPosition().longitude());
+					System.out.println(message);
+				});
 
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
 		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
 		var newYorkAirport = new Airport("NY", "New York Airport", new GeodeticCoordinate(40.71, -74.01));
 
-		var joiner = new FlightJoiner();
+		var joiner = new FlightJoiner(observableFlights);
 
 		final var airports = List.of(glasgowAirport, edinburghAirport, londonAirport, newYorkAirport);
 		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
@@ -173,9 +200,6 @@ public class FlightTrackingTest {
 
 		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
 		controlTowerThreads.forEach(Thread::start);
-
-		var stubJoinerSubscriber = new StubFlightJoinerSubscriber();
-		joiner.registerSubscriber(stubJoinerSubscriber);
 
 		var flightATracker = new Thread(new FlightTracker(new Flight("FA",
 				new Airline("", ""),
@@ -213,23 +237,16 @@ public class FlightTrackingTest {
 			e.printStackTrace();
 		}
 
-		final var stubJoinerSubscriberData = stubJoinerSubscriber.receivedData;
-		Assertions.assertEquals(2, stubJoinerSubscriberData.size());
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(0).flightStatus().getCurrentControlTower().code);
-		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(0).flightStatus().getCurrentPosition().longitude());
 
-		Assertions.assertEquals("E", stubJoinerSubscriberData.get(1).flightStatus().getCurrentControlTower().code);
-		Assertions.assertEquals(55.91264599913692, stubJoinerSubscriberData.get(1).flightStatus().getCurrentPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, stubJoinerSubscriberData.get(1).flightStatus().getCurrentPosition().longitude());
+		Assertions.assertEquals(2, observableFlights.stream().toList().size());
+		Assertions.assertEquals("E", observableFlights.stream().toList().get(0).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().longitude());
+
+		Assertions.assertEquals("E", observableFlights.stream().toList().get(1).flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, observableFlights.stream().toList().get(1).flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, observableFlights.stream().toList().get(1).flightStatus().getCurrentPosition().longitude());
 
 	}
 
-	private static class StubFlightJoinerSubscriber implements Subscriber<Collection<Flight>> {
-		public ArrayList<Flight> receivedData = new ArrayList<>();
-
-		public void callback(Collection<Flight> data) {
-			receivedData.addAll(data);
-		}
-	}
 }

@@ -3,6 +3,7 @@ package com.github.adamtmalek.flightsimulator;
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import javafx.collections.ObservableSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,10 +14,17 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 	private final Map<String, Flight> flightMap;
 	private boolean isProcessing;
 	private volatile boolean isRunning;
+	private ObservableSet<Flight> observableFlights;
 
 	FlightJoiner() {
 		isRunning = true;
 		flightMap = new HashMap<>();
+	}
+
+	FlightJoiner(ObservableSet<Flight> observableFlights) {
+		isRunning = true;
+		flightMap = new HashMap<>();
+		this.observableFlights = observableFlights;
 	}
 
 	public void run() {
@@ -27,6 +35,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 			if (!uniqueFlights.isEmpty()) {
 				System.out.println("FlightJoiner is publishing joined flights.");
 				publish(uniqueFlights);
+				observableFlights.addAll(flightMap.values());
 				flightMap.clear();
 			}
 
