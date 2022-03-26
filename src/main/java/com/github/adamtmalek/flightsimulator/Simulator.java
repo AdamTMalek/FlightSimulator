@@ -118,7 +118,7 @@ public final class Simulator {
 														 @NotNull Path airlinesFile,
 														 @NotNull Path airportsFile,
 														 @NotNull Path flightsPath) throws FlightDataFileHandlerException {
-		final var data = flightDataHandler.readFlightData(aeroplanesFile, airlinesFile, airportsFile, flightsPath);
+		final var data = flightDataHandler.readFlightData(airportsFile, aeroplanesFile, airlinesFile, flightsPath);
 		replaceCollectionWith(aeroplanes, data.aeroplanes());
 		replaceCollectionWith(airlines, data.airlines());
 		replaceCollectionWith(airports, data.airports());
