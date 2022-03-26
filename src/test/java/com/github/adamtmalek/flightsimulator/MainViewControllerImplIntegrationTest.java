@@ -2,7 +2,6 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.gui.MainView;
 import com.github.adamtmalek.flightsimulator.gui.MainViewControllerImpl;
-import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
@@ -91,11 +90,6 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 
 		@Override
 		public void setAddButtonEnabled(boolean enabled) {
-
-		}
-
-		@Override
-		public void displayData(@NotNull FlightData flightData) {
 
 		}
 

@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
+import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandler;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
@@ -27,8 +28,6 @@ public final class Simulator {
 
 	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner();
 	private final @NotNull FlightSimulationThreadManagement threadManager;
-
-	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandlerImpl();
 
 	public Simulator() {
 		final var flightJoiner = new FlightJoiner();
@@ -91,7 +90,8 @@ public final class Simulator {
 	}
 
 	public void writeAirlineReports() {
-
+		final var writer = new ReportWriter();
+		writer.writeAirlineReports(FLIGHTS_REPORT_DIRECTORY, airlines, flights);
 	}
 
 	public void writeFlightData() {
@@ -110,8 +110,15 @@ public final class Simulator {
 	public void readFlightData(@NotNull Path aeroplanesFile,
 														 @NotNull Path airlinesFile,
 														 @NotNull Path airportsFile,
-														 @NotNull Path flightsPath) throws FlightDataFileHandlerException {
-		final var data = flightDataHandler.readFlightData(airportsFile, aeroplanesFile, airlinesFile, flightsPath);
+														 @NotNull Path flightsFile) throws FlightDataFileHandlerException {
+		final var handler = FlightDataFileHandler.getBuilder()
+				.withAirportsPath(airportsFile)
+				.withAeroplanesPath(aeroplanesFile)
+				.withAirlinesPath(airlinesFile)
+				.withFlightsPath(flightsFile)
+				.build();
+
+		final var data = handler.readFlightData();
 		replaceCollectionWith(aeroplanes, data.aeroplanes());
 		replaceCollectionWith(airlines, data.airlines());
 		replaceCollectionWith(airports, data.airports());
