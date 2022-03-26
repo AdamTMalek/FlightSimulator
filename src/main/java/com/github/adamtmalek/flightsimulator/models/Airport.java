@@ -6,6 +6,8 @@ import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.io.SerializableField;
 import com.github.adamtmalek.flightsimulator.io.converters.GeodeticCoordinateConverter;
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -62,6 +64,7 @@ public class Airport {
 		private final SynchronizedQueue<Flight> synchronizedQueue;
 		private final HashMap<String, Flight> flightMap;
 		private volatile boolean isRunning;
+		private final @NotNull Logger logger = LoggerFront.getInstance();
 
 		public ControlTower(@NotNull String codeIn, @NotNull String nameIn, @NotNull GeodeticCoordinate positionIn) {
 			code = codeIn;
@@ -81,7 +84,7 @@ public class Airport {
 								data.flightStatus().getCurrentPosition().latitude(),
 								data.flightStatus().getCurrentPosition().longitude()
 						);
-				System.out.println(message);
+				logger.debug(message);
 				synchronizedQueue.push(data);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -91,7 +94,7 @@ public class Airport {
 		public void run() {
 			try {
 				while (isRunning) {
-					System.out.println(this.code + " is running!");
+					logger.debug(this.code + " is running!");
 					if (!synchronizedQueue.isEmpty()) {
 
 						// Each element in queue is inserted into map and cleared.

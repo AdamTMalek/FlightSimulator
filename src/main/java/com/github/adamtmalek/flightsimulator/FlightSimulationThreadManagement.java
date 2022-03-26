@@ -1,5 +1,7 @@
 package com.github.adamtmalek.flightsimulator;
 
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +22,7 @@ public class FlightSimulationThreadManagement {
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
 
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 	private final Collection<Thread> threads;
 
 	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
@@ -75,22 +78,22 @@ public class FlightSimulationThreadManagement {
 	}
 
 	public void startThreads() {
-		System.out.println("Starting threads. ================== ");
+		logger.info("Starting threads. ================== ");
 		this.threads.forEach(Thread::start);
 	}
 
 	public void stopThreads() {
-		System.out.println("Stopping threads. ================== ");
+		logger.info("Stopping threads. ================== ");
 		this.threads.forEach(Thread::stop);
 	}
 
 	public void pauseThreads() {
-		System.out.println("Pausing threads. ================== ");
+		logger.info("Pausing threads. ================== ");
 		this.threads.forEach(Thread::suspend);
 	}
 
 	public void resumeThreads() {
-		System.out.println("Resuming threads. ================== ");
+		logger.info("Resuming threads. ================== ");
 		this.threads.forEach(Thread::resume);
 	}
 

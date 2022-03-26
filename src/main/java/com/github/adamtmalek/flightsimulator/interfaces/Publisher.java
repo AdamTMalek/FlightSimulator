@@ -1,5 +1,7 @@
 package com.github.adamtmalek.flightsimulator.interfaces;
 
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.List;
 
 public abstract class Publisher<T> {
 	private final List<Subscriber<T>> subscribers = new ArrayList<>();
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 
 	public void registerSubscriber(@NotNull Subscriber<T> sub) {
 		subscribers.add(sub);
@@ -18,7 +21,7 @@ public abstract class Publisher<T> {
 
 	public void publish(@NotNull T data) {
 		if (subscribers.isEmpty()) {
-			System.out.println("Warning, no subscribers attached!");
+			logger.warn("Warning, no subscribers attached!");
 		}
 
 		for (Subscriber<T> sub : subscribers) {

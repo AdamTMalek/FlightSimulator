@@ -1,16 +1,18 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
+import org.jetbrains.annotations.NotNull;
 
 public class FlightTracker extends Publisher<Flight> implements Runnable {
-
-
 	private final Flight flight;
 	private double duration;
 	private volatile boolean isRunning;
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 
 	FlightTracker(Flight flight) {
 		this.flight = flight;
@@ -21,7 +23,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	public void run() {
 
 		while (isRunning) {
-			System.out.println(this.flight.flightID() + " is running!");
+			logger.debug(this.flight.flightID() + " is running!");
 			OrientatedGeodeticCoordinate intermittentCoordinate = calculateCurrentPosition(calculateCurrentDistanceTravelled());
 			final var currentPosition = intermittentCoordinate.position;
 			final var nextControlTower = intermittentCoordinate.nextControlTower;
