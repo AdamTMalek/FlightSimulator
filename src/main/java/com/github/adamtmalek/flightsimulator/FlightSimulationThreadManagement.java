@@ -52,7 +52,7 @@ public class FlightSimulationThreadManagement {
 
 	}
 
-	public static long getApproxGuiUpdateFrequency() {
+	public static long getApproxGuiUpdateThreadPeriodMs() {
 		return getPeriodMs(GUI_UPDATE_FREQUENCY);
 
 	}

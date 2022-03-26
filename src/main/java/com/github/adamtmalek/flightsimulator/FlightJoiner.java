@@ -30,6 +30,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 	public void run() {
 		while (isRunning) {
 			var uniqueFlights = new ArrayList<>(flightMap.values());
+			System.out.println("FlightJoiner is running!");
 
 			//TO-DO, register GUI component subscriber
 			if (!uniqueFlights.isEmpty()) {
@@ -40,7 +41,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 			}
 
 			try {
-				final var sleepFor = FlightSimulationThreadManagement.getApproxGuiUpdateFrequency();
+				final var sleepFor = FlightSimulationThreadManagement.getApproxGuiUpdateThreadPeriodMs();
 				Thread.sleep(sleepFor);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
