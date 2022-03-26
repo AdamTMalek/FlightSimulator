@@ -145,6 +145,10 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void saveFlightData() {
-		simulator.writeFlightData();
+		try {
+			simulator.writeFlightData();
+		} catch (FlightDataFileHandlerException e) {
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

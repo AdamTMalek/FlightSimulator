@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
+import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandler;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
@@ -94,8 +95,16 @@ public final class Simulator {
 		writer.writeAirlineReports(FLIGHTS_REPORT_DIRECTORY, airlines, flights);
 	}
 
-	public void writeFlightData() {
+	public void writeFlightData() throws FlightDataFileHandlerException {
+		final var flightData = new FlightData(airports, airlines, aeroplanes, flights);
 
+		FlightDataFileHandler.getBuilder()
+				.withFlightsPath(FLIGHT_DATA_DIRECTORY.resolve("flights.csv"))
+				.withAeroplanesPath(FLIGHT_DATA_DIRECTORY.resolve("aeroplanes.csv"))
+				.withAirlinesPath(FLIGHT_DATA_DIRECTORY.resolve("airlines.csv"))
+				.withAirportsPath(FLIGHT_DATA_DIRECTORY.resolve("airports.csv"))
+				.build()
+				.saveFlights(flightData);
 	}
 
 	public void readFlightData() throws FlightDataFileHandlerException {
