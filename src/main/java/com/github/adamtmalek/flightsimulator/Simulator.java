@@ -1,6 +1,5 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
@@ -9,7 +8,6 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -100,18 +98,13 @@ public final class Simulator {
 
 	}
 
-	@Contract(pure = true)
-	public @NotNull FlightData readFlightData() {
+	public void readFlightData() throws FlightDataFileHandlerException {
 		final var aeroplanesPath = getPathFromResourcesFlightData("aeroplanes.csv");
 		final var airlinesPath = getPathFromResourcesFlightData("airlines.csv");
 		final var airportsPath = getPathFromResourcesFlightData("airports.csv");
 		final var flightsPath = getPathFromResourcesFlightData("flights.csv");
 
-		try {
-			return flightDataHandler.readFlightData(airportsPath, aeroplanesPath, airlinesPath, flightsPath);
-		} catch (FlightDataFileHandlerException e) {
-			throw new RuntimeException(e);
-		}
+		readFlightData(aeroplanesPath, airlinesPath, airportsPath, flightsPath);
 	}
 
 	public void readFlightData(@NotNull Path aeroplanesFile,
