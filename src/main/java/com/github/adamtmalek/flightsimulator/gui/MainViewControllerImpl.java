@@ -104,6 +104,7 @@ public class MainViewControllerImpl implements MainViewController {
 						() -> {
 							simulator.addFlight(flight);
 							view.updateFlightList();
+							view.resetSelections();
 						}
 				);
 	}

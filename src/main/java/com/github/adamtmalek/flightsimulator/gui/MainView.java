@@ -32,4 +32,6 @@ public interface MainView {
 	void setAddButtonEnabled(boolean enabled);
 
 	void updateFlightList();
+
+	void resetSelections();
 }

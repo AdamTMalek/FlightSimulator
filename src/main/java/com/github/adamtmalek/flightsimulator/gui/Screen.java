@@ -235,7 +235,8 @@ public class Screen extends JFrame implements MainView {
 		addButton.setEnabled(enabled);
 	}
 
-	private void resetComponents() {
+	@Override
+	public void resetSelections() {
 		IntStream.range(0, MAX_CONTROL_TOWERS)
 				.forEach(i -> flightPlanTable.setValueAt(emptyControlTower, 0, i));
 		flightPlanTable.updateUI();
