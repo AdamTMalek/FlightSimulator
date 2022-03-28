@@ -12,8 +12,7 @@ repositories {
 }
 
 javafx {
-    version = "17"
-    modules("javafx.controls","javafx.fxml")
+    modules("javafx.base")
 }
 
 dependencies {

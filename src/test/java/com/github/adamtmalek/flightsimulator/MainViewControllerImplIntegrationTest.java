@@ -2,11 +2,9 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.gui.MainView;
 import com.github.adamtmalek.flightsimulator.gui.MainViewControllerImpl;
-import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
-import com.github.adamtmalek.flightsimulator.models.io.TestSuite;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +24,8 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 	@AfterEach
 	void removeReportAndFlightDataDirectories() {
 		try {
-			FileUtils.deleteDirectory(MainViewControllerImpl.getFlightDataDirectory().toFile());
-			FileUtils.deleteDirectory(MainViewControllerImpl.getFlightsReportDirectory().toFile());
+			FileUtils.deleteDirectory(Simulator.FLIGHT_DATA_DIRECTORY.toFile());
+			FileUtils.deleteDirectory(Simulator.FLIGHTS_REPORT_DIRECTORY.toFile());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -35,11 +33,11 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 
 	@Test
 	void testAirlineReportIsSavedOnClose() {
-		final var controller = new MainViewControllerImpl(new MainViewStub());
+		final var controller = new MainViewControllerImpl(new MainViewStub(), new Simulator());
 		controller.showView();
 		controller.onWindowClosing();
 
-		File actualFile = MainViewControllerImpl.getFlightsReportDirectory().resolve("American Airlines.csv").toFile();
+		File actualFile = Simulator.FLIGHTS_REPORT_DIRECTORY.resolve("American Airlines.csv").toFile();
 		File expectedFile = getPathFromResources("airline-reports/American Airlines.csv").toFile();
 		org.assertj.core.api.Assertions.assertThat(actualFile).hasSameTextualContentAs(expectedFile);
 	}
@@ -92,11 +90,6 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 
 		@Override
 		public void setAddButtonEnabled(boolean enabled) {
-
-		}
-
-		@Override
-		public void displayData(@NotNull FlightData flightData) {
 
 		}
 
