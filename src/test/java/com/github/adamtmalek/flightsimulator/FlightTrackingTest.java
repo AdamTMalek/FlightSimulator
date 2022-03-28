@@ -176,8 +176,8 @@ public class FlightTrackingTest {
 
 		// Configure thread timing for test case.
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.05); // Flight travelling between G-E within test duration.
-		FlightSimulationThreadManagement.setThreadFrequency(1.8);
-		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
+		FlightSimulationThreadManagement.setThreadFrequency(2);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(1);
 
 		final var simulationStartTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
 
@@ -233,7 +233,7 @@ public class FlightTrackingTest {
 
 		joinerThread.start();
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(2200);
 			flightATracker.stop();
 			flightBTracker.stop();
 			joinerThread.stop();
@@ -244,14 +244,19 @@ public class FlightTrackingTest {
 		}
 
 
-		Assertions.assertEquals(2, observableFlights.stream().toList().size());
-		Assertions.assertEquals("E", observableFlights.stream().toList().get(0).flightStatus().getCurrentControlTower().code);
-		Assertions.assertEquals(55.91264599913692, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, observableFlights.stream().toList().get(0).flightStatus().getCurrentPosition().longitude());
+		Assertions.assertEquals(4, observableFlights.stream().toList().size());
 
-		Assertions.assertEquals("E", observableFlights.stream().toList().get(1).flightStatus().getCurrentControlTower().code);
-		Assertions.assertEquals(55.91264599913692, observableFlights.stream().toList().get(1).flightStatus().getCurrentPosition().latitude());
-		Assertions.assertEquals(-3.7937437059544337, observableFlights.stream().toList().get(1).flightStatus().getCurrentPosition().longitude());
+		final var mostRecentFlightA = observableFlights.stream().filter(f -> f.flightID().equals("FA") && f.flightStatus().getCurrentPosition().latitude() == 55.91264599913692).findFirst();
+		Assertions.assertEquals(true, mostRecentFlightA.isPresent());
+		Assertions.assertEquals("E", mostRecentFlightA.get().flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, mostRecentFlightA.get().flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, mostRecentFlightA.get().flightStatus().getCurrentPosition().longitude());
+
+		final var mostRecentFlightB = observableFlights.stream().filter(f -> f.flightID().equals("FB") && f.flightStatus().getCurrentPosition().latitude() == 55.91264599913692).findFirst();
+		Assertions.assertEquals(true, mostRecentFlightB.isPresent());
+		Assertions.assertEquals("E", mostRecentFlightB.get().flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(55.91264599913692, mostRecentFlightB.get().flightStatus().getCurrentPosition().latitude());
+		Assertions.assertEquals(-3.7937437059544337, mostRecentFlightB.get().flightStatus().getCurrentPosition().longitude());
 
 	}
 
