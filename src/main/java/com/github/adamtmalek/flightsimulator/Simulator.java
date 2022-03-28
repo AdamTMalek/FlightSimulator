@@ -29,13 +29,12 @@ public class Simulator {
 	private final @NotNull ObservableSet<Airport> airports = FXCollections.observableSet();
 	private final @NotNull ObservableSet<Flight> flights = FXCollections.observableSet();
 
-	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner();
+	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner(flights);
 	private final @NotNull FlightSimulationThreadManagement threadManager;
 
 	private ZonedDateTime simulationStartTime;
 
 	public Simulator() {
-		final var flightJoiner = new FlightJoiner();
 		final var controlTowers = airports.stream().map(o -> o.controlTower).toList();
 
 		initFlightJoiner(flightJoiner);
@@ -46,7 +45,7 @@ public class Simulator {
 	private void initFlightJoiner(@NotNull FlightJoiner joiner) {
 		airports.stream()
 				.map(o -> o.controlTower)
-				.forEach(o -> o.registerSubscriber(flightJoiner));
+				.forEach(o -> o.registerSubscriber(joiner));
 
 		joiner.registerSubscriber(data -> data.forEach(flight -> {
 					flights.removeIf(f -> f.flightID().equals(flight.flightID()));

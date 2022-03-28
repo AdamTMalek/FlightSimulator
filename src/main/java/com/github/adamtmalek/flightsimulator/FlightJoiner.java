@@ -15,15 +15,10 @@ import java.util.Map;
 
 public class FlightJoiner extends Publisher<Collection<Flight>> implements Subscriber<Collection<Flight>>, Runnable {
 	private final Map<String, Flight> flightMap;
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 	private boolean isProcessing;
 	private volatile boolean isRunning;
 	private ObservableSet<Flight> observableFlights;
-	private final @NotNull Logger logger = LoggerFront.getInstance();
-
-	FlightJoiner() {
-		isRunning = true;
-		flightMap = new HashMap<>();
-	}
 
 	FlightJoiner(ObservableSet<Flight> observableFlights) {
 		isRunning = true;
