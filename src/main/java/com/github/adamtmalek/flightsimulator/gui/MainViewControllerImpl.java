@@ -135,9 +135,19 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	@Override
+	public void onSimulationControlClicked(boolean newState) {
+		if (newState) {
+			simulator.startSimulation();
+		} else {
+			simulator.pauseSimulation();
+		}
+	}
+
+	@Override
 	public void onWindowClosing() {
 		saveFlightData();
 		saveFlightsReport();
+		simulator.stopSimulation();
 	}
 
 	private void saveFlightsReport() {

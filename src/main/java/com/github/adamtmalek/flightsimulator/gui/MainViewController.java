@@ -9,5 +9,7 @@ public interface MainViewController {
 
 	void onAddFlightClicked();
 
+	void onSimulationControlClicked(boolean newState);
+
 	void onWindowClosing();
 }

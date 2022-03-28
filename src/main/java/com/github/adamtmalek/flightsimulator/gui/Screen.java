@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 
 public class Screen extends JFrame implements MainView {
 	private static final @NotNull String windowTitle = "Flight Tracking System";
+	private static final @NotNull String simulationToggleNotSelectedText = "Start Simulation";
+	private static final @NotNull String simulationToggleSelectedText = "Pause Simulation";
 
 	private JPanel panelMain;
 	private JLabel textDistance;
@@ -44,6 +46,7 @@ public class Screen extends JFrame implements MainView {
 	private JFormattedTextField dateTimeField;
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
+	private JToggleButton simulationToggle;
 
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
@@ -73,6 +76,11 @@ public class Screen extends JFrame implements MainView {
 
 		addListenersForUpdatingAddButtonState();
 		addButton.addActionListener(e -> controller.onAddFlightClicked());
+		simulationToggle.addActionListener(e -> {
+			final boolean selected = simulationToggle.isSelected();
+			simulationToggle.setText(selected ? simulationToggleSelectedText : simulationToggleNotSelectedText);
+			controller.onSimulationControlClicked(selected);
+		});
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		flightList.addListSelectionListener(e -> setSelectedFlight());
 		addOnExitEventHandler();

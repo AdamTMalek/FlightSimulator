@@ -31,6 +31,7 @@ public class Simulator {
 
 	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner(flights);
 	private final @NotNull FlightSimulationThreadManagement threadManager;
+	private @NotNull SimulationState simulationState = SimulationState.NOT_STARTED;
 
 	private ZonedDateTime simulationStartTime;
 
@@ -94,6 +95,26 @@ public class Simulator {
 		return flights.stream().toList();
 	}
 
+	public void startSimulation() {
+		if (simulationState == SimulationState.SUSPENDED) {
+			threadManager.resumeThreads();
+		} else {
+			threadManager.startThreads();
+		}
+
+		simulationState = SimulationState.RUNNING;
+	}
+
+	public void pauseSimulation() {
+		threadManager.pauseThreads();
+		simulationState = SimulationState.SUSPENDED;
+	}
+
+	public void stopSimulation() {
+		threadManager.stopThreads();
+		simulationState = SimulationState.TERMINATED;
+	}
+
 	public void writeAirlineReports() {
 		final var writer = new ReportWriter();
 		writer.writeAirlineReports(FLIGHTS_REPORT_DIRECTORY, airlines, flights);
@@ -154,5 +175,12 @@ public class Simulator {
 			// But we have to do something here - so let's throw a RuntimeException just to "handle" that possibility.
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private enum SimulationState {
+		NOT_STARTED,
+		RUNNING,
+		SUSPENDED,
+		TERMINATED
 	}
 }
