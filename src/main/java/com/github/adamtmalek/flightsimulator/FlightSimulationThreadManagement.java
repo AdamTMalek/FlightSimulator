@@ -23,10 +23,10 @@ public class FlightSimulationThreadManagement {
 	private static double THREAD_FREQUENCY = 2; //Hz
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
-	private ZonedDateTime simulationStartTime;
-
 	private final @NotNull Logger logger = LoggerFront.getInstance();
 	private final Collection<Thread> threads;
+	private ZonedDateTime simulationStartTime;
+	private Stopwatch stopwatch;
 
 	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
 																					@NotNull Collection<Airport.ControlTower> controlTowers,
@@ -34,6 +34,7 @@ public class FlightSimulationThreadManagement {
 																					@NotNull ZonedDateTime simulationStartTime) {
 
 		this.simulationStartTime = simulationStartTime;
+		stopwatch = new Stopwatch(simulationStartTime);
 
 		final var flightTrackerThreads = flights
 				.stream()
@@ -47,7 +48,7 @@ public class FlightSimulationThreadManagement {
 				.toList();
 		final var flightJoinerThread = new Thread(flightJoiner);
 
-		this.threads = Stream.of(flightTrackerThreads, controlTowerThreads, List.of(flightJoinerThread))
+		this.threads = Stream.of(flightTrackerThreads, controlTowerThreads, List.of(flightJoinerThread), List.of(new Thread(stopwatch)))
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 	}
@@ -83,7 +84,7 @@ public class FlightSimulationThreadManagement {
 	}
 
 	public void startTrackingNewFlight(@NotNull Flight flight) {
-		var newFlightThread = new Thread(new FlightTracker(flight, simulationStartTime));
+		var newFlightThread = new Thread(new FlightTracker(flight, stopwatch.getCurrentRelativeTime()));
 		newFlightThread.start();
 		threads.add(newFlightThread);
 	}
