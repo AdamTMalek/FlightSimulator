@@ -12,6 +12,7 @@ repositories {
 }
 
 javafx {
+    version = "17"
     modules("javafx.base")
 }
 
