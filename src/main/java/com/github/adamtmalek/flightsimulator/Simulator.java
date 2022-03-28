@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -31,13 +33,15 @@ public final class Simulator {
 	private final @NotNull FlightSimulationThreadManagement threadManager;
 
 	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandlerImpl();
+	private ZonedDateTime simulationStartTime;
 
 	public Simulator() {
 		final var flightJoiner = new FlightJoiner();
 		final var controlTowers = airports.stream().map(o -> o.controlTower).toList();
 
 		initFlightJoiner(flightJoiner);
-		threadManager = new FlightSimulationThreadManagement(flights, controlTowers, flightJoiner);
+		simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+		threadManager = new FlightSimulationThreadManagement(flights, controlTowers, flightJoiner, simulationStartTime);
 	}
 
 	private void initFlightJoiner(@NotNull FlightJoiner joiner) {

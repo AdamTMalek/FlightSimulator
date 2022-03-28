@@ -42,6 +42,8 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		final var simulationStartTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -73,9 +75,9 @@ public class FlightTrackingTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				controlTowers
-		)));
+				simulationStartTime,
+				controlTowers),
+				simulationStartTime));
 
 
 		var joinerThread = new Thread(joiner);
@@ -107,6 +109,8 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		final var simulationStartTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -139,9 +143,9 @@ public class FlightTrackingTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				controlTowers
-		)));
+				simulationStartTime,
+				controlTowers),
+				simulationStartTime));
 
 
 		var joinerThread = new Thread(joiner);
@@ -175,6 +179,8 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.8);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.508);
 
+		final var simulationStartTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -206,18 +212,18 @@ public class FlightTrackingTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				controlTowers
-		)));
+				simulationStartTime,
+				controlTowers),
+				simulationStartTime));
 
 		var flightBTracker = new Thread(new FlightTracker(new Flight("FB",
 				new Airline("", ""),
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				controlTowers
-		)));
+				simulationStartTime,
+				controlTowers),
+				simulationStartTime));
 
 
 		var joinerThread = new Thread(joiner);
@@ -259,6 +265,8 @@ public class FlightTrackingTest {
 		FlightSimulationThreadManagement.setThreadFrequency(1.9);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(3);
 
+		final var simulationStartTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -288,9 +296,9 @@ public class FlightTrackingTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				londonAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
-				controlTowers
-		)));
+				simulationStartTime.minusDays(5),
+				controlTowers),
+				simulationStartTime));
 
 
 		var joinerThread = new Thread(joiner);
@@ -312,5 +320,72 @@ public class FlightTrackingTest {
 		Assertions.assertEquals(londonAirport.controlTower.code, finalFlight.get().flightStatus().getCurrentControlTower().code);
 		Assertions.assertEquals(londonAirport.position, finalFlight.get().flightStatus().getCurrentPosition());
 
+	}
+
+	@Test
+	void testFlightCommunicatesWithDepartureAirportBeforeTakeoff() {
+		/**
+		 * Test flight communicates with the departure airport correctly before takeoff.
+		 */
+		// Configure thread timing for test case.
+		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.000278); // Adds approximately 1 hour every tick
+		FlightSimulationThreadManagement.setThreadFrequency(2);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(3);
+
+		final var simulationStartTime = ZonedDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
+		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
+		observableFlights
+				.addListener((SetChangeListener<Flight>) changeListener -> {
+					final var newFlight = changeListener.getElementAdded();
+					final var message = "Listener received data from `%s`: %s at `%s, %s`"
+							.formatted(newFlight.flightStatus().getCurrentControlTower(),
+									newFlight.flightID(),
+									newFlight.flightStatus().getCurrentPosition().latitude(),
+									newFlight.flightStatus().getCurrentPosition().longitude());
+					System.out.println(message);
+				});
+
+
+		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
+		var londonAirport = new Airport("L", "London Airport", new GeodeticCoordinate(51.47, -0.46));
+
+		var joiner = new FlightJoiner(observableFlights);
+
+		final var airports = List.of(glasgowAirport, londonAirport);
+		final var controlTowers = airports.stream().map(airport -> airport.controlTower).toList();
+		controlTowers.forEach(tower -> tower.registerSubscriber(joiner));
+
+		final var controlTowerThreads = airports.stream().map(airport -> new Thread(airport.controlTower)).toList();
+		controlTowerThreads.forEach(Thread::start);
+
+		var tracker = new Thread(new FlightTracker(Flight.buildWithSerialNumber("001",
+				new Airline("", ""),
+				new Aeroplane("a", "a", 1, 50),
+				glasgowAirport,
+				londonAirport,
+				simulationStartTime.plusHours(2),
+				controlTowers),
+				simulationStartTime));
+
+
+		var joinerThread = new Thread(joiner);
+
+		tracker.start();
+		joinerThread.start();
+		try {
+			Thread.sleep(1000);
+			tracker.stop();
+			joinerThread.stop();
+			controlTowerThreads.forEach(Thread::stop);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Assertions.assertEquals(1, observableFlights.stream().toList().size());
+		final var finalFlight = observableFlights.stream().toList().get(0);
+		Assertions.assertEquals(Flight.FlightStatus.Status.WAITING_FOR_DEPARTURE, finalFlight.flightStatus().getStatus());
+		Assertions.assertEquals(glasgowAirport.controlTower.code, finalFlight.flightStatus().getCurrentControlTower().code);
+		Assertions.assertEquals(glasgowAirport.position, finalFlight.flightStatus().getCurrentPosition());
 	}
 }

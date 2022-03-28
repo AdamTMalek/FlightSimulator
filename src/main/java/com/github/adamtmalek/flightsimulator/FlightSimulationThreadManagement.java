@@ -4,6 +4,7 @@ import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,17 +21,18 @@ public class FlightSimulationThreadManagement {
 	private static double THREAD_FREQUENCY = 2; //Hz
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
-
+	private ZonedDateTime simulationStartTime;
 
 	private Collection<Thread> threads;
 
 	public FlightSimulationThreadManagement(@NotNull Collection<Flight> flights,
 																					@NotNull Collection<Airport.ControlTower> controlTowers,
-																					@NotNull FlightJoiner flightJoiner) {
+																					@NotNull FlightJoiner flightJoiner,
+																					@NotNull ZonedDateTime simulationStartTime) {
 
 		final var flightTrackerThreads = flights
 				.stream()
-				.map(FlightTracker::new)
+				.map(f -> new FlightTracker(f, simulationStartTime))
 				.map(Thread::new)
 				.toList();
 
@@ -51,7 +53,6 @@ public class FlightSimulationThreadManagement {
 
 	public static long getApproxFlightSimulationPeriodMs() {
 		return getPeriodMs(FLIGHT_SIMULATION_FREQUENCY);
-
 	}
 
 	public static long getApproxGuiUpdateThreadPeriodMs() {
@@ -77,7 +78,7 @@ public class FlightSimulationThreadManagement {
 	}
 
 	public void startTrackingNewFlight(@NotNull Flight flight) {
-		var newFlightThread = new Thread(new FlightTracker(flight));
+		var newFlightThread = new Thread(new FlightTracker(flight, simulationStartTime));
 		newFlightThread.start();
 		threads.add(newFlightThread);
 	}
