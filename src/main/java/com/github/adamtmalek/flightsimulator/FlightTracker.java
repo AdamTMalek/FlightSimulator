@@ -1,19 +1,21 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 
 public class FlightTracker extends Publisher<Flight> implements Runnable {
-
-
 	private final Flight flight;
 	private long flightDuration;
 	private ZonedDateTime simulationRelativeTime;
 	private volatile boolean isRunning;
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 
 
 	FlightTracker(Flight flight, ZonedDateTime simulationStartTime) {
@@ -26,7 +28,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	public void run() {
 
 		while (isRunning) {
-			System.out.println(this.flight.flightID() + " is running at " + simulationRelativeTime);
+			logger.debug(this.flight.flightID() + " is running!");
 
 			if (hasDepartureDatePassed()) {
 				System.out.println("Flight is being tracked.");

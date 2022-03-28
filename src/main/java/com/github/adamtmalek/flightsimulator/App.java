@@ -1,6 +1,5 @@
 package com.github.adamtmalek.flightsimulator;
 
-import com.github.adamtmalek.flightsimulator.gui.MainViewController;
 import com.github.adamtmalek.flightsimulator.gui.MainViewControllerImpl;
 
 public class App {

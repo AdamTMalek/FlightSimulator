@@ -1,6 +1,7 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.io.FlightData;
+import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandler;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
@@ -9,7 +10,6 @@ import com.github.adamtmalek.flightsimulator.models.Flight;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Objects;
 
-public final class Simulator {
+public class Simulator {
 	public static final Path FLIGHT_DATA_DIRECTORY = Path.of("flight-data/");
 	public static final Path FLIGHTS_REPORT_DIRECTORY = Path.of("reports/");
 
@@ -32,7 +32,6 @@ public final class Simulator {
 	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner();
 	private final @NotNull FlightSimulationThreadManagement threadManager;
 
-	private final @NotNull FlightDataHandler flightDataHandler = new FlightDataHandlerImpl();
 	private ZonedDateTime simulationStartTime;
 
 	public Simulator() {
@@ -97,32 +96,43 @@ public final class Simulator {
 	}
 
 	public void writeAirlineReports() {
-
+		final var writer = new ReportWriter();
+		writer.writeAirlineReports(FLIGHTS_REPORT_DIRECTORY, airlines, flights);
 	}
 
-	public void writeFlightData() {
+	public void writeFlightData() throws FlightDataFileHandlerException {
+		final var flightData = new FlightData(airports, airlines, aeroplanes, flights);
 
+		FlightDataFileHandler.getBuilder()
+				.withFlightsPath(FLIGHT_DATA_DIRECTORY.resolve("flights.csv"))
+				.withAeroplanesPath(FLIGHT_DATA_DIRECTORY.resolve("aeroplanes.csv"))
+				.withAirlinesPath(FLIGHT_DATA_DIRECTORY.resolve("airlines.csv"))
+				.withAirportsPath(FLIGHT_DATA_DIRECTORY.resolve("airports.csv"))
+				.build()
+				.saveFlights(flightData);
 	}
 
-	@Contract(pure = true)
-	public @NotNull FlightData readFlightData() {
+	public void readFlightData() throws FlightDataFileHandlerException {
 		final var aeroplanesPath = getPathFromResourcesFlightData("aeroplanes.csv");
 		final var airlinesPath = getPathFromResourcesFlightData("airlines.csv");
 		final var airportsPath = getPathFromResourcesFlightData("airports.csv");
 		final var flightsPath = getPathFromResourcesFlightData("flights.csv");
 
-		try {
-			return flightDataHandler.readFlightData(airportsPath, aeroplanesPath, airlinesPath, flightsPath);
-		} catch (FlightDataFileHandlerException e) {
-			throw new RuntimeException(e);
-		}
+		readFlightData(aeroplanesPath, airlinesPath, airportsPath, flightsPath);
 	}
 
 	public void readFlightData(@NotNull Path aeroplanesFile,
 														 @NotNull Path airlinesFile,
 														 @NotNull Path airportsFile,
-														 @NotNull Path flightsPath) throws FlightDataFileHandlerException {
-		final var data = flightDataHandler.readFlightData(aeroplanesFile, airlinesFile, airportsFile, flightsPath);
+														 @NotNull Path flightsFile) throws FlightDataFileHandlerException {
+		final var handler = FlightDataFileHandler.getBuilder()
+				.withAirportsPath(airportsFile)
+				.withAeroplanesPath(aeroplanesFile)
+				.withAirlinesPath(airlinesFile)
+				.withFlightsPath(flightsFile)
+				.build();
+
+		final var data = handler.readFlightData();
 		replaceCollectionWith(aeroplanes, data.aeroplanes());
 		replaceCollectionWith(airlines, data.airlines());
 		replaceCollectionWith(airports, data.airports());

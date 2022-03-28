@@ -1,13 +1,9 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -23,7 +19,7 @@ class FileLogger extends Logger {
 			String filePath = loggingDir + "/" + date + ".log";
 			File file = new File(filePath);
 			if (!file.createNewFile()) {
-				System.out.println("Log file with the same timestamp already exists.");
+				System.err.println("Log file with the same timestamp already exists.");
 			}
 			loggingDir = filePath;
 //			try (BufferedWriter writer = Files.newBufferedWriter(loggingDir, charset)) {
@@ -43,7 +39,7 @@ class FileLogger extends Logger {
 			writer.close();
 		} catch (IOException e) {
 			System.err.println("IOException while logging to: " + loggingDir);
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 		}
 
 	}

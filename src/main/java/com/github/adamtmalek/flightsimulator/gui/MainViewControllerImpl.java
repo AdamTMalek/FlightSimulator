@@ -2,8 +2,6 @@ package com.github.adamtmalek.flightsimulator.gui;
 
 import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
-import com.github.adamtmalek.flightsimulator.models.Aeroplane;
-import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.validators.FlightPlanValidator;
@@ -13,9 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 public class MainViewControllerImpl implements MainViewController {
@@ -36,6 +32,11 @@ public class MainViewControllerImpl implements MainViewController {
 	public void showView() {
 		SwingUtilities.invokeLater(() -> {
 			view.setVisible(true);
+			try {
+				simulator.readFlightData();
+			} catch (FlightDataFileHandlerException e) {
+				JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		});
 	}
 
@@ -65,44 +66,34 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void addNewFlight() throws InterruptedException, InvocationTargetException {
-		final AtomicReference<Airline> airline = new AtomicReference<>();
-		final AtomicReference<Aeroplane> aeroplane = new AtomicReference<>();
-		final AtomicReference<Airport> departureAirport = new AtomicReference<>();
-		final AtomicReference<Airport> destinationAirport = new AtomicReference<>();
-		final List<Airport.ControlTower> flightPlan = new ArrayList<>();
-		final AtomicReference<ZonedDateTime> departureDateTime = new AtomicReference<>();
-		final AtomicReference<String> flightNumber = new AtomicReference<>();
+		final var airline = view.getSelectedAirline();
+		final var aeroplane = view.getSelectedAeroplane();
+		final Airport departureAirport = view.getSelectedDepartureAirport();
+		final Airport destinationAirport = view.getSelectedArrivalAirport();
+		final List<Airport.ControlTower> flightPlan = view.getFlightPlan();
+		final ZonedDateTime departureDateTime = view.getDateTimeOfDeparture();
+		final String flightNumber = view.getFlightNumber();
 
-		SwingUtilities.invokeAndWait(() -> {
-			airline.set(view.getSelectedAirline());
-			aeroplane.set(view.getSelectedAeroplane());
-			departureAirport.set(view.getSelectedDepartureAirport());
-			destinationAirport.set(view.getSelectedArrivalAirport());
-			flightPlan.addAll(view.getFlightPlan());
-			departureDateTime.set(view.getDateTimeOfDeparture());
-			flightNumber.set(view.getFlightNumber());
-		});
-
-		assert airline.get() != null;
-		assert aeroplane.get() != null;
-		assert departureAirport.get() != null;
-		assert destinationAirport.get() != null;
-		assert departureDateTime.get() != null;
-		assert flightNumber.get() != null && !flightNumber.get().isEmpty();
+		assert airline != null;
+		assert aeroplane != null;
+		assert departureAirport != null;
+		assert destinationAirport != null;
+		assert departureDateTime != null;
+		assert flightNumber != null && !flightNumber.isEmpty();
 
 		final var invalidResults = Stream.of(
-						new FlightValidator(departureAirport.get()).validate(destinationAirport.get()),
-						new FlightPlanValidator(departureAirport.get(), destinationAirport.get()).validate(flightPlan)
+						new FlightValidator(departureAirport).validate(destinationAirport),
+						new FlightPlanValidator(departureAirport, destinationAirport).validate(flightPlan)
 				).filter(e -> !e.isValid())
 				.toList();
 
 		if (!invalidResults.isEmpty()) {
-			SwingUtilities.invokeLater(() -> invalidResults.forEach(result ->
-					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE)));
+			invalidResults.forEach(result ->
+					JOptionPane.showMessageDialog(new JFrame(), result.reason(), "Error", JOptionPane.ERROR_MESSAGE));
 			return;
 		}
-		final var flight = Flight.buildWithSerialNumber(flightNumber.get(), airline.get(), aeroplane.get(),
-				departureAirport.get(), destinationAirport.get(), departureDateTime.get(), flightPlan);
+		final var flight = Flight.buildWithSerialNumber(flightNumber, airline, aeroplane,
+				departureAirport, destinationAirport, departureDateTime, flightPlan);
 
 		simulator.getFlights()
 				.stream()
@@ -112,29 +103,28 @@ public class MainViewControllerImpl implements MainViewController {
 						(f) -> showNotUniqueFlightIdError(),
 						() -> {
 							simulator.addFlight(flight);
-							SwingUtilities.invokeLater(() -> view.updateFlightList());
+							view.updateFlightList();
 						}
 				);
 	}
 
 	private void showNotUniqueFlightIdError() {
-		SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE));
-
+		JOptionPane.showMessageDialog(new JFrame(), "Flight ID must be unique", "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
 	public void onOpenFileClicked() {
 		final OpenFileViewController openFileController = new OpenFileViewControllerImpl();
-		SwingUtilities.invokeLater(() -> openFileController.openDialog(view.getComponent())
-				.ifPresent(this::readFlightData));
+		openFileController.openDialog(view.getComponent())
+				.ifPresent(this::readFlightData);
 	}
 
 	private void readFlightData(@NotNull FlightFilesPaths paths) {
 		try {
 			simulator.readFlightData(
-					paths.airports(),
 					paths.aeroplanes(),
 					paths.airlines(),
+					paths.airports(),
 					paths.flights()
 			);
 		} catch (FlightDataFileHandlerException ex) {
@@ -155,6 +145,10 @@ public class MainViewControllerImpl implements MainViewController {
 	}
 
 	private void saveFlightData() {
-		simulator.writeFlightData();
+		try {
+			simulator.writeFlightData();
+		} catch (FlightDataFileHandlerException e) {
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

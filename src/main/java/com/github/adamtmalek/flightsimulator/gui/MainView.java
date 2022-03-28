@@ -1,6 +1,5 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
-import com.github.adamtmalek.flightsimulator.io.FlightData;
 import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
@@ -31,8 +30,6 @@ public interface MainView {
 	@NotNull List<Airport.ControlTower> getFlightPlan();
 
 	void setAddButtonEnabled(boolean enabled);
-
-	void displayData(@NotNull FlightData flightData);
 
 	void updateFlightList();
 }

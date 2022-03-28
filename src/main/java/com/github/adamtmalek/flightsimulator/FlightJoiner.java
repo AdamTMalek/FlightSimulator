@@ -2,8 +2,11 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
+import com.github.adamtmalek.flightsimulator.logger.Logger;
+import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import javafx.collections.ObservableSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +18,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 	private boolean isProcessing;
 	private volatile boolean isRunning;
 	private ObservableSet<Flight> observableFlights;
+	private final @NotNull Logger logger = LoggerFront.getInstance();
 
 	FlightJoiner() {
 		isRunning = true;
@@ -34,7 +38,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 
 			//TO-DO, register GUI component subscriber
 			if (!uniqueFlights.isEmpty()) {
-				System.out.println("FlightJoiner is publishing joined flights.");
+				logger.debug("FlightJoiner is publishing joined flights.");
 				publish(uniqueFlights);
 				observableFlights.addAll(flightMap.values());
 				flightMap.clear();
@@ -64,7 +68,7 @@ public class FlightJoiner extends Publisher<Collection<Flight>> implements Subsc
 							newFlight.flightID(),
 							newFlight.flightStatus().getCurrentPosition().latitude(),
 							newFlight.flightStatus().getCurrentPosition().longitude());
-			System.out.println(message);
+			logger.debug(message);
 
 			final var existingFlight = flightMap.get(newFlight.flightID());
 			if (existingFlight == null) {
