@@ -30,6 +30,8 @@ public class FlightSimulationThreadManagement {
 																					@NotNull FlightJoiner flightJoiner,
 																					@NotNull ZonedDateTime simulationStartTime) {
 
+		this.simulationStartTime = simulationStartTime;
+
 		final var flightTrackerThreads = flights
 				.stream()
 				.map(f -> new FlightTracker(f, simulationStartTime))

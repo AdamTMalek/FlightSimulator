@@ -20,6 +20,8 @@ public class FlightSimulationThreadManagementTest {
 		FlightSimulationThreadManagement.setThreadFrequency(2);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(2);
 
+		final var simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -49,7 +51,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -58,7 +60,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -67,7 +69,8 @@ public class FlightSimulationThreadManagementTest {
 				List.of(flightA, flightB),
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower),
-				flightJoiner);
+				flightJoiner,
+				simulationStartTime);
 
 		flightSimManager.startThreads();
 
@@ -97,6 +100,8 @@ public class FlightSimulationThreadManagementTest {
 		FlightSimulationThreadManagement.setThreadFrequency(2);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(20);
 
+		final var simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
 				.addListener((SetChangeListener<Flight>) changeListener -> {
@@ -126,7 +131,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -135,7 +140,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -143,7 +148,8 @@ public class FlightSimulationThreadManagementTest {
 				List.of(flightA, flightB),
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower),
-				flightJoiner);
+				flightJoiner,
+				simulationStartTime);
 
 		flightSimManager.startThreads();
 
@@ -203,6 +209,7 @@ public class FlightSimulationThreadManagementTest {
 		FlightSimulationThreadManagement.setThreadFrequency(2);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(2);
 
+		final var simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
 
 		var glasgowAirport = new Airport("G", "Glasgow Airport", new GeodeticCoordinate(55.87, -4.43));
 		var edinburghAirport = new Airport("E", "Edinburgh Airport", new GeodeticCoordinate(55.95, -3.19));
@@ -221,7 +228,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -230,7 +237,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -238,7 +245,8 @@ public class FlightSimulationThreadManagementTest {
 				List.of(flightA, flightB),
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower),
-				flightJoiner);
+				flightJoiner,
+				simulationStartTime);
 
 
 		try {
@@ -257,6 +265,8 @@ public class FlightSimulationThreadManagementTest {
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.005); // Flight travelling between G-E-L within test duration.
 		FlightSimulationThreadManagement.setThreadFrequency(2);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(2);
+
+		final var simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
 
 		ObservableSet<Flight> observableFlights = FXCollections.observableSet();
 		observableFlights
@@ -287,7 +297,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -296,7 +306,7 @@ public class FlightSimulationThreadManagementTest {
 				new Aeroplane("a", "a", 1, 50),
 				glasgowAirport,
 				newYorkAirport,
-				ZonedDateTime.of(2022, 2, 18, 16, 0, 0, 0, ZoneId.of("UTC+0")),
+				simulationStartTime,
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower));
 
@@ -305,7 +315,8 @@ public class FlightSimulationThreadManagementTest {
 				List.of(flightA),
 				List.of(glasgowAirport.controlTower, edinburghAirport.controlTower,
 						londonAirport.controlTower, newYorkAirport.controlTower),
-				flightJoiner);
+				flightJoiner,
+				simulationStartTime);
 
 
 		flightSimManager.startThreads();
