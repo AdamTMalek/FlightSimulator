@@ -19,7 +19,7 @@ class FileLogger extends Logger {
 		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 		try {
 			File dir = new File(loggingDir);
-			this.hasErrored = !dir.mkdirs();
+			dir.mkdirs();
 			String filePath = loggingDir + "" + date + ".log";
 			File file = new File(filePath);
 			if (!file.createNewFile()) {
