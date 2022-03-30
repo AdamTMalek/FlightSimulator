@@ -2,7 +2,6 @@ package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.logger.Logger;
-import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import com.github.adamtmalek.flightsimulator.models.GeodeticCoordinate;
@@ -15,7 +14,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	private long flightDuration;
 	private ZonedDateTime simulationRelativeTime;
 	private volatile boolean isRunning;
-	private final @NotNull Logger logger = LoggerFront.getInstance();
+	private final @NotNull Logger logger = Logger.getInstance();
 
 
 	FlightTracker(Flight flight, ZonedDateTime simulationStartTime) {

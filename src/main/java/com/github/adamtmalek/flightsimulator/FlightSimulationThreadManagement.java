@@ -1,7 +1,6 @@
 package com.github.adamtmalek.flightsimulator;
 
 import com.github.adamtmalek.flightsimulator.logger.Logger;
-import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,7 @@ public class FlightSimulationThreadManagement {
 	private static double THREAD_FREQUENCY = 2; //Hz
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
-	private final @NotNull Logger logger = LoggerFront.getInstance();
+	private final @NotNull Logger logger = Logger.getInstance();
 	private final Collection<Thread> threads;
 	private ZonedDateTime simulationStartTime;
 	private Stopwatch stopwatch;

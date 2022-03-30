@@ -3,7 +3,6 @@ package com.github.adamtmalek.flightsimulator;
 import com.github.adamtmalek.flightsimulator.interfaces.Publisher;
 import com.github.adamtmalek.flightsimulator.interfaces.Subscriber;
 import com.github.adamtmalek.flightsimulator.logger.Logger;
-import com.github.adamtmalek.flightsimulator.logger.LoggerFront;
 import com.github.adamtmalek.flightsimulator.models.Flight;
 import javafx.collections.ObservableSet;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 public class FlightJoiner extends Publisher<Collection<Flight>> implements Subscriber<Collection<Flight>>, Runnable {
 	private final Map<String, Flight> flightMap;
-	private final @NotNull Logger logger = LoggerFront.getInstance();
+	private final @NotNull Logger logger = Logger.getInstance();
 	private boolean isProcessing;
 	private volatile boolean isRunning;
 	private ObservableSet<Flight> observableFlights;
