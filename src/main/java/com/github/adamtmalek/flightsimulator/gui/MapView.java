@@ -51,8 +51,7 @@ public class MapView extends JFrame{
 		mapViewer.addMouseMotionListener(mia);
 		mapViewer.addMouseListener(new CenterMapListener(mapViewer));
 		mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
-		mapViewer.addKeyListener(new PanKeyListener(mapViewer));
-
+		//mapViewer.addKeyListener(new PanKeyListener(mapViewer));
 		// Display the viewer in a JFrame
 		this.getContentPane().add(mapViewer);
 		this.setSize(800, 600);
@@ -64,28 +63,28 @@ public class MapView extends JFrame{
 														@NotNull SetChangeListener.Change<? extends Flight> change) {
 		if (change.wasAdded()) {
 			addMarker(model, change.getElementAdded());
-		} else {
+		}/* else {
 			System.out.println("removing marker");
 			removeMarker(change.getElementRemoved());
-		}
+		}*/
 
 	}
 
 	private void addMarker(DefaultListModel<Flight> model, Flight flight){
 
-		final var currentPos = flight.flightStatus().getCurrentPosition();
+		if(!model.isEmpty()) {
+			final var flights = Arrays.stream(model.toArray()).map(Flight.class::cast).toList();
 
-		final var flights = Arrays.stream(model.toArray()).map(Flight.class::cast).toList();
+			final var geoPosistiions = flights.stream().map(f -> new GeoPosition(f.flightStatus().getCurrentPosition().latitude(),
+					f.flightStatus().getCurrentPosition().longitude())).collect(Collectors.toSet());
 
-		final var geoPosistiions = flights.stream().map(f->new GeoPosition(f.flightStatus().getCurrentPosition().latitude(),
-				f.flightStatus().getCurrentPosition().longitude())).collect(Collectors.toSet());
+			final var waypoints = geoPosistiions.stream().map(DefaultWaypoint::new).collect(Collectors.toSet());
 
-		final var waypoints = geoPosistiions.stream().map(DefaultWaypoint::new).collect(Collectors.toSet());
-
-		waypointPainter.setWaypoints(waypoints);
+			waypointPainter.setWaypoints(waypoints);
+			this.repaint();
+		}
 	}
 
-	private void removeMarker(Flight flight){
-
-	}
+	//private void removeMarker(Flight flight){
+	//}
 	}
