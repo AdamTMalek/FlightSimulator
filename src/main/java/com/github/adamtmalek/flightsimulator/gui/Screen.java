@@ -47,6 +47,7 @@ public class Screen extends JFrame implements MainView {
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
 	private JToggleButton simulationToggle;
+	private MapView mapView = new MapView();
 
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
@@ -125,6 +126,7 @@ public class Screen extends JFrame implements MainView {
 
 	private void addListenersToSimulatorCollections() {
 		simulator.addFlightCollectionListener(change -> handleChange(flightList, flightsModel, change));
+		simulator.addFlightCollectionListener(change -> mapView.handleChange(flightsModel, change));
 		simulator.addAirlineCollectionListener(change -> handleChange(airlineBox, airlinesModel, change));
 		simulator.addAeroplaneCollectionListener(change -> handleChange(aeroplaneBox, aeroplanesModel, change));
 		simulator.addAirportCollectionListener(change -> {
