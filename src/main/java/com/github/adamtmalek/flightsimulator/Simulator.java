@@ -30,17 +30,18 @@ public class Simulator {
 	private final @NotNull ObservableSet<Flight> flights = FXCollections.observableSet();
 
 	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner(flights);
-	private final @NotNull FlightSimulationThreadManagement threadManager;
+	private @NotNull FlightSimulationThreadManagement threadManager;
 	private @NotNull SimulationState simulationState = SimulationState.NOT_STARTED;
 
 	private ZonedDateTime simulationStartTime;
 
 	public Simulator() {
-		final var controlTowers = airports.stream().map(o -> o.controlTower).toList();
 
-		initFlightJoiner(flightJoiner);
+		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.00111111111); // Adds approximately 0.25 hour every tick
+		FlightSimulationThreadManagement.setThreadFrequency(2);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(2);
+
 		simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
-		threadManager = new FlightSimulationThreadManagement(flights, controlTowers, flightJoiner, simulationStartTime);
 	}
 
 	private void initFlightJoiner(@NotNull FlightJoiner joiner) {
@@ -99,6 +100,8 @@ public class Simulator {
 		if (simulationState == SimulationState.SUSPENDED) {
 			threadManager.resumeThreads();
 		} else {
+			final var controlTowers = airports.stream().map(o -> o.controlTower).toList();
+			threadManager = new FlightSimulationThreadManagement(flights, controlTowers, flightJoiner, simulationStartTime);
 			threadManager.startThreads();
 		}
 
@@ -157,6 +160,9 @@ public class Simulator {
 		replaceCollectionWith(airlines, data.airlines());
 		replaceCollectionWith(airports, data.airports());
 		replaceCollectionWith(flights, data.flights());
+
+		initFlightJoiner(flightJoiner);
+
 	}
 
 	private <T> void replaceCollectionWith(@NotNull Collection<T> collection,

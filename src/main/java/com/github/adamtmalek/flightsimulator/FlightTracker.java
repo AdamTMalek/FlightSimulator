@@ -30,9 +30,10 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 			logger.debug(this.flight.flightID() + " is running!");
 
 			if (hasDepartureDatePassed()) {
-				System.out.println("Flight is being tracked.");
 
 				final var updatedFlight = trackFlight();
+				System.out.println("Flight "+updatedFlight.flightID()+" is tracked to " + updatedFlight.flightStatus().getCurrentPosition().latitude()+","+updatedFlight.flightStatus().getCurrentPosition().latitude());
+
 				publishTo(updatedFlight, updatedFlight.flightStatus().getCurrentControlTower());
 
 				this.flightDuration += (FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000);
@@ -111,7 +112,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	}
 
 	private double calculateCurrentDistanceTravelled() {
-		return flight.aeroplane().speed() * flightDuration;
+		return flight.aeroplane().speed() * (flightDuration/3600);
 	}
 
 
