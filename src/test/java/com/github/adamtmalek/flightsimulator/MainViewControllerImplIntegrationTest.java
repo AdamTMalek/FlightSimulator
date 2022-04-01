@@ -97,5 +97,10 @@ class MainViewControllerImplIntegrationTest extends TestSuite {
 		public void updateFlightList() {
 
 		}
+
+		@Override
+		public void resetSelections(){
+
+		}
 	}
 }
