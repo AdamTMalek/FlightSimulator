@@ -80,7 +80,7 @@ public abstract class Logger {
 //			}
 
 			// Hard coded here
-			System.out.println("src/main/java/com/github/adamtmalek/flightsimulator/logger/logs/".equals(properties.getProperty("FileLogger.path")));
+			//System.out.println("src/main/java/com/github/adamtmalek/flightsimulator/logger/logs/".equals(properties.getProperty("FileLogger.path")));
 //			loggers = Arrays.asList(
 //					new ConsoleLogger(LogLevel.WARN),
 //					new FileLogger(LogLevel.ALL,
@@ -88,16 +88,18 @@ public abstract class Logger {
 //					)
 //			);
 
+			loggers = new ArrayList<>();
 			// Factory version
 			LoggerFactory logFact = new LoggerFactory();
 			// List.stream().forEach() version
 //			List<String> loggersToMake = Arrays.asList(logFact.getLoggerTypes());
 //			loggersToMake.stream()
 //					.forEach(logType -> loggers.add(logFact.getLogger(logType)));
+
 			// For loop version
 			String[] loggersToMake = logFact.getLoggerTypes();
 			for (String loggerType: loggersToMake) {
-				loggers.add(logFact.getLogger(loggerType));
+				this.loggers.add(logFact.getLogger(loggerType));
 			}
 
 		}
