@@ -9,7 +9,8 @@ import java.util.Properties;
 /*
 	To add more loggers:
 	1. Create a new logger class which extends Logger (check ConsoleLogger.java for simplest example)
-	2. Add unique logger name to
+	2. Add unique logger name to getLoggerTypes() and corresponding switch case in getLogger()
+	3. Optionally add properties to the logger.properties file
  */
 
 public class LoggerFactory {
