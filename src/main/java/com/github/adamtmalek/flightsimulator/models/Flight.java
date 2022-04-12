@@ -222,22 +222,12 @@ public final class Flight {
 		if (obj == this) return true;
 		if (obj == null || obj.getClass() != this.getClass()) return false;
 		var that = (Flight) obj;
-		return Objects.equals(this.flightID, that.flightID) &&
-				Objects.equals(this.airline, that.airline) &&
-				Objects.equals(this.aeroplane, that.aeroplane) &&
-				Objects.equals(this.departureAirport, that.departureAirport) &&
-				Objects.equals(this.destinationAirport, that.destinationAirport) &&
-				Objects.equals(this.departureDate, that.departureDate) &&
-				Objects.equals(this.controlTowersToCross, that.controlTowersToCross) &&
-				Double.doubleToLongBits(this.estimatedTotalDistanceToTravel) == Double.doubleToLongBits(that.estimatedTotalDistanceToTravel) &&
-				Double.doubleToLongBits(this.estimatedFuelConsumption) == Double.doubleToLongBits(that.estimatedFuelConsumption) &&
-				Double.doubleToLongBits(this.estimatedCO2Produced) == Double.doubleToLongBits(that.estimatedCO2Produced) &&
-				Objects.equals(this.flightStatus, that.flightStatus);
+		return Objects.equals(this.flightID, that.flightID);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(flightID, airline, aeroplane, departureAirport, destinationAirport, departureDate, controlTowersToCross, estimatedTotalDistanceToTravel, estimatedFuelConsumption, estimatedCO2Produced, flightStatus);
+		return Objects.hash(flightID);
 	}
 
 	@Override
