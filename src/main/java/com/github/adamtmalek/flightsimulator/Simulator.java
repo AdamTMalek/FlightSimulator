@@ -41,7 +41,7 @@ public class Simulator {
 		FlightSimulationThreadManagement.setThreadFrequency(2);
 		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.5);
 
-		simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
+		simulationStartTime = ZonedDateTime.of(2022, 1, 12, 13, 0, 0, 0, ZoneId.of("UTC+0"));
 	}
 
 	private void initFlightJoiner(@NotNull FlightJoiner joiner) {
