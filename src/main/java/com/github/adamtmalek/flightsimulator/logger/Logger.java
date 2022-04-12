@@ -1,9 +1,20 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
+import com.fasterxml.jackson.xml.XmlMapper;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public abstract class Logger {
 	abstract void log(LogLevel level, String msg);
@@ -45,17 +56,30 @@ public abstract class Logger {
 	}
 
 	private static class LoggerImplementation extends Logger {
-		private List<? extends Logger> loggers;
+		private List<Logger> loggers;
 
 		protected LoggerImplementation(LogLevel logLevel) {
 			// instantiate loggers here from config
 			super(logLevel);
-			loggers = Arrays.asList(
-					new ConsoleLogger(LogLevel.WARN),
-					new FileLogger(LogLevel.ALL,
-							"src/main/java/com/github/adamtmalek/flightsimulator/logger/logs/"
-					)
-			);
+
+			loggers = new ArrayList<>();
+			// Factory version
+			LoggerFactory logFact = new LoggerFactory();
+			// List.stream().forEach() version
+//			List<String> loggersToMake = Arrays.asList(logFact.getLoggerTypes());
+//			loggersToMake.stream()
+//					.forEach(logType -> loggers.add(logFact.getLogger(logType)));
+
+			// For loop version
+			String[] loggersToMake = logFact.getLoggerTypes();
+			for (String loggerType: loggersToMake) {
+				try {
+					this.loggers.add(logFact.getLogger(loggerType));
+				} catch (IOException e) {
+					System.out.println("IOException when trying to create logger");
+					System.out.println(e.getMessage());
+				}
+			}
 		}
 
 		protected void log(@NotNull LogLevel level, @NotNull String message) {
