@@ -1,6 +1,7 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
 import com.github.adamtmalek.flightsimulator.Simulator;
+import com.github.adamtmalek.flightsimulator.gui.mapView.MapView;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
 import com.github.adamtmalek.flightsimulator.models.*;
 import javafx.collections.SetChangeListener;
