@@ -28,11 +28,9 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 
 		while (isRunning) {
 			logger.debug(this.flight.flightID() + " is running!");
-
 			if (hasDepartureDatePassed()) {
 
 				final var updatedFlight = trackFlight();
-				System.out.println("Flight "+updatedFlight.flightID()+" is tracked to " + updatedFlight.flightStatus().getCurrentPosition().latitude()+","+updatedFlight.flightStatus().getCurrentPosition().latitude());
 
 				publishTo(updatedFlight, updatedFlight.flightStatus().getCurrentControlTower());
 
@@ -112,7 +110,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 	}
 
 	private double calculateCurrentDistanceTravelled() {
-		return flight.aeroplane().speed() * (flightDuration/3600);
+		return flight.aeroplane().speed() * (flightDuration/3600.0);
 	}
 
 
