@@ -63,8 +63,9 @@ public class MapView extends JFrame{
 		if(!model.isEmpty()) {
 			final var flights = Arrays.stream(model.toArray()).map(Flight.class::cast).toList();
 
-			final var flightWaypoints = flights.stream().map(f-> new FlightWaypoint(f.flightID(),
-					new GeoPosition(f.flightStatus().getCurrentPosition().latitude(),f.flightStatus().getCurrentPosition().longitude()))).collect(Collectors.toSet());
+			final var flightWaypoints = flights.stream().filter(f->f.flightStatus().getStatus()== Flight.FlightStatus.Status.IN_PROGRESS)
+					.map(f-> new FlightWaypoint(f.flightID(),
+						new GeoPosition(f.flightStatus().getCurrentPosition().latitude(),f.flightStatus().getCurrentPosition().longitude()))).collect(Collectors.toSet());
 
 			waypointPainter.setWaypoints(flightWaypoints);
 			this.repaint(); //Call to ensure markers are updated on the map, otherwise only repainted on mouse interaction.
