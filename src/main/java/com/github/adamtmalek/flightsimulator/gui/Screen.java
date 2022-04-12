@@ -127,7 +127,7 @@ public class Screen extends JFrame implements MainView {
 
 	private void addListenersToSimulatorCollections() {
 		simulator.addFlightCollectionListener(change -> handleChange(flightList, flightsModel, change));
-		simulator.addFlightCollectionListener(change -> mapView.handleChange(flightsModel, change));
+		simulator.addFlightCollectionListener(change -> mapView.handleChange(flightsModel));
 		simulator.addAirlineCollectionListener(change -> handleChange(airlineBox, airlinesModel, change));
 		simulator.addAeroplaneCollectionListener(change -> handleChange(aeroplaneBox, aeroplanesModel, change));
 		simulator.addAirportCollectionListener(change -> {

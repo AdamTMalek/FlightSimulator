@@ -3,8 +3,6 @@ package com.github.adamtmalek.flightsimulator.gui.mapView;
 import javax.swing.event.MouseInputListener;
 
 import com.github.adamtmalek.flightsimulator.models.Flight;
-import javafx.collections.SetChangeListener;
-import org.jetbrains.annotations.NotNull;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.CenterMapListener;
@@ -24,48 +22,43 @@ public class MapView extends JFrame{
 
 	public MapView(){
 		JXMapViewer mapViewer = new JXMapViewer();
-		waypointPainter.setRenderer(new FlightWaypointRenderer());
 		mapViewer.setFont(new Font("Default", Font.PLAIN, 20));
 
 		TileFactoryInfo info = new OSMTileFactoryInfo();
 		DefaultTileFactory tileFactory = new DefaultTileFactory(info);
 		mapViewer.setTileFactory(tileFactory);
+		tileFactory.setThreadPoolSize(2);
 
-		// Use 8 threads in parallel to load the tiles
-		tileFactory.setThreadPoolSize(8);
-
-		// Set the focus
+		// Set  focus
 		GeoPosition edinburgh = new GeoPosition(55.95, -3.19);
-		mapViewer.setZoom(15);
+		mapViewer.setZoom(16);
 		mapViewer.setAddressLocation(edinburgh);
 
+		//Set map viewer to use custom flight waypoint renderer
+		waypointPainter.setRenderer(new FlightWaypointRenderer());
 		mapViewer.setOverlayPainter(waypointPainter);
+
 		//Set up mouse interaction.
 		MouseInputListener mia = new PanMouseInputListener(mapViewer);
 		mapViewer.addMouseListener(mia);
 		mapViewer.addMouseMotionListener(mia);
 		mapViewer.addMouseListener(new CenterMapListener(mapViewer));
 		mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
-		//mapViewer.addKeyListener(new PanKeyListener(mapViewer));
+
 		// Display the viewer in a JFrame
 		this.getContentPane().add(mapViewer);
 		this.setSize(800, 600);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setTitle("Map Viewer - Active Flights");
 		this.setVisible(true);
-	}
-
-	public void handleChange(DefaultListModel<Flight> model,
-														@NotNull SetChangeListener.Change<? extends Flight> change) {
-		if (change.wasAdded()) {
-			addMarker(model, change.getElementAdded());
-		}/* else {
-			System.out.println("removing marker");
-			removeMarker(change.getElementRemoved());
-		}*/
 
 	}
 
-	private void addMarker(DefaultListModel<Flight> model, Flight flight){
+	public void handleChange(DefaultListModel<Flight> model) {
+			drawMarkers(model);
+	}
+
+	private void drawMarkers(DefaultListModel<Flight> model){
 
 		if(!model.isEmpty()) {
 			final var flights = Arrays.stream(model.toArray()).map(Flight.class::cast).toList();
@@ -74,10 +67,8 @@ public class MapView extends JFrame{
 					new GeoPosition(f.flightStatus().getCurrentPosition().latitude(),f.flightStatus().getCurrentPosition().longitude()))).collect(Collectors.toSet());
 
 			waypointPainter.setWaypoints(flightWaypoints);
-			this.repaint();
+			this.repaint(); //Call to ensure markers are updated on the map, otherwise only repainted on mouse interaction.
 		}
 	}
 
-	//private void removeMarker(Flight flight){
-	//}
 	}
