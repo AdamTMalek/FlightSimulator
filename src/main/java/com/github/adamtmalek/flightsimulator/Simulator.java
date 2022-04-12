@@ -39,7 +39,7 @@ public class Simulator {
 
 		FlightSimulationThreadManagement.setFlightSimulationFrequency(0.00111111111); // Adds approximately 0.25 hour every tick
 		FlightSimulationThreadManagement.setThreadFrequency(2);
-		FlightSimulationThreadManagement.setGuiUpdateFrequency(2);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(0.5);
 
 		simulationStartTime = ZonedDateTime.of(2022, 1, 30, 0, 0, 0, 0, ZoneId.of("UTC+0"));
 	}
