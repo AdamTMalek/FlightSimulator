@@ -9,6 +9,8 @@ public interface MainViewController {
 
 	void onAddFlightClicked();
 
+	void onSimulationSpeedChange(double speed);
+
 	void onSimulationControlClicked(boolean newState);
 
 	void onWindowClosing();

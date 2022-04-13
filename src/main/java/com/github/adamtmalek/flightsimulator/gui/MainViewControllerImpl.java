@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
+import com.github.adamtmalek.flightsimulator.FlightSimulationThreadManagement;
 import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.io.FlightDataFileHandlerException;
 import com.github.adamtmalek.flightsimulator.models.Airport;
@@ -133,6 +134,11 @@ public class MainViewControllerImpl implements MainViewController {
 					new JFrame(), ex.getMessage(), "Failed to read flight data", JOptionPane.ERROR_MESSAGE)
 			);
 		}
+	}
+
+	@Override
+	public void onSimulationSpeedChange(double speed) {
+		FlightSimulationThreadManagement.setThreadFrequency(speed);
 	}
 
 	@Override

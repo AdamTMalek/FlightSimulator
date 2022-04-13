@@ -19,9 +19,13 @@ import java.util.stream.Stream;
  * may vary between runs (data-dependent).
  */
 public class FlightSimulationThreadManagement {
+	public static final double MINIMUM_THREAD_FREQUENCY = 0.5;
+	public static final double MAXIMUM_THREAD_FREQUENCY = 4;
+
 	private static double THREAD_FREQUENCY = 2; //Hz
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz
 	private static double GUI_UPDATE_FREQUENCY = 2; //Hz
+
 	private final @NotNull Logger logger = Logger.getInstance();
 	private final Collection<Thread> threads;
 	private ZonedDateTime simulationStartTime;
@@ -107,6 +111,4 @@ public class FlightSimulationThreadManagement {
 		logger.info("Resuming threads. ================== ");
 		this.threads.forEach(Thread::resume);
 	}
-
-
 }

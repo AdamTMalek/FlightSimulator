@@ -1,5 +1,6 @@
 package com.github.adamtmalek.flightsimulator.gui;
 
+import com.github.adamtmalek.flightsimulator.FlightSimulationThreadManagement;
 import com.github.adamtmalek.flightsimulator.Simulator;
 import com.github.adamtmalek.flightsimulator.gui.mapView.MapView;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -19,8 +22,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -49,6 +54,8 @@ public class Screen extends JFrame implements MainView {
 	private JTextField flightNumberTextField;
 	private JToggleButton simulationToggle;
 	private MapView mapView = new MapView();
+	private JSlider simulationSpeedSlider;
+	private JLabel currentSimulationTimeLabel;
 
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
@@ -85,6 +92,12 @@ public class Screen extends JFrame implements MainView {
 		});
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		flightList.addListSelectionListener(e -> setSelectedFlight());
+		simulationSpeedSlider.addChangeListener(e -> {
+			final float value = (float) simulationSpeedSlider.getValue() / 10;
+			final double roundedValue = (double) Math.round(value * 100) / 100;
+			final var label = new JLabel(String.format("%f", roundedValue));
+			controller.onSimulationSpeedChange(simulationSpeedSlider.getValue());
+		});
 		addOnExitEventHandler();
 		addListenersToSimulatorCollections();
 	}
@@ -100,6 +113,30 @@ public class Screen extends JFrame implements MainView {
 		departureBox.setModel(departureAirportsModel);
 		destinationBox.setRenderer(new AirportListCellRenderer());
 		destinationBox.setModel(destinationAirportModel);
+
+	initializeSimulationSpeedSlider();
+	}
+
+	private void initializeSimulationSpeedSlider() {
+		final double max = FlightSimulationThreadManagement.MAXIMUM_THREAD_FREQUENCY;
+		final double min = FlightSimulationThreadManagement.MINIMUM_THREAD_FREQUENCY;
+
+		final var steps = (int) (max - min) * 2 + 1;
+
+		simulationSpeedSlider.setMinimum(0);
+		simulationSpeedSlider.setMaximum(steps);
+
+		final Function<Double, Double> round = value -> (double) Math.round(value * 100) / 100;
+
+
+		final var labelMap = IntStream.rangeClosed(0, steps)
+				.boxed()
+				.collect(Collectors.toUnmodifiableMap(
+						Function.identity(),
+						stepIndex -> new JLabel("%.1f".formatted(round.apply(min + stepIndex * 0.5)))
+				));
+		final var labelTable = new Hashtable<>(labelMap);
+		simulationSpeedSlider.setLabelTable(labelTable);
 	}
 
 	private void addListenersForUpdatingAddButtonState() {
