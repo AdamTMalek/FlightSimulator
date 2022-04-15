@@ -1,0 +1,14 @@
+<loggerConfig>
+    <configurations>
+        <config>
+            <class>com.github.adamtmalek.flightsimulator.logger.ConsoleLogger</class>
+            <level>INFO</level>
+            <output/>
+        </config>
+        <config>
+            <class>com.github.adamtmalek.flightsimulator.logger.FileLogger</class>
+            <level>ALL</level>
+            <output>/home/adam/IdeaProjects/FlightSimulator/out/logs</output>
+        </config>
+    </configurations>
+</loggerConfig>

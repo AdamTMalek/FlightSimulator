@@ -1,20 +1,13 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
-import com.fasterxml.jackson.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Parameter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+import java.util.Optional;
 
 public abstract class Logger {
 	abstract void log(LogLevel level, String msg);
@@ -43,59 +36,58 @@ public abstract class Logger {
 		this.log(LogLevel.FATAL, msg);
 	}
 
-	protected LogLevel loggerLevel;
+	private final static Logger singleton = new LoggerFacade(LogLevel.ALL, null);
 
-	private final static Logger singleton = new LoggerImplementation(LogLevel.ALL);
+	protected final @NotNull LogLevel loggerLevel;
+	protected final @Nullable String output;
+
+	private boolean shouldLog(@NotNull LogLevel logLevel) {
+		return loggerLevel.value >= logLevel.value;
+	}
 
 	public static Logger getInstance() {
 		return singleton;
 	}
 
-	protected Logger(LogLevel logLevel) {
+	protected Logger(@NotNull LogLevel logLevel, @Nullable String output) {
 		this.loggerLevel = logLevel;
+		this.output = output;
 	}
 
-	private static class LoggerImplementation extends Logger {
-		private List<Logger> loggers;
+	private static class LoggerFacade extends Logger {
+		private static final String configFilename = "logConfig.xml";
+		private final List<Logger> loggers;
 
-		protected LoggerImplementation(LogLevel logLevel) {
-			// instantiate loggers here from config
-			super(logLevel);
+		protected LoggerFacade(@NotNull LogLevel logLevel, @Nullable String output) {
+			super(logLevel, output);
+			loggers = getLoggerFactory().createLoggers();
+		}
 
-			loggers = new ArrayList<>();
-			// Factory version
-			LoggerFactory logFact = new LoggerFactory();
-			// List.stream().forEach() version
-//			List<String> loggersToMake = Arrays.asList(logFact.getLoggerTypes());
-//			loggersToMake.stream()
-//					.forEach(logType -> loggers.add(logFact.getLogger(logType)));
+		@Contract("-> new")
+		private static LoggerFactory getLoggerFactory() {
+			return getConfigurations()
+					.map(LoggerFactory::withConfiguration)
+					.orElseGet(LoggerFactory::withDefaultConfiguration);
+		}
 
-			// For loop version
-			String[] loggersToMake = logFact.getLoggerTypes();
-			for (String loggerType: loggersToMake) {
-				try {
-					this.loggers.add(logFact.getLogger(loggerType));
-				} catch (IOException e) {
-					System.out.println("IOException when trying to create logger");
-					System.out.println(e.getMessage());
-				}
+		@Contract(pure = true)
+		private static @NotNull Optional<LoggerConfigurations> getConfigurations() {
+			final var mapper = new XmlMapper();
+
+			try {
+				final var resourceUrl = LoggerFacade.class.getClassLoader().getResource(configFilename);
+				if (resourceUrl == null) return Optional.empty();
+
+				return Optional.of(mapper.readValue(resourceUrl, LoggerConfigurations.class));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
 		protected void log(@NotNull LogLevel level, @NotNull String message) {
-			String formattedMsg = String.format(
-					"[%s]: %s",
-					level.name(),
-					message
-			);
-
 			loggers.stream()
-					.filter(logger -> shouldLog(logger, level))
+					.filter(logger -> logger.shouldLog(level))
 					.forEach(logger -> logger.log(level, message));
-		}
-
-		private static boolean shouldLog(@NotNull Logger logger, @NotNull LogLevel level) {
-			return logger.loggerLevel.value >= level.value;
 		}
 	}
 }

@@ -20,6 +20,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.jetbrains:annotations:20.1.0")
     implementation("org.jxmapviewer:jxmapviewer2:2.5")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.0")
     compileOnly("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("org.assertj:assertj-core:3.22.0")

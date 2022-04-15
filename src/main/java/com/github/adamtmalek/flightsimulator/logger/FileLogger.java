@@ -1,55 +1,54 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-class FileLogger extends Logger {
-	private String loggingDir;
-	private final Charset charset = Charset.defaultCharset();
-	private boolean hasErrored = false;
+/**
+ * This logger, even though it has a public constructor should not be created by itself.
+ * The public constructor is there to get reflection working, to be able to create it by the factory.
+ */
+public class FileLogger extends Logger {
+	private final @NotNull File outputFile;
 
-	protected FileLogger(LogLevel level, String path) {
-		super(level);
-		this.loggingDir = path;
+	public FileLogger(LogLevel level, String path) {
+		super(level, path);
+		assert this.output != null;
+		outputFile = createLogFile();
+	}
 
+	private @NotNull File createLogFile() {
 		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+		String filePath = "%s/%s.log".formatted(output, date);
+
+		final var file = new File(filePath);
+
 		try {
-			File dir = new File(loggingDir);
-			dir.mkdirs();
-			String filePath = loggingDir + "" + date + ".log";
-			File file = new File(filePath);
-			if (!file.createNewFile()) {
-				System.out.println("Log file with the same timestamp already exists.");
-				this.hasErrored = true;
+			//noinspection ResultOfMethodCallIgnored
+			file.getParentFile().mkdirs();
+
+			if (file.createNewFile()) {
+				return file;
+			} else {
+				throw new RuntimeException("Failed to create log file %s. Already exists.".formatted(file.getAbsolutePath()));
 			}
-			this.loggingDir = filePath;
-//			try (BufferedWriter writer = Files.newBufferedWriter(loggingDir, charset)) {
-//				String msg = "Launched.";
-//				writer.write(msg, 0, msg.length());
-//			} catch (IOException e) {
-//				//System.err.format("IOException: ")
-//			}
-		} catch (SecurityException e) {
-			System.err.println("SecurityException while creating logging dir at: " + this.loggingDir + e.getMessage());
 		} catch (IOException e) {
-			System.err.println("IOException while creating new log file: " + e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
+
 	public void log(LogLevel level, String msg) {
-		if (this.hasErrored) {return;}
 		try {
-			FileWriter writer = new FileWriter(loggingDir, true);
+			FileWriter writer = new FileWriter(outputFile, true);
 			writer.write(msg + "\n");
 			writer.close();
 		} catch (IOException e) {
-			System.err.println("IOException while logging to: " + loggingDir);
+			System.err.println("IOException while logging to: " + outputFile);
 			System.out.println(e.getMessage());
-			this.hasErrored = true;
 		}
-
 	}
 }

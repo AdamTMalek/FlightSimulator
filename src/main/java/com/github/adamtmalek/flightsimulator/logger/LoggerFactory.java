@@ -1,54 +1,54 @@
 package com.github.adamtmalek.flightsimulator.logger;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Properties;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-/*
-	To add more loggers:
-	1. Create a new logger class which extends Logger (check ConsoleLogger.java for simplest example)
-	2. Add unique logger name to getLoggerTypes() and corresponding switch case in getLogger()
-	3. Optionally add properties to the logger.properties file
- */
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class LoggerFactory {
-	private final String propertiesPath = "src/main/java/com/github/adamtmalek/flightsimulator/logger/logger.properties";
-	private final Properties props = new Properties();
 
-	public LoggerFactory() {
-		try {
-			props.load(new FileInputStream(propertiesPath));
-		} catch (FileNotFoundException e) {
-			System.err.println("Properties file was not found in " + propertiesPath);
-		} catch (IOException e) {
-			System.err.println("IOException when reading properties file. " + e.getMessage());
+class LoggerFactory {
+	private final @Nullable LoggerConfigurations configurations;
+
+	private LoggerFactory(@Nullable LoggerConfigurations configurations) {
+		this.configurations = configurations;
+	}
+
+	@Contract("_ -> new")
+	public static @NotNull LoggerFactory withConfiguration(@NotNull LoggerConfigurations configurations) {
+		return new LoggerFactory(configurations);
+	}
+
+	@Contract("-> new")
+	public static @NotNull LoggerFactory withDefaultConfiguration() {
+		return new LoggerFactory(null);
+	}
+
+
+	public @NotNull @Unmodifiable List<Logger> createLoggers() {
+		if (configurations == null) {
+			return new ArrayList<>() {{
+				add(new ConsoleLogger(LogLevel.WARN, null));
+			}};
 		}
+
+		return Arrays.stream(configurations.loggerConfigurations).map(this::createLogger).toList();
 	}
 
-	public String[] getLoggerTypes() {
-		return new String[]{
-				"CONSOLE", "FILE"
-		};
-	}
-
-	public Logger getLogger(String loggerType) throws IOException {
-		return switch (loggerType) {
-			case "CONSOLE" -> new ConsoleLogger(
-					getLogLevelFromProperties("ConsoleLogger", "WARN"));
-			case "FILE" -> new FileLogger(
-					getLogLevelFromProperties("FileLogger", "ALL"),
-					props.getProperty("FileLogger.path",
-					"src/main/java/com/github/adamtmalek/flightsimulator/logger/logs/"));
-			default -> null;
-		};
-	}
-
-	public LogLevel getLogLevelFromProperties(String loggerType, String defaultLevel) {
-		String level = props.getProperty(
-				String.format("%s.logLevel", loggerType),
-				defaultLevel.toUpperCase(Locale.ROOT));
-		return LogLevel.valueOf(level);
+	@Contract("_ -> new")
+	private @NotNull Logger createLogger(@NotNull LoggerConfigurations.LoggerConfiguration loggerConfiguration) {
+		final var fqn = loggerConfiguration.getLoggerClass();
+		try {
+			final var klass = Class.forName(fqn);
+			final var constructor = klass.getConstructor(LogLevel.class, String.class);
+			return (Logger) constructor.newInstance(loggerConfiguration.getLogLevel(), loggerConfiguration.getOutput());
+		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException
+						 | IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
