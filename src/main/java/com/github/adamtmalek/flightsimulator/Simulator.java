@@ -7,6 +7,7 @@ import com.github.adamtmalek.flightsimulator.models.Aeroplane;
 import com.github.adamtmalek.flightsimulator.models.Airline;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -15,9 +16,10 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 public class Simulator {
@@ -28,6 +30,8 @@ public class Simulator {
 	private final @NotNull ObservableSet<Airline> airlines = FXCollections.observableSet();
 	private final @NotNull ObservableSet<Airport> airports = FXCollections.observableSet();
 	private final @NotNull ObservableSet<Flight> flights = FXCollections.observableSet();
+
+	private final @NotNull List<ChangeListener<? super ZonedDateTime>> simulationTimeListeners = new ArrayList<>();
 
 	private final @NotNull FlightJoiner flightJoiner = new FlightJoiner(flights);
 	private @NotNull FlightSimulationThreadManagement threadManager;
@@ -113,6 +117,10 @@ public class Simulator {
 		simulationState = SimulationState.TERMINATED;
 	}
 
+	public void registerSimulationTimeObserver(ChangeListener<? super ZonedDateTime> listener) {
+		simulationTimeListeners.add(listener);
+	}
+
 	public void writeAirlineReports() {
 		final var writer = new ReportWriter();
 		writer.writeAirlineReports(FLIGHTS_REPORT_DIRECTORY, airlines, flights);
@@ -165,6 +173,8 @@ public class Simulator {
 				airports.stream().map(o -> o.controlTower).toList(),
 				flightJoiner,
 				earliestDepartureDate.minusHours(1));
+
+		simulationTimeListeners.forEach(listener -> threadManager.registerTimeObserver(listener));
 	}
 
 	private <T> void replaceCollectionWith(@NotNull Collection<T> collection,

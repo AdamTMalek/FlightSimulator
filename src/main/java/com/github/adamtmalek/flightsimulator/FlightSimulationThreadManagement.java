@@ -3,6 +3,7 @@ package com.github.adamtmalek.flightsimulator;
 import com.github.adamtmalek.flightsimulator.logger.Logger;
 import com.github.adamtmalek.flightsimulator.models.Airport;
 import com.github.adamtmalek.flightsimulator.models.Flight;
+import javafx.beans.value.ChangeListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
@@ -90,6 +91,10 @@ public class FlightSimulationThreadManagement {
 		var newFlightThread = new Thread(new FlightTracker(flight, stopwatch.getCurrentRelativeTime()));
 		newFlightThread.start();
 		threads.add(newFlightThread);
+	}
+
+	public void registerTimeObserver(ChangeListener<? super ZonedDateTime> listener) {
+		stopwatch.registerTimeObserver(listener);
 	}
 
 	public void startThreads() {

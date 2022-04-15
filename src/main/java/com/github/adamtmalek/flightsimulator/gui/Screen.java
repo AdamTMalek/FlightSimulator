@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -98,6 +96,11 @@ public class Screen extends JFrame implements MainView {
 			final var label = new JLabel(String.format("%f", roundedValue));
 			controller.onSimulationSpeedChange(simulationSpeedSlider.getValue());
 		});
+
+		simulator.registerSimulationTimeObserver((observable, oldValue, newValue) -> {
+			SwingUtilities.invokeLater(() -> currentSimulationTimeLabel.setText(dateTimeFormatter.format(newValue)));
+		});
+
 		addOnExitEventHandler();
 		addListenersToSimulatorCollections();
 	}
@@ -114,7 +117,7 @@ public class Screen extends JFrame implements MainView {
 		destinationBox.setRenderer(new AirportListCellRenderer());
 		destinationBox.setModel(destinationAirportModel);
 
-	initializeSimulationSpeedSlider();
+		initializeSimulationSpeedSlider();
 	}
 
 	private void initializeSimulationSpeedSlider() {
