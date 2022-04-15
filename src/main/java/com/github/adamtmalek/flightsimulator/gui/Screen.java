@@ -56,6 +56,14 @@ public class Screen extends JFrame implements MainView {
 	private JSlider simulationSpeedSlider;
 	private JLabel currentSimulationTimeLabel;
 	private JTextArea logArea;
+	private JSlider simulationTickSlider;
+	private JSlider guiRefreshSlider;
+
+	private final Hashtable<Integer, JLabel> sliderLabelMap = new Hashtable<Integer, JLabel>() {{
+		put(slowSimulationSpeedIndex, new JLabel("Slow"));
+		put(normalSimulationSpeedIndex, new JLabel("Standard"));
+		put(fastSimulationSpeedIndex, new JLabel("Fast"));
+	}};
 
 	private final int slowSimulationSpeedIndex = 0;
 	private final int normalSimulationSpeedIndex = 1;
@@ -97,19 +105,7 @@ public class Screen extends JFrame implements MainView {
 		});
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		flightList.addListSelectionListener(e -> setSelectedFlight());
-		simulationSpeedSlider.addChangeListener(e -> {
-			double selectedThreadFrequency;
-			switch (simulationSpeedSlider.getValue()) {
-				case slowSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.MINIMUM_THREAD_FREQUENCY;
-				case normalSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.DEFAULT_THREAD_FREQUENCY;
-				case fastSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.MAXIMUM_THREAD_FREQUENCY;
-				default -> throw new RuntimeException("Unexpected simulation speed slider value: %d".formatted(
-					simulationSpeedSlider.getValue()
-				));
-			}
-
-			controller.onSimulationSpeedChange(selectedThreadFrequency);
-		});
+		addChangeListenerToSimulationControls();
 
 		simulator.registerSimulationTimeObserver((observable, oldValue, newValue) -> {
 			SwingUtilities.invokeLater(() -> currentSimulationTimeLabel.setText(dateTimeFormatter.format(newValue)));
@@ -140,17 +136,64 @@ public class Screen extends JFrame implements MainView {
 		flightPlanStatusTable.setModel(flightPlanStatusTableModel);
 		flightPlanStatusTableModel.addColumn("ControlTower");
 		flightPlanStatusTableModel.addColumn("Status");
-		initializeSimulationSpeedSlider();
+		simulationSpeedSlider.setLabelTable(sliderLabelMap);
+		guiRefreshSlider.setLabelTable(sliderLabelMap);
+		initializeTickPeriodSlider();
 	}
 
-	private void initializeSimulationSpeedSlider() {
+	private void initializeTickPeriodSlider() {
 		final var labelMap = new Hashtable<Integer, JLabel>() {{
-			put(slowSimulationSpeedIndex, new JLabel("Slow"));
-			put(normalSimulationSpeedIndex, new JLabel("Standard"));
-			put(fastSimulationSpeedIndex, new JLabel("Fast"));
+			put(0, new JLabel("5 minutes"));
+			put(1, new JLabel("15 minutes"));
+			put(2, new JLabel("30 minutes"));
+			put(3, new JLabel("45 minutes"));
+			put(4, new JLabel("1 hour"));
 		}};
-		final var labelTable = new Hashtable<>(labelMap);
-		simulationSpeedSlider.setLabelTable(labelTable);
+
+		simulationTickSlider.setLabelTable(labelMap);
+	}
+
+	private void addChangeListenerToSimulationControls() {
+		simulationSpeedSlider.addChangeListener(e -> {
+			double selectedThreadFrequency = switch (simulationSpeedSlider.getValue()) {
+				case slowSimulationSpeedIndex -> FlightSimulationThreadManagement.MINIMUM_THREAD_FREQUENCY;
+				case normalSimulationSpeedIndex -> FlightSimulationThreadManagement.DEFAULT_THREAD_FREQUENCY;
+				case fastSimulationSpeedIndex -> FlightSimulationThreadManagement.MAXIMUM_THREAD_FREQUENCY;
+				default -> throw new RuntimeException("Unexpected simulation speed slider value: %d".formatted(
+						simulationSpeedSlider.getValue()
+				));
+			};
+
+			controller.onSimulationSpeedChange(selectedThreadFrequency);
+		});
+
+		guiRefreshSlider.addChangeListener(e -> {
+			double selectedThreadFrequency = switch (guiRefreshSlider.getValue()) {
+				case slowSimulationSpeedIndex -> FlightSimulationThreadManagement.MINIMUM_GUI_UPDATE_FREQUENCY;
+				case normalSimulationSpeedIndex -> FlightSimulationThreadManagement.DEFAULT_GUI_UPDATE_FREQUENCY;
+				case fastSimulationSpeedIndex -> FlightSimulationThreadManagement.MAXIMUM_GUI_UPDATE_FREQUENCY;
+				default -> throw new RuntimeException("Unexpected simulation speed slider value: %d".formatted(
+						guiRefreshSlider.getValue()
+				));
+			};
+
+			controller.onGuiRefreshSpeedChange(selectedThreadFrequency);
+		});
+
+		simulationTickSlider.addChangeListener(e -> {
+			double selectedThreadFrequency = switch (simulationTickSlider.getValue()) {
+				case 0 -> FlightSimulationThreadManagement.FLIGHT_SIM_FREQ_5_MINUTES;
+				case 1 -> FlightSimulationThreadManagement.FLIGHT_SIM_FREQ_15_MINUTES;
+				case 2 -> FlightSimulationThreadManagement.FLIGHT_SIM_FREQ_30_MINUTES;
+				case 3 -> FlightSimulationThreadManagement.FLIGHT_SIM_FREQ_45_MINUTES;
+				case 4 -> FlightSimulationThreadManagement.FLIGHT_SIM_FREQ_60_MINUTES;
+				default -> throw new RuntimeException("Unexpected simulation speed slider value: %d".formatted(
+						simulationTickSlider.getValue()
+				));
+			};
+
+			controller.onSimulationTickPeriodChange(selectedThreadFrequency);
+		});
 	}
 
 	private void addListenersForUpdatingAddButtonState() {
@@ -159,22 +202,6 @@ public class Screen extends JFrame implements MainView {
 						flightNumberTextField)
 				.forEach(e -> e.addPropertyChangeListener(evt -> controller.onAddFlightFormEdited()));
 	}
-
-//	private void setSelectedFlight() {
-//		final var flight = flightList.getSelectedValue();
-//		if (flight == null) return;
-//
-//		textDistance.setText(Double.toString(flight.estimatedTotalDistanceToTravel()));
-//		textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
-//		textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
-//		textTime.setText(dateTimeFormatter.format(flight.departureDate()));
-//
-//		final var flightPlanText = flight.controlTowersToCross()
-//				.stream()
-//				.map(t -> t.code)
-//				.collect(Collectors.joining("\n"));
-//		flightPlan.setText(flightPlanText);
-//	}
 
 	private void setSelectedFlight() {
 		final var flight = flightList.getSelectedValue();
