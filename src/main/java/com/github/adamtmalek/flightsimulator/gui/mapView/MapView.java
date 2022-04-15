@@ -55,7 +55,7 @@ public class MapView extends JFrame{
 	}
 
 	public void handleChange(DefaultListModel<Flight> model) {
-			drawMarkers(model);
+		SwingUtilities.invokeLater(() -> drawMarkers(model));
 	}
 
 	private void drawMarkers(DefaultListModel<Flight> model){
