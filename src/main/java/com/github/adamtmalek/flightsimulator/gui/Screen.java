@@ -6,6 +6,7 @@ import com.github.adamtmalek.flightsimulator.gui.mapView.MapView;
 import com.github.adamtmalek.flightsimulator.gui.renderers.*;
 import com.github.adamtmalek.flightsimulator.models.*;
 import javafx.collections.SetChangeListener;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -40,7 +40,6 @@ public class Screen extends JFrame implements MainView {
 	private JLabel textFuelConsumption;
 	private JLabel textCo2Emission;
 	private JList<Flight> flightList;
-//	private JTextArea flightPlan;
 	private JComboBox<Airline> airlineBox;
 	private JComboBox<Aeroplane> aeroplaneBox;
 	private JComboBox<Airport> departureBox;
@@ -65,12 +64,17 @@ public class Screen extends JFrame implements MainView {
 		put(fastSimulationSpeedIndex, new JLabel("Fast"));
 	}};
 
+	private final @NotNull String currentControlTowerIconResourcePath = "plane.png";
+	private final @NotNull String passedControlTowerIconResourcePath = "done.png";
+	private final @NotNull Icon currentControlTowerIcon;
+	private final @NotNull Icon passedControlTowerIcon;
+
 	private final int slowSimulationSpeedIndex = 0;
 	private final int normalSimulationSpeedIndex = 1;
 	private final int fastSimulationSpeedIndex = 2;
 
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
-	private final @NotNull DefaultTableModel flightPlanStatusTableModel = new DefaultTableModel();
+	private final @NotNull DefaultTableModel flightPlanStatusTableModel = new TableModelWithIcon();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
 	private final @NotNull MutableComboBoxModel<Aeroplane> aeroplanesModel = new DefaultComboBoxModel<>();
 	private final @NotNull MutableComboBoxModel<Airport> departureAirportsModel = new DefaultComboBoxModel<>();
@@ -120,6 +124,9 @@ public class Screen extends JFrame implements MainView {
 
 		addOnExitEventHandler();
 		addListenersToSimulatorCollections();
+
+		currentControlTowerIcon = getIcon(currentControlTowerIconResourcePath);
+		passedControlTowerIcon = getIcon(passedControlTowerIconResourcePath);
 	}
 
 	private void initializeComponents() {
@@ -151,6 +158,15 @@ public class Screen extends JFrame implements MainView {
 		}};
 
 		simulationTickSlider.setLabelTable(labelMap);
+	}
+
+	@Contract("_ -> new")
+	private @NotNull Icon getIcon(@NotNull String resourceName) {
+		final var resourceUrl = getClass().getClassLoader().getResource(resourceName);
+		assert resourceUrl != null;
+		final var image = new ImageIcon(resourceUrl).getImage();
+		final var scaledImage = image.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
+		return new ImageIcon(scaledImage);
 	}
 
 	private void addChangeListenerToSimulationControls() {
@@ -212,26 +228,21 @@ public class Screen extends JFrame implements MainView {
 		textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
 		textTime.setText(dateTimeFormatter.format(flight.departureDate()));
 
-		JLabel doneImage = getImage("DONE");
-		JLabel currentImage = getImage("CURRENT");
-
-		Airport.ControlTower ct;
-		int idxLastControlTower = flight.controlTowersToCross().size() - 1;
-		int idxCurrentControlTower = flight.flightStatus().getControlTowersPassed().size() - 1;
-		List<Airport.ControlTower> controlTower = flight.controlTowersToCross();
-
-		for(int idx = 0; idx <= idxCurrentControlTower; idx++){
-			ct = controlTower.get(idx);
-			if(idx == idxCurrentControlTower && idx != idxLastControlTower){
-				flightPlanStatusTableModel.addRow(
-						new Object[]{ct.code, currentImage}
-				);
-			} else {
-				flightPlanStatusTableModel.addRow(
-						new Object[]{ct.code, doneImage}
-				);
-			}
+		if (flightPlanStatusTableModel.getRowCount() > 0) {
+			IntStream.range(0, flightPlanStatusTableModel.getRowCount())
+					.forEach(index -> flightPlanStatusTableModel.removeRow(0));
 		}
+
+		flight.flightStatus().getControlTowersPassed()
+				.forEach(tower -> flightPlanStatusTableModel.addRow(new Object[]{tower.code, passedControlTowerIcon}));
+
+		final var currentControlTower = flight.flightStatus().getCurrentControlTower();
+		flightPlanStatusTableModel.addRow(
+				new Object[]{currentControlTower.code, currentControlTowerIcon}
+		);
+
+		flight.flightStatus().getControlTowersStillToCross()
+				.forEach(tower -> flightPlanStatusTableModel.addRow(new Object[]{tower.code, tower.name}));
 	}
 
 	private void addListenersToSimulatorCollections() {
@@ -425,29 +436,5 @@ public class Screen extends JFrame implements MainView {
 				super.windowClosing(e);
 			}
 		});
-	}
-
-	/** Returns an ImageIcon, or null if the path was invalid. */
-	protected ImageIcon createImageIcon(String path,
-																			String description) {
-		java.net.URL imgURL = getClass().getResource(path);
-		if (imgURL != null) {
-			return new ImageIcon(imgURL, description);
-		} else {
-			System.err.println("Couldn't find file: " + path);
-			return null;
-		}
-	}
-
-	private JLabel getImage(String imgType){
-		ImageIcon img;
-		if (Objects.equals(imgType, "DONE")){
-			img = createImageIcon("resources/done.png",
-					"Image for passed control tower");
-		} else {
-			img = createImageIcon("resources/plane.png",
-					"Image for current control tower");
-		}
-		return new JLabel(img);
 	}
 }
