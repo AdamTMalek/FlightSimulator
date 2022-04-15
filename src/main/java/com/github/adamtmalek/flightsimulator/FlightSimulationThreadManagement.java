@@ -20,8 +20,10 @@ import java.util.stream.Stream;
  * may vary between runs (data-dependent).
  */
 public class FlightSimulationThreadManagement {
-	public static final double MINIMUM_THREAD_FREQUENCY = 0.5;
-	public static final double MAXIMUM_THREAD_FREQUENCY = 4;
+	private static final double THREAD_FREQUENCY_SPEED_DIFFERENCE = 1;
+	public static final double DEFAULT_THREAD_FREQUENCY = 2;
+	public static final double MINIMUM_THREAD_FREQUENCY = DEFAULT_THREAD_FREQUENCY - THREAD_FREQUENCY_SPEED_DIFFERENCE;
+	public static final double MAXIMUM_THREAD_FREQUENCY = DEFAULT_THREAD_FREQUENCY + THREAD_FREQUENCY_SPEED_DIFFERENCE;
 
 	private static double THREAD_FREQUENCY = 2; //Hz
 	private static double FLIGHT_SIMULATION_FREQUENCY = 5; //Hz

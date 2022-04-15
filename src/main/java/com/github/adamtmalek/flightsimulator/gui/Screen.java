@@ -55,6 +55,10 @@ public class Screen extends JFrame implements MainView {
 	private JSlider simulationSpeedSlider;
 	private JLabel currentSimulationTimeLabel;
 
+	private final int slowSimulationSpeedIndex = 0;
+	private final int normalSimulationSpeedIndex = 1;
+	private final int fastSimulationSpeedIndex = 2;
+
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
 	private final @NotNull MutableComboBoxModel<Aeroplane> aeroplanesModel = new DefaultComboBoxModel<>();
@@ -91,10 +95,17 @@ public class Screen extends JFrame implements MainView {
 		exitButton.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 		flightList.addListSelectionListener(e -> setSelectedFlight());
 		simulationSpeedSlider.addChangeListener(e -> {
-			final float value = (float) simulationSpeedSlider.getValue() / 10;
-			final double roundedValue = (double) Math.round(value * 100) / 100;
-			final var label = new JLabel(String.format("%f", roundedValue));
-			controller.onSimulationSpeedChange(simulationSpeedSlider.getValue());
+			double selectedThreadFrequency;
+			switch (simulationSpeedSlider.getValue()) {
+				case slowSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.MINIMUM_THREAD_FREQUENCY;
+				case normalSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.DEFAULT_THREAD_FREQUENCY;
+				case fastSimulationSpeedIndex -> selectedThreadFrequency = FlightSimulationThreadManagement.MAXIMUM_THREAD_FREQUENCY;
+				default -> throw new RuntimeException("Unexpected simulation speed slider value: %d".formatted(
+					simulationSpeedSlider.getValue()
+				));
+			}
+
+			controller.onSimulationSpeedChange(selectedThreadFrequency);
 		});
 
 		simulator.registerSimulationTimeObserver((observable, oldValue, newValue) -> {
@@ -121,23 +132,11 @@ public class Screen extends JFrame implements MainView {
 	}
 
 	private void initializeSimulationSpeedSlider() {
-		final double max = FlightSimulationThreadManagement.MAXIMUM_THREAD_FREQUENCY;
-		final double min = FlightSimulationThreadManagement.MINIMUM_THREAD_FREQUENCY;
-
-		final var steps = (int) (max - min) * 2 + 1;
-
-		simulationSpeedSlider.setMinimum(0);
-		simulationSpeedSlider.setMaximum(steps);
-
-		final Function<Double, Double> round = value -> (double) Math.round(value * 100) / 100;
-
-
-		final var labelMap = IntStream.rangeClosed(0, steps)
-				.boxed()
-				.collect(Collectors.toUnmodifiableMap(
-						Function.identity(),
-						stepIndex -> new JLabel("%.1f".formatted(round.apply(min + stepIndex * 0.5)))
-				));
+		final var labelMap = new Hashtable<Integer, JLabel>() {{
+			put(slowSimulationSpeedIndex, new JLabel("Slow"));
+			put(normalSimulationSpeedIndex, new JLabel("Standard"));
+			put(fastSimulationSpeedIndex, new JLabel("Fast"));
+		}};
 		final var labelTable = new Hashtable<>(labelMap);
 		simulationSpeedSlider.setLabelTable(labelTable);
 	}
