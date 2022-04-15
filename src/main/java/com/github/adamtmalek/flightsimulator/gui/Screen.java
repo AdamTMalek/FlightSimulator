@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -40,7 +41,7 @@ public class Screen extends JFrame implements MainView {
 	private JLabel textFuelConsumption;
 	private JLabel textCo2Emission;
 	private JList<Flight> flightList;
-	private JTextArea flightPlan;
+//	private JTextArea flightPlan;
 	private JComboBox<Airline> airlineBox;
 	private JComboBox<Aeroplane> aeroplaneBox;
 	private JComboBox<Airport> departureBox;
@@ -51,6 +52,7 @@ public class Screen extends JFrame implements MainView {
 	private JTable flightPlanTable;
 	private JTextField flightNumberTextField;
 	private JToggleButton simulationToggle;
+	private JTable flightPlanStatusTable;
 	private MapView mapView = new MapView();
 	private JSlider simulationSpeedSlider;
 	private JLabel currentSimulationTimeLabel;
@@ -60,6 +62,7 @@ public class Screen extends JFrame implements MainView {
 	private final int fastSimulationSpeedIndex = 2;
 
 	private final @NotNull DefaultListModel<Flight> flightsModel = new DefaultListModel<>();
+	private final @NotNull DefaultTableModel flightPlanStatusTableModel = new DefaultTableModel();
 	private final @NotNull MutableComboBoxModel<Airline> airlinesModel = new DefaultComboBoxModel<>();
 	private final @NotNull MutableComboBoxModel<Aeroplane> aeroplanesModel = new DefaultComboBoxModel<>();
 	private final @NotNull MutableComboBoxModel<Airport> departureAirportsModel = new DefaultComboBoxModel<>();
@@ -127,7 +130,9 @@ public class Screen extends JFrame implements MainView {
 		departureBox.setModel(departureAirportsModel);
 		destinationBox.setRenderer(new AirportListCellRenderer());
 		destinationBox.setModel(destinationAirportModel);
-
+		flightPlanStatusTable.setModel(flightPlanStatusTableModel);
+		flightPlanStatusTableModel.addColumn("ControlTower");
+		flightPlanStatusTableModel.addColumn("Status");
 		initializeSimulationSpeedSlider();
 	}
 
@@ -148,6 +153,22 @@ public class Screen extends JFrame implements MainView {
 				.forEach(e -> e.addPropertyChangeListener(evt -> controller.onAddFlightFormEdited()));
 	}
 
+//	private void setSelectedFlight() {
+//		final var flight = flightList.getSelectedValue();
+//		if (flight == null) return;
+//
+//		textDistance.setText(Double.toString(flight.estimatedTotalDistanceToTravel()));
+//		textFuelConsumption.setText(Double.toString(flight.estimatedFuelConsumption()));
+//		textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
+//		textTime.setText(dateTimeFormatter.format(flight.departureDate()));
+//
+//		final var flightPlanText = flight.controlTowersToCross()
+//				.stream()
+//				.map(t -> t.code)
+//				.collect(Collectors.joining("\n"));
+//		flightPlan.setText(flightPlanText);
+//	}
+
 	private void setSelectedFlight() {
 		final var flight = flightList.getSelectedValue();
 		if (flight == null) return;
@@ -157,11 +178,26 @@ public class Screen extends JFrame implements MainView {
 		textCo2Emission.setText(Double.toString(flight.estimatedCO2Produced()));
 		textTime.setText(dateTimeFormatter.format(flight.departureDate()));
 
-		final var flightPlanText = flight.controlTowersToCross()
-				.stream()
-				.map(t -> t.code)
-				.collect(Collectors.joining("\n"));
-		flightPlan.setText(flightPlanText);
+		JLabel doneImage = getImage("DONE");
+		JLabel currentImage = getImage("CURRENT");
+
+		Airport.ControlTower ct;
+		int idxLastControlTower = flight.controlTowersToCross().size() - 1;
+		int idxCurrentControlTower = flight.flightStatus().getControlTowersPassed().size() - 1;
+		List<Airport.ControlTower> controlTower = flight.controlTowersToCross();
+
+		for(int idx = 0; idx <= idxCurrentControlTower; idx++){
+			ct = controlTower.get(idx);
+			if(idx == idxCurrentControlTower && idx != idxLastControlTower){
+				flightPlanStatusTableModel.addRow(
+						new Object[]{ct.code, currentImage}
+				);
+			} else {
+				flightPlanStatusTableModel.addRow(
+						new Object[]{ct.code, doneImage}
+				);
+			}
+		}
 	}
 
 	private void addListenersToSimulatorCollections() {
@@ -355,5 +391,29 @@ public class Screen extends JFrame implements MainView {
 				super.windowClosing(e);
 			}
 		});
+	}
+
+	/** Returns an ImageIcon, or null if the path was invalid. */
+	protected ImageIcon createImageIcon(String path,
+																			String description) {
+		java.net.URL imgURL = getClass().getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL, description);
+		} else {
+			System.err.println("Couldn't find file: " + path);
+			return null;
+		}
+	}
+
+	private JLabel getImage(String imgType){
+		ImageIcon img;
+		if (Objects.equals(imgType, "DONE")){
+			img = createImageIcon("resources/done.png",
+					"Image for passed control tower");
+		} else {
+			img = createImageIcon("resources/plane.png",
+					"Image for current control tower");
+		}
+		return new JLabel(img);
 	}
 }
