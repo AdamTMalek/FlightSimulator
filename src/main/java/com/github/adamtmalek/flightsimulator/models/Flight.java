@@ -291,7 +291,7 @@ public final class Flight {
 			final var lastIndex = controlTowersToCross.size() - 1;
 
 			if (currentControlTowerIndex == lastIndex) return Collections.emptyList();
-			return controlTowersToCross.subList(currentControlTowerIndex + 1, lastIndex);
+			return controlTowersToCross.subList(currentControlTowerIndex + 1, lastIndex + 1);
 		}
 
 		public enum Status {
