@@ -11,7 +11,7 @@ public class ConsoleLogger extends Logger {
 		super(level, output);
 	}
 
-	void log(LogLevel level, String msg) {
+	public void log(LogLevel level, String msg) {
 		System.out.println(level.colourCode + msg + "\033[0m");
 		// Arrays.toString(Thread.currentThread().getStackTrace());
 	}

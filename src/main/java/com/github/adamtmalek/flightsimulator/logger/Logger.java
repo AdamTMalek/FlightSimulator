@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class Logger {
-	abstract void log(LogLevel level, String msg);
+	public abstract void log(LogLevel level, String msg);
 
 	public void trace(String msg) {
 		this.log(LogLevel.TRACE, msg);
@@ -49,7 +49,7 @@ public abstract class Logger {
 		return singleton;
 	}
 
-	protected Logger(@NotNull LogLevel logLevel, @Nullable String output) {
+	public Logger(@NotNull LogLevel logLevel, @Nullable String output) {
 		this.loggerLevel = logLevel;
 		this.output = output;
 	}
@@ -84,7 +84,7 @@ public abstract class Logger {
 			}
 		}
 
-		protected void log(@NotNull LogLevel level, @NotNull String message) {
+		public void log(@NotNull LogLevel level, @NotNull String message) {
 			loggers.stream()
 					.filter(logger -> logger.shouldLog(level))
 					.forEach(logger -> logger.log(level, message));
