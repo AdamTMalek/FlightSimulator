@@ -10,5 +10,10 @@
             <level>ALL</level>
             <output>/home/adam/IdeaProjects/FlightSimulator/out/logs</output>
         </config>
+        <config>
+            <class>com.github.adamtmalek.flightsimulator.gui.GUILogger</class>
+            <level>WARN</level>
+            <output/>
+        </config>
     </configurations>
 </loggerConfig>

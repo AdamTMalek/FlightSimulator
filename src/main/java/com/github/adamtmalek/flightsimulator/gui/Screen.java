@@ -24,7 +24,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -56,6 +55,7 @@ public class Screen extends JFrame implements MainView {
 	private MapView mapView = new MapView();
 	private JSlider simulationSpeedSlider;
 	private JLabel currentSimulationTimeLabel;
+	private JTextArea logArea;
 
 	private final int slowSimulationSpeedIndex = 0;
 	private final int normalSimulationSpeedIndex = 1;
@@ -114,6 +114,13 @@ public class Screen extends JFrame implements MainView {
 		simulator.registerSimulationTimeObserver((observable, oldValue, newValue) -> {
 			SwingUtilities.invokeLater(() -> currentSimulationTimeLabel.setText(dateTimeFormatter.format(newValue)));
 		});
+
+		final var guiLogger = GUILogger.getInstance();
+		if (guiLogger != null) {
+			guiLogger.setListener((level, message) -> SwingUtilities.invokeLater(() ->
+				logArea.append("[%s]: %s\n".formatted(level, message))
+			));
+		}
 
 		addOnExitEventHandler();
 		addListenersToSimulatorCollections();
