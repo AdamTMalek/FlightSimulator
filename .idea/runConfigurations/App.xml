@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="App" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="App" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.github.adamtmalek.flightsimulator.App" />
     <module name="FlightSimulator.main" />
+    <option name="VM_PARAMETERS" value="-ea" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.github.adamtmalek.flightsimulator.*" />
