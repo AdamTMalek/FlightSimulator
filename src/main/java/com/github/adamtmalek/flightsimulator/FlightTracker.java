@@ -37,7 +37,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 				this.flightDuration += (FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000);
 
 				if (updatedFlight.flightStatus().getStatus() == Flight.FlightStatus.Status.TERMINATED) {
-					System.out.println("Flight has terminated. Stopping track.");
+					logger.debug("Flight has terminated. Stopping track.");
 					stop();
 				}
 
@@ -71,7 +71,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 		} else {      // Distance is >0.0, therefore we can track the target.
 			final var distanceTravelled = calculateCurrentDistanceTravelled();
 			if (distanceTravelled >= flight.estimatedTotalDistanceToTravel()) { // Then we can say the flight has reached its destination.
-				System.out.println("Flight has terminated! Pos is " + flight.destinationAirport().position.latitude() + "," + flight.destinationAirport().position.longitude());
+				logger.debug("Flight has terminated! Pos is " + flight.destinationAirport().position.latitude() + "," + flight.destinationAirport().position.longitude());
 				return flight.withNewFlightStatus(flight.destinationAirport().controlTower, flight.destinationAirport().position, Flight.FlightStatus.Status.TERMINATED);
 			} else { // Flight hasn't reached its destination yet, therefore we should calculate a tracked position.
 				return createFlightWithTrackedPosition();
