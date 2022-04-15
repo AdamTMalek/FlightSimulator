@@ -377,7 +377,7 @@
                   <maximum value="2"/>
                   <paintLabels value="true"/>
                   <paintTicks value="true"/>
-                  <value value="2"/>
+                  <value value="1"/>
                 </properties>
               </component>
               <component id="ba295" class="javax.swing.JLabel">
