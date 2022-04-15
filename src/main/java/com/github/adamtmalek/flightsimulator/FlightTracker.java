@@ -43,7 +43,7 @@ public class FlightTracker extends Publisher<Flight> implements Runnable {
 
 
 			} else {
-				System.out.println("Flight has yet to take off.");
+				logger.debug("Flight %s has yet to take off".formatted(flight.flightID()));
 				publishTo(flight, flight.departureAirport().controlTower);
 			}
 			simulationRelativeTime = simulationRelativeTime.plusSeconds(FlightSimulationThreadManagement.getApproxFlightSimulationPeriodMs() / 1000);
