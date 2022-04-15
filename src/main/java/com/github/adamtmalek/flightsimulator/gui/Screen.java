@@ -180,25 +180,29 @@ public class Screen extends JFrame implements MainView {
 	private <T> void handleChange(@NotNull JComponent component,
 																@NotNull DefaultListModel<T> model,
 																@NotNull SetChangeListener.Change<? extends T> change) {
-		if (change.wasAdded()) {
-			model.addElement(change.getElementAdded());
-		} else {
-			model.removeElement(change.getElementRemoved());
-		}
+		SwingUtilities.invokeLater(() -> {
+			if (change.wasAdded()) {
+				model.addElement(change.getElementAdded());
+			} else {
+				model.removeElement(change.getElementRemoved());
+			}
 
-		SwingUtilities.invokeLater(component::updateUI);
+			component.updateUI();
+		});
 	}
 
 	private <T> void handleChange(@NotNull JComponent component,
 																@NotNull MutableComboBoxModel<T> model,
 																@NotNull SetChangeListener.Change<? extends T> change) {
-		if (change.wasAdded()) {
-			model.addElement(change.getElementAdded());
-		} else {
-			model.removeElement(change.getElementRemoved());
-		}
+		SwingUtilities.invokeLater(() -> {
+			if (change.wasAdded()) {
+				model.addElement(change.getElementAdded());
+			} else {
+				model.removeElement(change.getElementRemoved());
+			}
 
-		SwingUtilities.invokeLater(component::updateUI);
+			component.updateUI();
+		});
 	}
 
 	@Override
