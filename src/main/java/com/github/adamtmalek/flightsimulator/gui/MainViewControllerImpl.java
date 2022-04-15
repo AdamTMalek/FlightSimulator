@@ -139,6 +139,7 @@ public class MainViewControllerImpl implements MainViewController {
 	@Override
 	public void onSimulationSpeedChange(double speed) {
 		FlightSimulationThreadManagement.setThreadFrequency(speed);
+		FlightSimulationThreadManagement.setGuiUpdateFrequency(speed);
 	}
 
 	@Override
