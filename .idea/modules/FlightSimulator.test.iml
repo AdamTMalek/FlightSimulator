@@ -10,7 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="FlightSimulator.main" />
-    <orderEntry type="library" name="Gradle: org.openjfx:javafx-base:mac:17" level="project" />
+    <orderEntry type="library" name="Gradle: org.openjfx:javafx-base:linux:17" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.11.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:20.1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jxmapviewer:jxmapviewer2:2.5" level="project" />
